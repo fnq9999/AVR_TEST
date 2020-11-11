@@ -1,0 +1,142 @@
+                        .module key.c
+                        .area text(rom, con, rel)
+ 0000                   .dbfile lib\key.c
+ 0000                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\key.c
+ 0000                   .dbfunc e Key_init _Key_init fV
+                        .even
+ 0000           _Key_init::
+ 0000                   .dbline -1
+ 0000                   .dbline 21
+ 0000           ; /************************************************
+ 0000           ; 文件：key.c
+ 0000           ; 用途：
+ 0000           ; 注意：内部8M晶振
+ 0000           ; 创建：2008.4.1
+ 0000           ; 修改：2008.4.1
+ 0000           ; Copy Right  (c)  www.avrvi.com  AVR与虚拟仪器
+ 0000           ; ************************************************/
+ 0000           ; #include "..\config.h"
+ 0000           ; /*************************************************************************
+ 0000           ; ** 函数名称:键盘初始化
+ 0000           ; ** 功能描述:
+ 0000           ; ** 输　入:
+ 0000           ; ** 输出        :
+ 0000           ; ** 全局变量:
+ 0000           ; ** 调用模块:
+ 0000           ; ** 说明：
+ 0000           ; ** 注意：
+ 0000           ; **************************************************************************/
+ 0000           ; void Key_init(void)
+ 0000           ; {
+ 0000                   .dbline 22
+ 0000           ;  KEY_DDR &=~ (1<<S1)|(1<<S2)|(1<<S3)|(1<<S4);
+ 0000 8C98              cbi 0x11,4
+ 0002                   .dbline 23
+ 0002           ;  KEY_PORT |= (1<<S1)|(1<<S2)|(1<<S3)|(1<<S4);
+ 0002 82B3              in R24,0x12
+ 0004 806F              ori R24,240
+ 0006 82BB              out 0x12,R24
+ 0008                   .dbline -2
+ 0008           L2:
+ 0008                   .dbline 0 ; func end
+ 0008 0895              ret
+ 000A                   .dbend
+ 000A                   .dbfunc e get_key _get_key fc
+ 000A           ;            tmp -> <dead>
+ 000A           ;      Key_Value -> R20
+                        .even
+ 000A           _get_key::
+ 000A 4A93              st -y,R20
+ 000C                   .dbline -1
+ 000C                   .dbline 36
+ 000C           ; }
+ 000C           ; /*************************************************************************
+ 000C           ; ** 函数名称:键盘扫描
+ 000C           ; ** 功能描述:
+ 000C           ; ** 输　入:
+ 000C           ; ** 输出        :
+ 000C           ; ** 全局变量:
+ 000C           ; ** 调用模块:
+ 000C           ; ** 说明：
+ 000C           ; ** 注意：
+ 000C           ; **************************************************************************/
+ 000C           ; unsigned char get_key(void)
+ 000C           ; {
+ 000C                   .dbline 37
+ 000C           ;  unsigned char Key_Value=0xFF,tmp;
+ 000C 4FEF              ldi R20,255
+ 000E                   .dbline 39
+ 000E           ; 
+ 000E           ;  Key_Value=KEY_PIN & ((1<<S1)|(1<<S2)|(1<<S3)|(1<<S4));
+ 000E 40B3              in R20,0x10
+ 0010 407F              andi R20,240
+ 0012                   .dbline 40
+ 0012           ;  if( Key_Value != ((1<<S1)|(1<<S2)|(1<<S3)|(1<<S4)) )
+ 0012 403F              cpi R20,240
+ 0014 B1F0              breq L4
+ 0016           X0:
+ 0016                   .dbline 41
+ 0016           ;        {
+ 0016                   .dbline 42
+ 0016           ;         delay_nms(2);
+ 0016 02E0              ldi R16,2
+ 0018 10E0              ldi R17,0
+ 001A 0E940000          xcall _delay_nms
+ 001E                   .dbline 43
+ 001E           ;         if( (KEY_PIN & ((1<<S1)|(1<<S2)|(1<<S3)|(1<<S4))) == Key_Value )
+ 001E 80B3              in R24,0x10
+ 0020 807F              andi R24,240
+ 0022 8417              cp R24,R20
+ 0024 71F4              brne L6
+ 0026           X1:
+ 0026                   .dbline 44
+ 0026           ;                {
+ 0026                   .dbline 45
+ 0026           ;                 Key_Value=KEY_PIN & ((1<<S1)|(1<<S2)|(1<<S3)|(1<<S4));
+ 0026 40B3              in R20,0x10
+ 0028 407F              andi R20,240
+ 002A           L8:
+ 002A                   .dbline 47
+ 002A           ;                 //NOP();
+ 002A           ;                 while(( KEY_PIN & ((1<<S1)|(1<<S2)|(1<<S3)|(1<<S4)) )!= ((1<<S1)|(1<<S2)|(1<<S3)|(1<<S4)));
+ 002A           L9:
+ 002A                   .dbline 47
+ 002A 80B3              in R24,0x10
+ 002C 807F              andi R24,240
+ 002E 803F              cpi R24,240
+ 0030 E1F7              brne L8
+ 0032           X2:
+ 0032                   .dbline 48
+ 0032           ;                 delay_nms(1);
+ 0032 01E0              ldi R16,1
+ 0034 10E0              ldi R17,0
+ 0036 0E940000          xcall _delay_nms
+ 003A           L11:
+ 003A                   .dbline 49
+ 003A           ;                 while(( KEY_PIN & ((1<<S1)|(1<<S2)|(1<<S3)|(1<<S4)) )!= ((1<<S1)|(1<<S2)|(1<<S3)|(1<<S4)));
+ 003A           L12:
+ 003A                   .dbline 49
+ 003A 80B3              in R24,0x10
+ 003C 807F              andi R24,240
+ 003E 803F              cpi R24,240
+ 0040 E1F7              brne L11
+ 0042           X3:
+ 0042                   .dbline 50
+ 0042           ;                }
+ 0042           L6:
+ 0042                   .dbline 51
+ 0042           ;        }
+ 0042           L4:
+ 0042                   .dbline 53
+ 0042           ;        
+ 0042           ;  return Key_Value;
+ 0042 042F              mov R16,R20
+ 0044                   .dbline -2
+ 0044           L3:
+ 0044                   .dbline 0 ; func end
+ 0044 4991              ld R20,y+
+ 0046 0895              ret
+ 0048                   .dbsym l tmp 1 c
+ 0048                   .dbsym r Key_Value 20 c
+ 0048                   .dbend
+ 0048           ; }

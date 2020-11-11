@@ -1,0 +1,163 @@
+/************************************************
+文件：main.c
+用途：
+注意：内部8M晶振
+创建：2008.4.1
+修改：2008.4.1
+Copy Right  (c)  www.avrvi.com  AVR与虚拟仪器
+************************************************/
+
+#include "config.h"
+#include<time.h>
+
+unsigned char tem[20];
+unsigned char tem2[20];
+unsigned char read_buf[20]="201110095000";
+unsigned char out_buf[50]="201110095000";
+unsigned char ind=0;
+#define uint8 unsigned char
+
+void val_pc_to_msc(unsigned char *t){/// string to bcd
+	 unsigned char i=0;
+	 for(ind=0;ind<6;++ind){  
+	 	tem[ind]=(0xf0)&((t[2*ind]-'0'))<<4;
+		tem[ind]|=(0x0f)&(t[2*ind+1]-'0');
+	 }
+	 for(i=0;i<6;++i){
+	 	t[i]=tem[5-i];
+	 }
+}
+
+
+
+
+void time_init(uint8 *s)// s is a string 
+{
+
+     	val_pc_to_msc(s);
+         pcf_set_byte(0x02,s[0]);         //秒
+         pcf_set_byte(0x03,s[1]);         //分钟    
+         pcf_set_byte(0x04,s[2]);          //时             
+         pcf_set_byte(0x05,s[3]);          //日
+         pcf_set_byte(0x06,0x00);          //星期
+         pcf_set_byte(0x07,s[4]);          //月
+         pcf_set_byte(0x08,s[5]);          //年
+}
+
+
+
+void pre_transfer(unsigned char *t){
+	 t[0]&=0x7f;	 t[1]&=0x7f;
+	 t[2]&=0x3f;	 t[3]&=0x3f;
+ 	 t[4]&=0x07;	 t[5]&=0x1f;
+}
+
+
+///use_to_display_val_to_com_string_ok
+void val_msc_to_pc(unsigned char *t){
+	 unsigned char i=0;
+	 ind=0;
+	 for(i=0;i<7;++i){  
+	 	tem[ind++]='0'+(t[i]/16);
+		tem[ind++]='0'+(t[i]%16);
+	 }
+	 tem[ind]='\0';
+	 for(i=0;tem[i];++i){
+	 	t[i]=tem[i];
+	 }
+	 t[i]='\0';
+	 
+}
+
+#define uint8 unsigned char
+unsigned char len(unsigned char *s){
+		 uint8 i=0,cnt=0;
+		 for(;s[i];++i){
+		 	++cnt;
+		 }
+		 return cnt;
+}
+
+
+/// com_packet
+void msc_to_pc(unsigned char *s){
+	 Com_putstring (s,len(s),&RTbuf_UART0);
+}
+void pc_to_msc(unsigned char *p,uint8 len){
+	 Com_getstring (p,len,&RTbuf_UART0);
+}/// com_packet_end
+
+void out_user(uint8 *s){
+	 ind=0;
+	 out_buf[ind++]=s[0];
+	 out_buf[ind++]=s[1];
+	 out_buf[ind++]='S';out_buf[ind++]='E';out_buf[ind++]='C';
+	 out_buf[ind++]=s[2];
+	 out_buf[ind++]=s[3];
+	 out_buf[ind++]='M';out_buf[ind++]='I';out_buf[ind++]='N';
+     out_buf[ind++]=s[4];
+	 out_buf[ind++]=s[5];
+	 out_buf[ind++]='H';
+	 out_buf[ind]='\0';
+	
+	 
+	 
+	 msc_to_pc(out_buf);
+	 
+}
+
+void main(void)
+{
+     unsigned char *W_Buff="www.avrvi.com",*R_Buff="0",i=0;
+	 
+	 //// init_process
+	 CLI();
+	 Com_init();
+	 twi_init();
+	 SEI();
+ 	 //// init_process_end
+	 
+	 //pcf 
+	 msc_to_pc("Plead write the time to the msc now!\n\n");
+	 msc_to_pc("24C01 Write: www.avrvi.com\n\n");
+	 time_init(read_buf);
+	 pcf_start();
+	//pcf_init_end	
+	 delay_nms(5000);
+	
+	
+	
+	 pcfread(tem2,2,7);/// get the bcd_to_year
+	 pre_transfer(tem2);///and op
+	 val_msc_to_pc(tem2);/// bcd to string
+	 out_to_user(tem2);
+	 msc_to_pc(out_buf);
+	 	
+	 //string_to_user(tem2);//tem2->out_buf
+	 //msc_to_pc(out_buf);
+	 
+	 
+	 
+//	 Com_putstring (tem2,&RTbuf_UART0);
+	 
+	 
+	 while(1){;}
+	 
+	 
+	 
+
+	 wt24c(W_Buff,0x00,13);
+	 delay_nms(500);
+	 //Com_putstring ("24C01 Read: ",12,&RTbuf_UART0);
+	 rd24c(R_Buff,0x00,13);Com_putstring (R_Buff,13,&RTbuf_UART0);
+	 //Com_putstring ("\n\n",2,&RTbuf_UART0);
+     delay_nms(500);
+	 
+	 
+	 
+	 while(1)
+	 {
+	  ;
+	 }
+}
+

@@ -1,0 +1,336 @@
+XL
+H 2 areas 15 global symbols
+M AT24C01.c
+S _delay_nms Ref0000
+S _i2cstop Ref0000
+S push_xgset00FC Ref0000
+S _i2crd Ref0000
+S push_xgsetF03C Ref0000
+S _i2cwt Ref0000
+S _i2cstart Ref0000
+S lsl32 Ref0000
+S pop_xgset00FC Ref0000
+S pop_xgsetF03C Ref0000
+A text size 2CE flags 0
+dbfile lib\AT24C01.c
+dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\AT24C01.c
+dbfunc e wt24c_fc 0 fpc
+dbsym r t 16 c
+dbsym r n A c
+dbsym r ad C i
+dbsym r p 14 pc
+dbline FFFFFFFF A
+dbline 19 A
+dbline 1A A
+dbline 1D A
+dbline 1E 10
+dbline 21 12
+dbline 23 16
+dbline 24 22
+dbline 28 22
+dbline 2A 28
+dbline 2B 2A
+dbline 2C 2A
+dbline 2D 32
+dbline 2E 36
+dbline 2A 36
+dbline 2A 38
+dbline 2F 3E
+dbline 30 40
+dbline 32 46
+dbline 33 4A
+dbline 35 52
+dbline FFFFFFFE 54
+dbline 0 54
+dbfunc e pcf_set_byte 58 fV
+dbsym l startcode 2 c
+dbsym r ad C i
+dbsym r p A c
+dbline FFFFFFFF 62
+dbline 38 62
+dbline 39 62
+dbline 3A 64
+dbline FFFFFFFE 78
+dbline 0 78
+dbfunc e wt24c_fc_pcf 80 fpc
+dbsym r t 16 c
+dbsym r n A c
+dbsym r ad C i
+dbsym r p 14 pc
+dbline FFFFFFFF 8A
+dbline 40 8A
+dbline 42 8A
+dbline 44 8A
+dbline 45 90
+dbline 48 92
+dbline 4A 96
+dbline 4B A2
+dbline 4F A2
+dbline 51 A8
+dbline 52 AA
+dbline 53 AA
+dbline 54 B2
+dbline 55 B6
+dbline 51 B6
+dbline 51 B8
+dbline 56 BE
+dbline 57 C0
+dbline 59 C6
+dbline 5A CA
+dbline 5C D2
+dbline FFFFFFFE D4
+dbline 0 D4
+dbfunc e wt24c D8 fV
+dbsym r n C i
+dbsym r num 16 i
+dbsym r ad_dst 14 i
+dbsym r p_rsc A pc
+dbline FFFFFFFF E6
+dbline 6B E6
+dbline 6E E6
+dbline 6F F4
+dbline 6F FC
+dbline 70 126
+dbline 72 130
+dbline 73 136
+dbline 74 136
+dbline 75 13E
+dbline 75 146
+dbline 78 148
+dbline 79 148
+dbline 7A 152
+dbline 7A 15A
+dbline 7C 15C
+dbline 7D 160
+dbline 81 166
+dbline 82 166
+dbline 83 172
+dbline 83 17A
+dbline 85 17C
+dbline 86 180
+dbline 87 184
+dbline 80 184
+dbline 89 18C
+dbline 8A 192
+dbline 8B 19A
+dbline FFFFFFFE 19A
+dbline 0 19A
+dbfunc e rd24c 1A0 fV
+dbsym r t A c
+dbsym r num 16 i
+dbsym r ad_rsc C i
+dbsym r p_dst 14 pc
+dbline FFFFFFFF 1AC
+dbline 98 1AC
+dbline 9C 1AC
+dbline 9F 1AC
+dbline A0 1B2
+dbline A3 1B4
+dbline A5 1B8
+dbline A6 1C4
+dbline AA 1C4
+dbline AC 1CA
+dbline AD 1CE
+dbline AF 1D6
+dbline B0 1D8
+dbline B1 1D8
+dbline B2 1E0
+dbline B3 1E4
+dbline AF 1E4
+dbline AF 1E8
+dbline B4 1EE
+dbline B5 1F0
+dbline B7 1F6
+dbline FFFFFFFE 1FA
+dbline 0 1FA
+dbfunc e rd24c_pcf 1FE fV
+dbsym r t A c
+dbsym r num 16 i
+dbsym r ad_rsc C i
+dbsym r p_dst 14 pc
+dbline FFFFFFFF 20A
+dbline C2 20A
+dbline C4 20A
+dbline C6 20A
+dbline C7 210
+dbline CA 212
+dbline CC 216
+dbline CD 222
+dbline D1 222
+dbline D3 228
+dbline D4 22C
+dbline D6 234
+dbline D7 236
+dbline D8 236
+dbline D9 23E
+dbline DA 242
+dbline D6 242
+dbline D6 246
+dbline DB 24C
+dbline DC 24E
+dbline DE 254
+dbline FFFFFFFE 258
+dbline 0 258
+dbfunc e pcf_stop 25C fV
+dbsym l stopcode 1 c
+dbline FFFFFFFF 25E
+dbline E5 25E
+dbline E6 25E
+dbline E7 262
+dbline FFFFFFFE 272
+dbline 0 272
+dbfunc e pcf_start 276 fV
+dbsym l startcode 1 c
+dbline FFFFFFFF 278
+dbline EA 278
+dbline EB 278
+dbline EC 27C
+dbline FFFFFFFE 28C
+dbline 0 28C
+dbfunc e pcfset 290 fpc
+dbsym r n E c
+dbsym r ad C i
+dbsym r p A pc
+dbline FFFFFFFF 29C
+dbline EF 29C
+dbline F0 29C
+dbline F1 29E
+dbline F2 2A6
+dbline F3 2A8
+dbline FFFFFFFE 2AA
+dbline 0 2AA
+dbfunc e pcfread 2B0 fV
+dbsym r num E i
+dbsym r ad_rsc C i
+dbsym r p_dst A pc
+dbline FFFFFFFF 2BE
+dbline F6 2BE
+dbline F7 2BE
+dbline FFFFFFFE 2C8
+dbline 0 2C8
+S _wt24c Def00D8
+S _pcf_start Def0276
+S _pcfread Def02B0
+S _wt24c_fc Def0000
+S _pcf_set_byte Def0058
+S _rd24c_pcf Def01FE
+S _pcf_stop Def025C
+S _wt24c_fc_pcf Def0080
+S _pcfset Def0290
+S _rd24c Def01A0
+A bss size 1 flags 20
+dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\AT24C01.c
+dbsym e syserr 0 c
+S _syserr Def0000
+T 00 00 0E 94 00 00 69 01 A8 01 A8 84 B6 01 67 2F
+R 00 00 00 00 12 04 04 00
+T 0E 00 77 27 66 0F 0E 94 00 00 06 2F 00 56
+R 00 00 00 00 12 08 06 00
+T 1A 00 0E 94 00 00 08 31 79 F4 0C 2D 0E 94 00 00
+R 00 00 00 00 12 04 05 00 12 0E 05 00
+T 28 00 07 C0 FA 01 00 81 0E 94 00 00 4F 5F 5F 4F
+R 00 00 00 00 12 0A 05 00
+T 36 00 AA 94 80 E0 8A 15 B0 F3 03 C0 81 E0 80 93
+R 00 00 00 00
+T 44 00 00 00 0E 94 00 00 06 E0 10 E0 0E 94 00 00
+R 00 00 00 00 00 02 01 00 12 06 01 00 12 0E 00 00
+T 52 00 8A 01 0C 94 00 00
+R 00 00 00 00 12 06 09 00
+T 58 00 AA 92 CA 92 69 01 A0 2E 23 97 CA 82 81 E0
+R 00 00 00 00
+T 66 00 90 E0 99 83 88 83 2A 2D 33 27 8E 01 0E 5F
+R 00 00 00 00
+T 74 00 1F 4F 04 D0 23 96 C9 90 A9 90 08 95
+R 00 00 00 00
+T 80 00 0E 94 00 00 69 01 A8 01 A8 84 B6 01 67 2F
+R 00 00 00 00 12 04 04 00
+T 8E 00 77 27 66 0F 0E 94 00 00 06 2F 0E 55
+R 00 00 00 00 12 08 06 00
+T 9A 00 0E 94 00 00 08 31 79 F4 0C 2D 0E 94 00 00
+R 00 00 00 00 12 04 05 00 12 0E 05 00
+T A8 00 07 C0 FA 01 00 81 0E 94 00 00 4F 5F 5F 4F
+R 00 00 00 00 12 0A 05 00
+T B6 00 AA 94 80 E0 8A 15 B0 F3 03 C0 81 E0 80 93
+R 00 00 00 00
+T C4 00 00 00 0E 94 00 00 06 E0 10 E0 0E 94 00 00
+R 00 00 00 00 00 02 01 00 12 06 01 00 12 0E 00 00
+T D2 00 8A 01 0C 94 00 00
+R 00 00 00 00 12 06 09 00
+T D8 00 0E 94 00 00 A9 01 58 01 21 97 69 85 7A 85
+R 00 00 00 00 12 04 04 00
+T E6 00 6A 01 D6 94 C7 94 D6 94 C7 94 D6 94 C7 94
+R 00 00 00 00
+T F4 00 CC 20 11 F4 DD 20 A9 F0 83 E0 90 E0 86 01
+R 00 00 00 00
+T 02 01 0F 5F 1F 4F 22 27 33 27 8A 93 0E 94 00 00
+R 00 00 00 00 12 0E 07 00
+T 10 01 18 01 29 01 3A 01 88 24 99 24 26 18 37 08
+R 00 00 00 00
+T 1E 01 48 08 59 08 61 01 05 C0 88 E0 90 E0 6C 01
+R 00 00 00 00
+T 2C 01 C4 1A D5 0A C6 16 D7 06 48 F0 68 83 9A 01
+R 00 00 00 00
+T 3A 01 85 01 61 DF 20 90 00 00 22 20 51 F1 29 C0
+R 00 00 00 00 00 08 01 00
+T 48 01 C8 82 9A 01 85 01 58 DF 58 01 20 90 00 00
+R 00 00 00 00 00 0E 01 00
+T 56 01 22 20 09 F0 1F C0 6C 19 7D 09 4C 0D 5D 1D
+R 00 00 00 00
+T 64 01 0F C0 88 E0 88 83 9A 01 85 01 48 DF 58 01
+R 00 00 00 00
+T 72 01 20 90 00 00 22 20 09 F0 0F C0 68 50 70 40
+R 00 00 00 00 00 04 01 00
+T 80 01 48 5F 5F 4F 68 30 E0 E0 7E 07 68 F7 60 30
+R 00 00 00 00
+T 8E 01 67 07 21 F0 68 83 9A 01 85 01 33 DF 21 96
+R 00 00 00 00
+T 9C 01 0C 94 00 00
+R 00 00 00 00 12 04 09 00
+T A0 01 0E 94 00 00 69 01 A8 01 68 85 79 85 56 01
+R 00 00 00 00 12 04 04 00
+T AE 01 AB 2C BB 24 AA 0C 0E 94 00 00 0A 2D 00 56
+R 00 00 00 00 12 0A 06 00
+T BC 01 0E 94 00 00 08 31 B1 F4 0C 2D 0E 94 00 00
+R 00 00 00 00 12 04 05 00 12 0E 05 00
+T CA 01 0E 94 00 00 0A 2D 0F 55 0E 94 00 00 08 C0
+R 00 00 00 00 12 04 06 00 12 0C 05 00
+T D8 01 0E 94 00 00 FA 01 00 83 4F 5F 5F 4F 61 50
+R 00 00 00 00 12 04 03 00
+T E6 01 70 40 60 30 67 07 A9 F7 03 C0 81 E0 80 93
+R 00 00 00 00
+T F4 01 00 00 0E 94 00 00 0C 94 00 00
+R 00 00 00 00 00 02 01 00 12 06 01 00 12 0A 09 00
+T FE 01 0E 94 00 00 69 01 A8 01 68 85 79 85 56 01
+R 00 00 00 00 12 04 04 00
+T 0C 02 AB 2C BB 24 AA 0C 0E 94 00 00 0A 2D 0E 55
+R 00 00 00 00 12 0A 06 00
+T 1A 02 0E 94 00 00 08 31 B1 F4 0C 2D 0E 94 00 00
+R 00 00 00 00 12 04 05 00 12 0E 05 00
+T 28 02 0E 94 00 00 0A 2D 0D 55 0E 94 00 00 08 C0
+R 00 00 00 00 12 04 06 00 12 0C 05 00
+T 36 02 0E 94 00 00 FA 01 00 83 4F 5F 5F 4F 61 50
+R 00 00 00 00 12 04 03 00
+T 44 02 70 40 60 30 67 07 A9 F7 03 C0 81 E0 80 93
+R 00 00 00 00
+T 52 02 00 00 0E 94 00 00 0C 94 00 00
+R 00 00 00 00 00 02 01 00 12 06 01 00 12 0A 09 00
+T 5C 02 22 97 80 E2 89 83 81 E0 88 83 22 27 33 27
+R 00 00 00 00
+T 6A 02 8E 01 0F 5F 1F 4F 07 DF 22 96 08 95
+R 00 00 00 00
+T 76 02 22 97 22 24 29 82 81 E0 88 83 22 27 33 27
+R 00 00 00 00
+T 84 02 8E 01 0F 5F 1F 4F FA DE 22 96 08 95
+R 00 00 00 00
+T 90 02 0E 94 00 00 69 01 58 01 21 97 EF 80 DF DF
+R 00 00 00 00 12 04 02 00
+T 9E 02 E8 82 96 01 85 01 ED DE E7 DF 85 01 21 96
+R 00 00 00 00
+T AC 02 0C 94 00 00
+R 00 00 00 00 12 04 08 00
+T B0 02 0E 94 00 00 69 01 58 01 22 97 E8 84 F9 84
+R 00 00 00 00 12 04 02 00
+T BE 02 F9 82 E8 82 96 01 85 01 9B DF 22 96
+R 00 00 00 00
+T CA 02 0C 94 00 00
+R 00 00 00 00 12 04 08 00

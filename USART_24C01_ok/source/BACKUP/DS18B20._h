@@ -1,0 +1,25 @@
+#ifndef tem_ds18b20_H
+#define tem_ds18b20_H 1
+
+
+//设置数据方向
+#define DQ_DDR_0() DDRA &=~(1<< PA4)
+#define DQ_DDR_1() DDRA |=(1<< PA4)
+
+//设置管引脚定义
+#define DQ_1()   PORTA |=(1<< PA4)
+#define DQ_0()   PORTA &=~(1<< PA4)
+#define RD_DQ_VAL()     (PINA &(1<<PA4))
+
+extern  unsigned char currentT;
+extern char current_temp_display_buffer[];
+extern unsigned char display_digit[];
+
+
+unsigned char  init_ds18b20(void);
+unsigned char  readonebyte(void);
+void writeonebyte(unsigned char dat);
+unsigned char read_temperature(void);
+void convert_temp_data(void);
+
+#endif

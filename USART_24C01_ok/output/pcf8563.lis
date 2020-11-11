@@ -1,0 +1,840 @@
+                        .module pcf8563.c
+                        .area text(rom, con, rel)
+ 0000                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\pcf8563.c
+ 0000                   .dbfunc e i2c_write_n_bytes _i2c_write_n_bytes fc
+ 0000           ;              i -> R20,R21
+ 0000           ;            DAT -> R10,R11
+ 0000           ;              N -> R12,R13
+ 0000           ;           ADDR -> R18,R19
+ 0000           ;          SLA_W -> R16
+                        .even
+ 0000           _i2c_write_n_bytes::
+ 0000 0E940000          xcall push_xgset303C
+ 0004 CE80              ldd R12,y+6
+ 0006 DF80              ldd R13,y+7
+ 0008 A884              ldd R10,y+8
+ 000A B984              ldd R11,y+9
+ 000C                   .dbline -1
+ 000C                   .dbline 38
+ 000C           ; /************************************************
+ 000C           ; 文件：AT24C01.c
+ 000C           ; 用途：AT24C01操作函数
+ 000C           ; 注意：
+ 000C           ; 创建：2008.1.26
+ 000C           ; 修改：2008.1.26
+ 000C           ; Copy Right  (c)  www.avrvi.com  AVR与虚拟仪器
+ 000C           ; ************************************************/
+ 000C           ; #include "..\config.h"
+ 000C           ; 
+ 000C           ; #define I2C_START()                            TWCR = BIT(TWINT)|BIT(TWEN)|BIT(TWSTA)
+ 000C           ; #define I2C_STOP()                          TWCR = BIT(TWINT)|BIT(TWEN)|BIT(TWSTO)
+ 000C           ; #define I2C_ACK()                          TWCR = BIT(TWINT)|BIT(TWEN)|BIT(TWEA)
+ 000C           ; #define I2C_NAK()                          TWCR = BIT(TWINT)|BIT(TWEN)
+ 000C           ; #define I2C_CHECK_STATUS(X)          {while(!(TWCR&BIT(TWINT))); if((TWSR&0xF8)!=(X)) return 0;}
+ 000C           ; #define I2C_WRITE(X)                  TWDR = (X)
+ 000C           ; #define I2C_READ(X)                          (X) = TWDR
+ 000C           ; 
+ 000C           ; //TWSR&0xF8 状态码
+ 000C           ; #define START                                  0x08
+ 000C           ; #define RE_START                          0x10
+ 000C           ; #define MT_SLA_ACK                          0x18
+ 000C           ; #define MT_SLA_NAK                          0x20
+ 000C           ; #define MT_DATA_ACK                          0x28
+ 000C           ; #define MT_DATA_NAK                          0x30
+ 000C           ; #define SLA_DATA_FAIL                  0x38
+ 000C           ; #define MR_SLA_ACK                          0x40
+ 000C           ; #define MR_SLA_NAK                          0x48
+ 000C           ; #define MR_DATA_ACK                          0x50
+ 000C           ; #define MR_DATA_NAK                          0x58
+ 000C           ; #define SLA_R_PCF8563                  0xA3
+ 000C           ; #define SLA_W_PCF8563                  0xA2
+ 000C           ; 
+ 000C           ; 
+ 000C           ; 
+ 000C           ; unsigned char i2c_write_n_bytes(unsigned char SLA_W, unsigned int ADDR,
+ 000C           ;                                 unsigned int N, unsigned char *DAT)
+ 000C           ; {
+ 000C                   .dbline 40
+ 000C           ; unsigned int i;
+ 000C           ; I2C_START();
+ 000C 84EA              ldi R24,164
+ 000E 80937400          sts 116,R24
+ 0012                   .dbline 41
+ 0012           ; I2C_CHECK_STATUS(START);
+ 0012           L3:
+ 0012                   .dbline 41
+ 0012           L4:
+ 0012                   .dbline 41
+ 0012 20907400          lds R2,116
+ 0016 27FE              sbrs R2,7
+ 0018 FCCF              rjmp L3
+ 001A           X0:
+ 001A                   .dbline 41
+ 001A 80917100          lds R24,113
+ 001E 887F              andi R24,248
+ 0020 8830              cpi R24,8
+ 0022 11F0              breq L6
+ 0024           X1:
+ 0024                   .dbline 41
+ 0024 0027              clr R16
+ 0026 55C0              xjmp L2
+ 0028           L6:
+ 0028                   .dbline 41
+ 0028                   .dbline 41
+ 0028                   .dbline 43
+ 0028           ; 
+ 0028           ; I2C_WRITE(SLA_W);
+ 0028 00937300          sts 115,R16
+ 002C                   .dbline 44
+ 002C           ; I2C_NAK();
+ 002C 84E8              ldi R24,132
+ 002E 80937400          sts 116,R24
+ 0032                   .dbline 45
+ 0032           ; I2C_CHECK_STATUS(MT_SLA_ACK);
+ 0032           L8:
+ 0032                   .dbline 45
+ 0032           L9:
+ 0032                   .dbline 45
+ 0032 20907400          lds R2,116
+ 0036 27FE              sbrs R2,7
+ 0038 FCCF              rjmp L8
+ 003A           X2:
+ 003A                   .dbline 45
+ 003A 80917100          lds R24,113
+ 003E 887F              andi R24,248
+ 0040 8831              cpi R24,24
+ 0042 11F0              breq L11
+ 0044           X3:
+ 0044                   .dbline 45
+ 0044 0027              clr R16
+ 0046 45C0              xjmp L2
+ 0048           L11:
+ 0048                   .dbline 45
+ 0048                   .dbline 45
+ 0048                   .dbline 47
+ 0048           ; 
+ 0048           ; if(SLA_W!=SLA_W_PCF8563)
+ 0048 023A              cpi R16,162
+ 004A 99F0              breq L13
+ 004C           X4:
+ 004C                   .dbline 48
+ 004C           ; {
+ 004C                   .dbline 49
+ 004C           ;   I2C_WRITE((unsigned char)(ADDR>>8));
+ 004C 1901              movw R2,R18
+ 004E 232C              mov R2,R3
+ 0050 3324              clr R3
+ 0052 20927300          sts 115,R2
+ 0056                   .dbline 50
+ 0056           ;   I2C_NAK();
+ 0056 84E8              ldi R24,132
+ 0058 80937400          sts 116,R24
+ 005C                   .dbline 51
+ 005C           ;   I2C_CHECK_STATUS(MT_DATA_ACK);
+ 005C           L15:
+ 005C                   .dbline 51
+ 005C           L16:
+ 005C                   .dbline 51
+ 005C 20907400          lds R2,116
+ 0060 27FE              sbrs R2,7
+ 0062 FCCF              rjmp L15
+ 0064           X5:
+ 0064                   .dbline 51
+ 0064 80917100          lds R24,113
+ 0068 887F              andi R24,248
+ 006A 8832              cpi R24,40
+ 006C 11F0              breq L18
+ 006E           X6:
+ 006E                   .dbline 51
+ 006E 0027              clr R16
+ 0070 30C0              xjmp L2
+ 0072           L18:
+ 0072                   .dbline 51
+ 0072                   .dbline 51
+ 0072                   .dbline 52
+ 0072           ; }
+ 0072           L13:
+ 0072                   .dbline 53
+ 0072           ; I2C_WRITE((unsigned char)ADDR);
+ 0072 20937300          sts 115,R18
+ 0076                   .dbline 54
+ 0076           ; I2C_NAK();
+ 0076 84E8              ldi R24,132
+ 0078 80937400          sts 116,R24
+ 007C                   .dbline 55
+ 007C           ; I2C_CHECK_STATUS(MT_DATA_ACK);
+ 007C           L20:
+ 007C                   .dbline 55
+ 007C           L21:
+ 007C                   .dbline 55
+ 007C 20907400          lds R2,116
+ 0080 27FE              sbrs R2,7
+ 0082 FCCF              rjmp L20
+ 0084           X7:
+ 0084                   .dbline 55
+ 0084 80917100          lds R24,113
+ 0088 887F              andi R24,248
+ 008A 8832              cpi R24,40
+ 008C 11F0              breq L23
+ 008E           X8:
+ 008E                   .dbline 55
+ 008E 0027              clr R16
+ 0090 20C0              xjmp L2
+ 0092           L23:
+ 0092                   .dbline 55
+ 0092                   .dbline 55
+ 0092                   .dbline 57
+ 0092           ; 
+ 0092           ; for(i=0;i<N;i++)
+ 0092 4427              clr R20
+ 0094 5527              clr R21
+ 0096 16C0              xjmp L28
+ 0098           L25:
+ 0098                   .dbline 58
+ 0098           ; {
+ 0098                   .dbline 59
+ 0098           ;   I2C_WRITE(DAT[i]);
+ 0098 FA01              movw R30,R20
+ 009A EA0D              add R30,R10
+ 009C FB1D              adc R31,R11
+ 009E 2080              ldd R2,z+0
+ 00A0 20927300          sts 115,R2
+ 00A4                   .dbline 60
+ 00A4           ;   I2C_NAK();
+ 00A4 84E8              ldi R24,132
+ 00A6 80937400          sts 116,R24
+ 00AA                   .dbline 61
+ 00AA           ;   I2C_CHECK_STATUS(MT_DATA_ACK);
+ 00AA           L29:
+ 00AA                   .dbline 61
+ 00AA           L30:
+ 00AA                   .dbline 61
+ 00AA 20907400          lds R2,116
+ 00AE 27FE              sbrs R2,7
+ 00B0 FCCF              rjmp L29
+ 00B2           X9:
+ 00B2                   .dbline 61
+ 00B2 80917100          lds R24,113
+ 00B6 887F              andi R24,248
+ 00B8 8832              cpi R24,40
+ 00BA 11F0              breq L32
+ 00BC           X10:
+ 00BC                   .dbline 61
+ 00BC 0027              clr R16
+ 00BE 09C0              xjmp L2
+ 00C0           L32:
+ 00C0                   .dbline 61
+ 00C0                   .dbline 61
+ 00C0                   .dbline 62
+ 00C0           ; }
+ 00C0           L26:
+ 00C0                   .dbline 57
+ 00C0 4F5F              subi R20,255  ; offset = 1
+ 00C2 5F4F              sbci R21,255
+ 00C4           L28:
+ 00C4                   .dbline 57
+ 00C4 4C15              cp R20,R12
+ 00C6 5D05              cpc R21,R13
+ 00C8 38F3              brlo L25
+ 00CA           X11:
+ 00CA                   .dbline 64
+ 00CA           ; 
+ 00CA           ; I2C_STOP();
+ 00CA 84E9              ldi R24,148
+ 00CC 80937400          sts 116,R24
+ 00D0                   .dbline 65
+ 00D0           ; return 1;
+ 00D0 01E0              ldi R16,1
+ 00D2                   .dbline -2
+ 00D2           L2:
+ 00D2                   .dbline 0 ; func end
+ 00D2 0C940000          xjmp pop_xgset303C
+ 00D6                   .dbsym r i 20 i
+ 00D6                   .dbsym r DAT 10 pc
+ 00D6                   .dbsym r N 12 i
+ 00D6                   .dbsym r ADDR 18 i
+ 00D6                   .dbsym r SLA_W 16 c
+ 00D6                   .dbend
+ 00D6                   .dbfunc e i2c_read_n_bytes _i2c_read_n_bytes fc
+ 00D6           ;              i -> R22,R23
+ 00D6           ;            DAT -> R10,R11
+ 00D6           ;              N -> R20,R21
+ 00D6           ;           ADDR -> R18,R19
+ 00D6           ;          SLA_R -> R16
+                        .even
+ 00D6           _i2c_read_n_bytes::
+ 00D6 0E940000          xcall push_xgsetF00C
+ 00DA 4E81              ldd R20,y+6
+ 00DC 5F81              ldd R21,y+7
+ 00DE A884              ldd R10,y+8
+ 00E0 B984              ldd R11,y+9
+ 00E2                   .dbline -1
+ 00E2                   .dbline 71
+ 00E2           ; }
+ 00E2           ; 
+ 00E2           ; 
+ 00E2           ; 
+ 00E2           ; unsigned char i2c_read_n_bytes(unsigned char SLA_R, unsigned int ADDR,
+ 00E2           ;                                unsigned int N, unsigned char *DAT){
+ 00E2                   .dbline 77
+ 00E2           ; 
+ 00E2           ; 
+ 00E2           ; 
+ 00E2           ; unsigned int i;
+ 00E2           ; 
+ 00E2           ; I2C_START();
+ 00E2 84EA              ldi R24,164
+ 00E4 80937400          sts 116,R24
+ 00E8                   .dbline 78
+ 00E8           ; I2C_CHECK_STATUS(START);
+ 00E8           L35:
+ 00E8                   .dbline 78
+ 00E8           L36:
+ 00E8                   .dbline 78
+ 00E8 20907400          lds R2,116
+ 00EC 27FE              sbrs R2,7
+ 00EE FCCF              rjmp L35
+ 00F0           X12:
+ 00F0                   .dbline 78
+ 00F0 80917100          lds R24,113
+ 00F4 887F              andi R24,248
+ 00F6 8830              cpi R24,8
+ 00F8 11F0              breq L38
+ 00FA           X13:
+ 00FA                   .dbline 78
+ 00FA 0027              clr R16
+ 00FC 91C0              xjmp L34
+ 00FE           L38:
+ 00FE                   .dbline 78
+ 00FE                   .dbline 78
+ 00FE                   .dbline 80
+ 00FE           ; 
+ 00FE           ; I2C_WRITE((SLA_R)-1);
+ 00FE 802F              mov R24,R16
+ 0100 8150              subi R24,1
+ 0102 80937300          sts 115,R24
+ 0106                   .dbline 81
+ 0106           ; I2C_NAK();
+ 0106 84E8              ldi R24,132
+ 0108 80937400          sts 116,R24
+ 010C                   .dbline 82
+ 010C           ; I2C_CHECK_STATUS(MT_SLA_ACK);
+ 010C           L40:
+ 010C                   .dbline 82
+ 010C           L41:
+ 010C                   .dbline 82
+ 010C 20907400          lds R2,116
+ 0110 27FE              sbrs R2,7
+ 0112 FCCF              rjmp L40
+ 0114           X14:
+ 0114                   .dbline 82
+ 0114 80917100          lds R24,113
+ 0118 887F              andi R24,248
+ 011A 8831              cpi R24,24
+ 011C 11F0              breq L43
+ 011E           X15:
+ 011E                   .dbline 82
+ 011E 0027              clr R16
+ 0120 7FC0              xjmp L34
+ 0122           L43:
+ 0122                   .dbline 82
+ 0122                   .dbline 82
+ 0122                   .dbline 84
+ 0122           ; 
+ 0122           ; if(SLA_R!=SLA_R_PCF8563)
+ 0122 033A              cpi R16,163
+ 0124 99F0              breq L45
+ 0126           X16:
+ 0126                   .dbline 85
+ 0126           ; {
+ 0126                   .dbline 86
+ 0126           ;   I2C_WRITE((unsigned char)(ADDR>>8));
+ 0126 1901              movw R2,R18
+ 0128 232C              mov R2,R3
+ 012A 3324              clr R3
+ 012C 20927300          sts 115,R2
+ 0130                   .dbline 87
+ 0130           ;   I2C_NAK();
+ 0130 84E8              ldi R24,132
+ 0132 80937400          sts 116,R24
+ 0136                   .dbline 88
+ 0136           ;   I2C_CHECK_STATUS(MT_DATA_ACK);
+ 0136           L47:
+ 0136                   .dbline 88
+ 0136           L48:
+ 0136                   .dbline 88
+ 0136 20907400          lds R2,116
+ 013A 27FE              sbrs R2,7
+ 013C FCCF              rjmp L47
+ 013E           X17:
+ 013E                   .dbline 88
+ 013E 80917100          lds R24,113
+ 0142 887F              andi R24,248
+ 0144 8832              cpi R24,40
+ 0146 11F0              breq L50
+ 0148           X18:
+ 0148                   .dbline 88
+ 0148 0027              clr R16
+ 014A 6AC0              xjmp L34
+ 014C           L50:
+ 014C                   .dbline 88
+ 014C                   .dbline 88
+ 014C                   .dbline 89
+ 014C           ; }
+ 014C           L45:
+ 014C                   .dbline 90
+ 014C           ; I2C_WRITE((unsigned char)ADDR);
+ 014C 20937300          sts 115,R18
+ 0150                   .dbline 91
+ 0150           ; I2C_NAK();
+ 0150 84E8              ldi R24,132
+ 0152 80937400          sts 116,R24
+ 0156                   .dbline 92
+ 0156           ; I2C_CHECK_STATUS(MT_DATA_ACK);
+ 0156           L52:
+ 0156                   .dbline 92
+ 0156           L53:
+ 0156                   .dbline 92
+ 0156 20907400          lds R2,116
+ 015A 27FE              sbrs R2,7
+ 015C FCCF              rjmp L52
+ 015E           X19:
+ 015E                   .dbline 92
+ 015E 80917100          lds R24,113
+ 0162 887F              andi R24,248
+ 0164 8832              cpi R24,40
+ 0166 11F0              breq L55
+ 0168           X20:
+ 0168                   .dbline 92
+ 0168 0027              clr R16
+ 016A 5AC0              xjmp L34
+ 016C           L55:
+ 016C                   .dbline 92
+ 016C                   .dbline 92
+ 016C                   .dbline 94
+ 016C           ; 
+ 016C           ; I2C_START();
+ 016C 84EA              ldi R24,164
+ 016E 80937400          sts 116,R24
+ 0172                   .dbline 95
+ 0172           ; I2C_CHECK_STATUS(RE_START);
+ 0172           L57:
+ 0172                   .dbline 95
+ 0172           L58:
+ 0172                   .dbline 95
+ 0172 20907400          lds R2,116
+ 0176 27FE              sbrs R2,7
+ 0178 FCCF              rjmp L57
+ 017A           X21:
+ 017A                   .dbline 95
+ 017A 80917100          lds R24,113
+ 017E 887F              andi R24,248
+ 0180 8031              cpi R24,16
+ 0182 11F0              breq L60
+ 0184           X22:
+ 0184                   .dbline 95
+ 0184 0027              clr R16
+ 0186 4CC0              xjmp L34
+ 0188           L60:
+ 0188                   .dbline 95
+ 0188                   .dbline 95
+ 0188                   .dbline 97
+ 0188           ; 
+ 0188           ; I2C_WRITE(SLA_R);
+ 0188 00937300          sts 115,R16
+ 018C                   .dbline 98
+ 018C           ; I2C_NAK();
+ 018C 84E8              ldi R24,132
+ 018E 80937400          sts 116,R24
+ 0192                   .dbline 99
+ 0192           ; I2C_CHECK_STATUS(MR_SLA_ACK);
+ 0192           L62:
+ 0192                   .dbline 99
+ 0192           L63:
+ 0192                   .dbline 99
+ 0192 20907400          lds R2,116
+ 0196 27FE              sbrs R2,7
+ 0198 FCCF              rjmp L62
+ 019A           X23:
+ 019A                   .dbline 99
+ 019A 80917100          lds R24,113
+ 019E 887F              andi R24,248
+ 01A0 8034              cpi R24,64
+ 01A2 11F0              breq L65
+ 01A4           X24:
+ 01A4                   .dbline 99
+ 01A4 0027              clr R16
+ 01A6 3CC0              xjmp L34
+ 01A8           L65:
+ 01A8                   .dbline 99
+ 01A8                   .dbline 99
+ 01A8                   .dbline 101
+ 01A8           ; 
+ 01A8           ; if(N>1)
+ 01A8 81E0              ldi R24,1
+ 01AA 90E0              ldi R25,0
+ 01AC 8417              cp R24,R20
+ 01AE 9507              cpc R25,R21
+ 01B0 F0F4              brsh L67
+ 01B2           X25:
+ 01B2                   .dbline 102
+ 01B2           ; {
+ 01B2                   .dbline 103
+ 01B2           ;   for(i=0;i<N-1;i++)
+ 01B2 6627              clr R22
+ 01B4 7727              clr R23
+ 01B6 16C0              xjmp L72
+ 01B8           L69:
+ 01B8                   .dbline 104
+ 01B8           ;   {
+ 01B8                   .dbline 105
+ 01B8           ;    I2C_ACK();
+ 01B8 84EC              ldi R24,196
+ 01BA 80937400          sts 116,R24
+ 01BE                   .dbline 106
+ 01BE           ;    I2C_CHECK_STATUS(MR_DATA_ACK);
+ 01BE           L73:
+ 01BE                   .dbline 106
+ 01BE           L74:
+ 01BE                   .dbline 106
+ 01BE 20907400          lds R2,116
+ 01C2 27FE              sbrs R2,7
+ 01C4 FCCF              rjmp L73
+ 01C6           X26:
+ 01C6                   .dbline 106
+ 01C6 80917100          lds R24,113
+ 01CA 887F              andi R24,248
+ 01CC 8035              cpi R24,80
+ 01CE 11F0              breq L76
+ 01D0           X27:
+ 01D0                   .dbline 106
+ 01D0 0027              clr R16
+ 01D2 26C0              xjmp L34
+ 01D4           L76:
+ 01D4                   .dbline 106
+ 01D4                   .dbline 106
+ 01D4                   .dbline 107
+ 01D4           ;    I2C_READ(DAT[i]);
+ 01D4 FB01              movw R30,R22
+ 01D6 EA0D              add R30,R10
+ 01D8 FB1D              adc R31,R11
+ 01DA 20907300          lds R2,115
+ 01DE 2082              std z+0,R2
+ 01E0                   .dbline 108
+ 01E0           ;   }
+ 01E0           L70:
+ 01E0                   .dbline 103
+ 01E0 6F5F              subi R22,255  ; offset = 1
+ 01E2 7F4F              sbci R23,255
+ 01E4           L72:
+ 01E4                   .dbline 103
+ 01E4 CA01              movw R24,R20
+ 01E6 0197              sbiw R24,1
+ 01E8 6817              cp R22,R24
+ 01EA 7907              cpc R23,R25
+ 01EC 28F3              brlo L69
+ 01EE           X28:
+ 01EE                   .dbline 109
+ 01EE           ; }
+ 01EE           L67:
+ 01EE                   .dbline 110
+ 01EE           ; I2C_NAK();
+ 01EE 84E8              ldi R24,132
+ 01F0 80937400          sts 116,R24
+ 01F4                   .dbline 111
+ 01F4           ; I2C_CHECK_STATUS(MR_DATA_NAK);
+ 01F4           L78:
+ 01F4                   .dbline 111
+ 01F4           L79:
+ 01F4                   .dbline 111
+ 01F4 20907400          lds R2,116
+ 01F8 27FE              sbrs R2,7
+ 01FA FCCF              rjmp L78
+ 01FC           X29:
+ 01FC                   .dbline 111
+ 01FC 80917100          lds R24,113
+ 0200 887F              andi R24,248
+ 0202 8835              cpi R24,88
+ 0204 11F0              breq L81
+ 0206           X30:
+ 0206                   .dbline 111
+ 0206 0027              clr R16
+ 0208 0BC0              xjmp L34
+ 020A           L81:
+ 020A                   .dbline 111
+ 020A                   .dbline 111
+ 020A                   .dbline 112
+ 020A           ; DAT[N-1]=TWDR;
+ 020A FA01              movw R30,R20
+ 020C 3197              sbiw R30,1
+ 020E EA0D              add R30,R10
+ 0210 FB1D              adc R31,R11
+ 0212 20907300          lds R2,115
+ 0216 2082              std z+0,R2
+ 0218                   .dbline 114
+ 0218           ; 
+ 0218           ; I2C_STOP();
+ 0218 84E9              ldi R24,148
+ 021A 80937400          sts 116,R24
+ 021E                   .dbline 115
+ 021E           ; return 1;
+ 021E 01E0              ldi R16,1
+ 0220                   .dbline -2
+ 0220           L34:
+ 0220                   .dbline 0 ; func end
+ 0220 0C940000          xjmp pop_xgsetF00C
+ 0224                   .dbsym r i 22 i
+ 0224                   .dbsym r DAT 10 pc
+ 0224                   .dbsym r N 20 i
+ 0224                   .dbsym r ADDR 18 i
+ 0224                   .dbsym r SLA_R 16 c
+ 0224                   .dbend
+ 0224                   .dbfunc e i2c_check_busy _i2c_check_busy fc
+ 0224           ;           retv -> R20
+ 0224           ;          SLA_W -> R16
+                        .even
+ 0224           _i2c_check_busy::
+ 0224 4A93              st -y,R20
+ 0226                   .dbline -1
+ 0226                   .dbline 120
+ 0226           ; }
+ 0226           ; 
+ 0226           ; 
+ 0226           ; unsigned char i2c_check_busy(unsigned char SLA_W)
+ 0226           ; {
+ 0226                   .dbline 121
+ 0226           ; unsigned char retv=0;
+ 0226 4427              clr R20
+ 0228                   .dbline 122
+ 0228           ; I2C_START();
+ 0228 84EA              ldi R24,164
+ 022A 80937400          sts 116,R24
+ 022E                   .dbline 123
+ 022E           ; I2C_CHECK_STATUS(START);
+ 022E           L84:
+ 022E                   .dbline 123
+ 022E           L85:
+ 022E                   .dbline 123
+ 022E 20907400          lds R2,116
+ 0232 27FE              sbrs R2,7
+ 0234 FCCF              rjmp L84
+ 0236           X31:
+ 0236                   .dbline 123
+ 0236 80917100          lds R24,113
+ 023A 887F              andi R24,248
+ 023C 8830              cpi R24,8
+ 023E 11F0              breq L87
+ 0240           X32:
+ 0240                   .dbline 123
+ 0240 0027              clr R16
+ 0242 13C0              xjmp L83
+ 0244           L87:
+ 0244                   .dbline 123
+ 0244                   .dbline 123
+ 0244                   .dbline 124
+ 0244           ; I2C_WRITE(SLA_W);
+ 0244 00937300          sts 115,R16
+ 0248                   .dbline 125
+ 0248           ; I2C_NAK();
+ 0248 84E8              ldi R24,132
+ 024A 80937400          sts 116,R24
+ 024E           L89:
+ 024E                   .dbline 126
+ 024E           ; while(!(TWCR&BIT(TWINT)));
+ 024E           L90:
+ 024E                   .dbline 126
+ 024E 20907400          lds R2,116
+ 0252 27FE              sbrs R2,7
+ 0254 FCCF              rjmp L89
+ 0256           X33:
+ 0256                   .dbline 127
+ 0256           ; if((TWSR&0xF8)!=MT_SLA_ACK)  retv=1;
+ 0256 80917100          lds R24,113
+ 025A 887F              andi R24,248
+ 025C 8831              cpi R24,24
+ 025E 09F0              breq L92
+ 0260           X34:
+ 0260                   .dbline 127
+ 0260 41E0              ldi R20,1
+ 0262           L92:
+ 0262                   .dbline 128
+ 0262           ; I2C_STOP();
+ 0262 84E9              ldi R24,148
+ 0264 80937400          sts 116,R24
+ 0268                   .dbline 129
+ 0268           ; return retv;
+ 0268 042F              mov R16,R20
+ 026A                   .dbline -2
+ 026A           L83:
+ 026A                   .dbline 0 ; func end
+ 026A 4991              ld R20,y+
+ 026C 0895              ret
+ 026E                   .dbsym r retv 20 c
+ 026E                   .dbsym r SLA_W 16 c
+ 026E                   .dbend
+ 026E                   .dbfunc e PCF8563_stop _PCF8563_stop fV
+ 026E           ;       stopcode -> y+4
+                        .even
+ 026E           _PCF8563_stop::
+ 026E 2597              sbiw R28,5
+ 0270                   .dbline -1
+ 0270                   .dbline 133
+ 0270           ; }
+ 0270           ; 
+ 0270           ; void PCF8563_stop(void)
+ 0270           ; {
+ 0270                   .dbline 134
+ 0270           ; unsigned char stopcode=0x20;
+ 0270 80E2              ldi R24,32
+ 0272 8C83              std y+4,R24
+ 0274                   .dbline 135
+ 0274           ; i2c_write_n_bytes(SLA_W_PCF8563,0,1,&stopcode);
+ 0274 CE01              movw R24,R28
+ 0276 0496              adiw R24,4
+ 0278 9B83              std y+3,R25
+ 027A 8A83              std y+2,R24
+ 027C 81E0              ldi R24,1
+ 027E 90E0              ldi R25,0
+ 0280 9983              std y+1,R25
+ 0282 8883              std y+0,R24
+ 0284 2227              clr R18
+ 0286 3327              clr R19
+ 0288 02EA              ldi R16,162
+ 028A BADE              xcall _i2c_write_n_bytes
+ 028C                   .dbline -2
+ 028C           L94:
+ 028C                   .dbline 0 ; func end
+ 028C 2596              adiw R28,5
+ 028E 0895              ret
+ 0290                   .dbsym l stopcode 4 c
+ 0290                   .dbend
+ 0290                   .dbfunc e PCF8563_start _PCF8563_start fV
+ 0290           ;      startcode -> y+4
+                        .even
+ 0290           _PCF8563_start::
+ 0290 2597              sbiw R28,5
+ 0292                   .dbline -1
+ 0292                   .dbline 139
+ 0292           ; }
+ 0292           ; 
+ 0292           ; void PCF8563_start(void)
+ 0292           ; {
+ 0292                   .dbline 140
+ 0292           ; unsigned char startcode=0x00;
+ 0292 2224              clr R2
+ 0294 2C82              std y+4,R2
+ 0296                   .dbline 141
+ 0296           ; i2c_write_n_bytes(SLA_W_PCF8563,0,1,&startcode);
+ 0296 CE01              movw R24,R28
+ 0298 0496              adiw R24,4
+ 029A 9B83              std y+3,R25
+ 029C 8A83              std y+2,R24
+ 029E 81E0              ldi R24,1
+ 02A0 90E0              ldi R25,0
+ 02A2 9983              std y+1,R25
+ 02A4 8883              std y+0,R24
+ 02A6 2227              clr R18
+ 02A8 3327              clr R19
+ 02AA 02EA              ldi R16,162
+ 02AC A9DE              xcall _i2c_write_n_bytes
+ 02AE                   .dbline -2
+ 02AE           L95:
+ 02AE                   .dbline 0 ; func end
+ 02AE 2596              adiw R28,5
+ 02B0 0895              ret
+ 02B2                   .dbsym l startcode 4 c
+ 02B2                   .dbend
+ 02B2                   .dbfunc e pcfset _pcfset fV
+ 02B2           ;           time -> R10,R11
+                        .even
+ 02B2           _pcfset::
+ 02B2 AA92              st -y,R10
+ 02B4 BA92              st -y,R11
+ 02B6 5801              movw R10,R16
+ 02B8 2497              sbiw R28,4
+ 02BA                   .dbline -1
+ 02BA                   .dbline 144
+ 02BA           ; }
+ 02BA           ; 
+ 02BA           ; void pcfset(unsigned char *time){
+ 02BA                   .dbline 155
+ 02BA           ; //     unsigned char time[7];
+ 02BA           ; /*
+ 02BA           ;        time[6]=yy;//年
+ 02BA           ;        time[5]=mm;//月
+ 02BA           ;        time[4]=da;//星期
+ 02BA           ;        time[3]=dd;//日
+ 02BA           ;        time[2]=hh;//时
+ 02BA           ;        time[1]=mi;//分
+ 02BA           ;        time[0]=ss;//秒
+ 02BA           ; */
+ 02BA           ;        PCF8563_stop();
+ 02BA D9DF              xcall _PCF8563_stop
+ 02BC                   .dbline 156
+ 02BC           ;        i2c_write_n_bytes(SLA_W_PCF8563,2,7,time);
+ 02BC BB82              std y+3,R11
+ 02BE AA82              std y+2,R10
+ 02C0 87E0              ldi R24,7
+ 02C2 90E0              ldi R25,0
+ 02C4 9983              std y+1,R25
+ 02C6 8883              std y+0,R24
+ 02C8 22E0              ldi R18,2
+ 02CA 30E0              ldi R19,0
+ 02CC 02EA              ldi R16,162
+ 02CE 98DE              xcall _i2c_write_n_bytes
+ 02D0                   .dbline 157
+ 02D0           ;        PCF8563_start();
+ 02D0 DFDF              xcall _PCF8563_start
+ 02D2                   .dbline -2
+ 02D2           L96:
+ 02D2                   .dbline 0 ; func end
+ 02D2 2496              adiw R28,4
+ 02D4 B990              ld R11,y+
+ 02D6 A990              ld R10,y+
+ 02D8 0895              ret
+ 02DA                   .dbsym r time 10 pc
+ 02DA                   .dbend
+ 02DA                   .dbfunc e pcfread _pcfread fV
+ 02DA           ;           time -> R10,R11
+                        .even
+ 02DA           _pcfread::
+ 02DA AA92              st -y,R10
+ 02DC BA92              st -y,R11
+ 02DE 5801              movw R10,R16
+ 02E0 2497              sbiw R28,4
+ 02E2                   .dbline -1
+ 02E2                   .dbline 159
+ 02E2           ; }
+ 02E2           ; void pcfread(unsigned char *time){
+ 02E2                   .dbline 160
+ 02E2           ;       i2c_read_n_bytes(SLA_R_PCF8563,2,7,time);
+ 02E2 BB82              std y+3,R11
+ 02E4 AA82              std y+2,R10
+ 02E6 87E0              ldi R24,7
+ 02E8 90E0              ldi R25,0
+ 02EA 9983              std y+1,R25
+ 02EC 8883              std y+0,R24
+ 02EE 22E0              ldi R18,2
+ 02F0 30E0              ldi R19,0
+ 02F2 03EA              ldi R16,163
+ 02F4 F0DE              xcall _i2c_read_n_bytes
+ 02F6                   .dbline -2
+ 02F6           L97:
+ 02F6                   .dbline 0 ; func end
+ 02F6 2496              adiw R28,4
+ 02F8 B990              ld R11,y+
+ 02FA A990              ld R10,y+
+ 02FC 0895              ret
+ 02FE                   .dbsym r time 10 pc
+ 02FE                   .dbend
+ 02FE           ; //time[6]       //年
+ 02FE           ;       
+ 02FE           ;       /*
+ 02FE           ;       time[5] &= 0x1F;//月
+ 02FE           ;       time[4] &= 0x07;//星期
+ 02FE           ;       time[3] &= 0x3F;//日
+ 02FE           ;       time[2] &= 0x3F;//时
+ 02FE           ;       time[1] &= 0x7F;//分
+ 02FE           ;       time[0] &= 0x7F;//秒
+ 02FE           ;               */
+ 02FE           ; }

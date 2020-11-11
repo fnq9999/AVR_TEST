@@ -1,0 +1,94 @@
+                        .module buzz.c
+                        .area text(rom, con, rel)
+ 0000                   .dbfile lib\buzz.c
+ 0000                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\buzz.c
+ 0000                   .dbfunc e Buzz_init _Buzz_init fV
+                        .even
+ 0000           _Buzz_init::
+ 0000                   .dbline -1
+ 0000                   .dbline 21
+ 0000           ; /************************************************
+ 0000           ; 文件：buzz.c
+ 0000           ; 用途：
+ 0000           ; 注意：内部8M晶振
+ 0000           ; 创建：2008.4.1
+ 0000           ; 修改：2008.4.1
+ 0000           ; Copy Right  (c)  www.avrvi.com  AVR与虚拟仪器
+ 0000           ; ************************************************/
+ 0000           ; #include "..\config.h"
+ 0000           ; /*************************************************************************
+ 0000           ; ** 函数名称:蜂鸣器初始化
+ 0000           ; ** 功能描述:
+ 0000           ; ** 输　入:
+ 0000           ; ** 输出        :
+ 0000           ; ** 全局变量:
+ 0000           ; ** 调用模块:
+ 0000           ; ** 说明：
+ 0000           ; ** 注意：
+ 0000           ; **************************************************************************/
+ 0000           ; void Buzz_init(void)
+ 0000           ; {
+ 0000                   .dbline 22
+ 0000           ;  BUZZ_DDR |= (1<<SPK);
+ 0000 80916400          lds R24,100
+ 0004 8061              ori R24,16
+ 0006 80936400          sts 100,R24
+ 000A                   .dbline 23
+ 000A           ;  BUZZ_PORT &=~ (1<<SPK);
+ 000A 80916500          lds R24,101
+ 000E 8F7E              andi R24,239
+ 0010 80936500          sts 101,R24
+ 0014                   .dbline -2
+ 0014           L2:
+ 0014                   .dbline 0 ; func end
+ 0014 0895              ret
+ 0016                   .dbend
+ 0016                   .dbfunc e Beep _Beep fV
+ 0016           ;         L_time -> R10,R11
+ 0016           ;         H_time -> R12,R13
+                        .even
+ 0016           _Beep::
+ 0016 0E940000          xcall push_xgset003C
+ 001A 5901              movw R10,R18
+ 001C 6801              movw R12,R16
+ 001E                   .dbline -1
+ 001E                   .dbline 36
+ 001E           ; }
+ 001E           ; /*************************************************************************
+ 001E           ; ** 函数名称:蜂鸣
+ 001E           ; ** 功能描述:
+ 001E           ; ** 输　入: H_time: 响的时间 L_time: 不响的时间
+ 001E           ; ** 输出        :
+ 001E           ; ** 全局变量:
+ 001E           ; ** 调用模块:
+ 001E           ; ** 说明：
+ 001E           ; ** 注意：
+ 001E           ; **************************************************************************/
+ 001E           ; void Beep(unsigned int H_time,unsigned int L_time)
+ 001E           ; {
+ 001E                   .dbline 37
+ 001E           ;  BUZZ_PORT |= (1<<SPK);
+ 001E 80916500          lds R24,101
+ 0022 8061              ori R24,16
+ 0024 80936500          sts 101,R24
+ 0028                   .dbline 38
+ 0028           ;  delay_nms(H_time);
+ 0028 8601              movw R16,R12
+ 002A 0E940000          xcall _delay_nms
+ 002E                   .dbline 39
+ 002E           ;  BUZZ_PORT &=~ (1<<SPK);
+ 002E 80916500          lds R24,101
+ 0032 8F7E              andi R24,239
+ 0034 80936500          sts 101,R24
+ 0038                   .dbline 40
+ 0038           ;  delay_nms(L_time);
+ 0038 8501              movw R16,R10
+ 003A 0E940000          xcall _delay_nms
+ 003E                   .dbline -2
+ 003E           L3:
+ 003E                   .dbline 0 ; func end
+ 003E 0C940000          xjmp pop_xgset003C
+ 0042                   .dbsym r L_time 10 i
+ 0042                   .dbsym r H_time 12 i
+ 0042                   .dbend
+ 0042           ; }

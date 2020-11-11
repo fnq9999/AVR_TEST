@@ -1,0 +1,74 @@
+XL
+H 1 areas 5 global symbols
+M TWI.c
+A text size 64 flags 0
+dbfile ..\source\lib\TWI.c
+dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\TWI.c
+dbfunc e twi_init 0 fV
+dbline FFFFFFFF 0
+dbline 15 0
+dbline 16 0
+dbline 17 6
+dbline 18 C
+dbline 19 10
+dbline 1A 14
+dbline FFFFFFFE 1A
+dbline 0 1A
+dbfunc e i2cstart 1C fV
+dbline FFFFFFFF 1C
+dbline 27 1C
+dbline 28 1C
+dbline 29 22
+dbline 29 22
+dbline FFFFFFFE 2A
+dbline 0 2A
+dbfunc e i2cwt 2C fc
+dbsym r data 10 c
+dbline FFFFFFFF 2C
+dbline 36 2C
+dbline 37 2C
+dbline 38 30
+dbline 39 36
+dbline 39 36
+dbline 3A 3E
+dbline 3B 40
+dbline FFFFFFFE 46
+dbline 0 46
+dbfunc e i2crd 48 fc
+dbline FFFFFFFF 48
+dbline 48 48
+dbline 49 48
+dbline 4A 4E
+dbline 4A 4E
+dbline 4B 56
+dbline FFFFFFFE 5A
+dbline 0 5A
+dbfunc e i2cstop 5C fV
+dbline FFFFFFFF 5C
+dbline 58 5C
+dbline 59 5C
+dbline FFFFFFFE 62
+dbline 0 62
+S _i2cstop Def005C
+S _i2crd Def0048
+S _i2cwt Def002C
+S _i2cstart Def001C
+S _twi_init Def0000
+T 00 00 22 24 20 92 74 00 84 E6 80 93 70 00 20 92
+R 00 00 00 00
+T 0E 00 71 00 20 92 72 00 84 E0 80 93 74 00 08 95
+R 00 00 00 00
+T 1C 00 84 EA 80 93 74 00 20 90 74 00 27 FE FC CF
+R 00 00 00 00
+T 2A 00 08 95
+R 00 00 00 00
+T 2C 00 00 93 73 00 84 E8 80 93 74 00 20 90 74 00
+R 00 00 00 00
+T 3A 00 27 FE FC CF 00 00 00 91 71 00 08 7F 08 95
+R 00 00 00 00
+T 48 00 84 EC 80 93 74 00 20 90 74 00 27 FE FC CF
+R 00 00 00 00
+T 56 00 00 91 73 00 08 95
+R 00 00 00 00
+T 5C 00 84 E9 80 93 74 00 08 95
+R 00 00 00 00

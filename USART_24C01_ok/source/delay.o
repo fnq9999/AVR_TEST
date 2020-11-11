@@ -1,0 +1,66 @@
+XL
+H 1 areas 6 global symbols
+M delay.c
+S push_xgset300C Ref0000
+S pop_xgset300C Ref0000
+A text size 50 flags 0
+dbfile lib\delay.c
+dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\delay.c
+dbfunc e delay_1us 0 fV
+dbline FFFFFFFF 0
+dbline B 0
+dbline C 0
+dbline FFFFFFFE 2
+dbline 0 2
+dbfunc e delay_nus 4 fV
+dbsym r i 14 i
+dbsym r n A i
+dbline FFFFFFFF A
+dbline 10 A
+dbline 11 A
+dbline 12 A
+dbline 13 10
+dbline 12 12
+dbline 12 16
+dbline FFFFFFFE 1C
+dbline 0 1C
+dbfunc e delay_1ms 20 fV
+dbsym r i 10 i
+dbline FFFFFFFF 20
+dbline 17 20
+dbline 19 20
+dbline 19 26
+dbline 19 26
+dbline 19 2A
+dbline FFFFFFFE 32
+dbline 0 32
+dbfunc e delay_nms 34 fV
+dbsym r i 14 i
+dbsym r n A i
+dbline FFFFFFFF 3A
+dbline 1D 3A
+dbline 1E 3A
+dbline 1F 3A
+dbline 20 40
+dbline 1F 42
+dbline 1F 46
+dbline FFFFFFFE 4C
+dbline 0 4C
+S _delay_nms Def0034
+S _delay_nus Def0004
+S _delay_1ms Def0020
+S _delay_1us Def0000
+T 00 00 00 00 08 95
+R 00 00 00 00
+T 04 00 0E 94 00 00 58 01 44 27 55 27 03 C0 F7 DF
+R 00 00 00 00 12 04 00 00
+T 12 00 4F 5F 5F 4F 4A 15 5B 05 D0 F3 0C 94 00 00
+R 00 00 00 00 12 0E 01 00
+T 20 00 00 27 11 27 02 C0 0F 5F 1F 4F 04 37 E4 E0
+R 00 00 00 00
+T 2E 00 1E 07 D0 F3 08 95
+R 00 00 00 00
+T 34 00 0E 94 00 00 58 01 44 27 55 27 03 C0 EF DF
+R 00 00 00 00 12 04 00 00
+T 42 00 4F 5F 5F 4F 4A 15 5B 05 D0 F3 0C 94 00 00
+R 00 00 00 00 12 0E 01 00

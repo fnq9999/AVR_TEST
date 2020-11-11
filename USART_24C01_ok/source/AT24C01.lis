@@ -1,0 +1,879 @@
+                        .module AT24C01.c
+                        .area text(rom, con, rel)
+ 0000                   .dbfile lib\AT24C01.c
+ 0000                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\AT24C01.c
+ 0000                   .dbfunc e wt24c_fc _wt24c_fc fpc
+ 0000           ;              t -> R22
+ 0000           ;              n -> R10
+ 0000           ;             ad -> R12,R13
+ 0000           ;              p -> R20,R21
+                        .even
+ 0000           _wt24c_fc::
+ 0000 0E940000          xcall push_xgsetF03C
+ 0004 6901              movw R12,R18
+ 0006 A801              movw R20,R16
+ 0008 A884              ldd R10,y+8
+ 000A                   .dbline -1
+ 000A                   .dbline 25
+ 000A           ; /************************************************
+ 000A           ; 文件：AT24C01.c
+ 000A           ; 用途：AT24C01操作函数
+ 000A           ; 注意：
+ 000A           ; 创建：2008.1.26
+ 000A           ; 修改：2008.1.26
+ 000A           ; Copy Right  (c)  www.avrvi.com  AVR与虚拟仪器
+ 000A           ; ************************************************/
+ 000A           ; #include "..\config.h"
+ 000A           ; unsigned char syserr;
+ 000A           ; /*************************************************************************
+ 000A           ; ** 函数名称: unsigned char * wt24c_fc(unsigned char *p, unsigned int ad, unsigned char n)
+ 000A           ; ** 功能描述: 向24Cxx写入数据wt24c_h()所要调用的函数
+ 000A           ; ** 输　入: 
+ 000A           ; ** 输出        : 返回写入n个字节后的主机内存指针
+ 000A           ; ** 全局变量: 无
+ 000A           ; ** 调用模块: 
+ 000A           ; ** 说明：
+ 000A           ; ** 注意：
+ 000A           ; **************************************************************************/
+ 000A           ; 
+ 000A           ; 
+ 000A           ; 
+ 000A           ; unsigned char * wt24c_fc(unsigned char *p, unsigned int ad, unsigned char n)
+ 000A           ; {
+ 000A                   .dbline 26
+ 000A           ;       unsigned char t=0;
+ 000A                   .dbline 29
+ 000A           ; 
+ 000A           ;       #if e2prom<32
+ 000A           ;       t=ad>>8;
+ 000A B601              movw R22,R12
+ 000C 672F              mov R22,R23
+ 000E 7727              clr R23
+ 0010                   .dbline 30
+ 0010           ;       t<<=1;
+ 0010 660F              lsl R22
+ 0012                   .dbline 33
+ 0012           ;       #endif
+ 0012           ;       
+ 0012           ;       i2cstart();                                     //发送起始信号
+ 0012 0E940000          xcall _i2cstart
+ 0016                   .dbline 35
+ 0016           ;               
+ 0016           ;       if(i2cwt(W_ADD_COM+t)==SLAW)//发送SLA_W, 写字节命令及器件地址
+ 0016 062F              mov R16,R22
+ 0018 0056              subi R16,96    ; addi 160
+ 001A 0E940000          xcall _i2cwt
+ 001E 0831              cpi R16,24
+ 0020 79F4              brne L3
+ 0022           X0:
+ 0022                   .dbline 36
+ 0022           ;       {       
+ 0022                   .dbline 40
+ 0022           ;               #if e2prom>16
+ 0022           ;               i2cwt(ad>>8);                   //ad_dst的高位到器件
+ 0022           ;               #endif
+ 0022           ;               i2cwt(ad);                              //ad_dst的低位到器件
+ 0022 0C2D              mov R16,R12
+ 0024 0E940000          xcall _i2cwt
+ 0028                   .dbline 42
+ 0028           ;                       
+ 0028           ;               for(;n>0;n--)                   //发送要写入的数据
+ 0028 07C0              xjmp L8
+ 002A           L5:
+ 002A                   .dbline 43
+ 002A           ;               {
+ 002A                   .dbline 44
+ 002A           ;                   i2cwt(*p);
+ 002A FA01              movw R30,R20
+ 002C 0081              ldd R16,z+0
+ 002E 0E940000          xcall _i2cwt
+ 0032                   .dbline 45
+ 0032           ;                       p++;
+ 0032 4F5F              subi R20,255  ; offset = 1
+ 0034 5F4F              sbci R21,255
+ 0036                   .dbline 46
+ 0036           ;               }
+ 0036           L6:
+ 0036                   .dbline 42
+ 0036 AA94              dec R10
+ 0038           L8:
+ 0038                   .dbline 42
+ 0038 80E0              ldi R24,0
+ 003A 8A15              cp R24,R10
+ 003C B0F3              brlo L5
+ 003E           X1:
+ 003E                   .dbline 47
+ 003E           ;       }
+ 003E 03C0              xjmp L4
+ 0040           L3:
+ 0040                   .dbline 48
+ 0040           ;       else syserr=ERR_SLAW;           //写字节命令及器件地址错
+ 0040 81E0              ldi R24,1
+ 0042 80930000          sts _syserr,R24
+ 0046           L4:
+ 0046                   .dbline 50
+ 0046           ;       
+ 0046           ;       i2cstop();
+ 0046 0E940000          xcall _i2cstop
+ 004A                   .dbline 51
+ 004A           ;     delay_nms(6);                                             //延时6ms
+ 004A 06E0              ldi R16,6
+ 004C 10E0              ldi R17,0
+ 004E 0E940000          xcall _delay_nms
+ 0052                   .dbline 53
+ 0052           ;       
+ 0052           ;       return(p);
+ 0052 8A01              movw R16,R20
+ 0054                   .dbline -2
+ 0054           L2:
+ 0054                   .dbline 0 ; func end
+ 0054 0C940000          xjmp pop_xgsetF03C
+ 0058                   .dbsym r t 22 c
+ 0058                   .dbsym r n 10 c
+ 0058                   .dbsym r ad 12 i
+ 0058                   .dbsym r p 20 pc
+ 0058                   .dbend
+ 0058                   .dbfunc e pcf_set_byte _pcf_set_byte fV
+ 0058           ;      startcode -> y+2
+ 0058           ;             ad -> R12,R13
+ 0058           ;              p -> R10
+                        .even
+ 0058           _pcf_set_byte::
+ 0058 AA92              st -y,R10
+ 005A CA92              st -y,R12
+ 005C 6901              movw R12,R18
+ 005E A02E              mov R10,R16
+ 0060 2397              sbiw R28,3
+ 0062                   .dbline -1
+ 0062                   .dbline 56
+ 0062           ; }
+ 0062           ; 
+ 0062           ; void pcf_set_byte(unsigned char p, unsigned int ad){
+ 0062                   .dbline 57
+ 0062           ;  unsigned char startcode=ad;
+ 0062 CA82              std y+2,R12
+ 0064                   .dbline 58
+ 0064           ;   wt24c_fc_pcf(&startcode,p,1);
+ 0064 81E0              ldi R24,1
+ 0066 90E0              ldi R25,0
+ 0068 9983              std y+1,R25
+ 006A 8883              std y+0,R24
+ 006C 2A2D              mov R18,R10
+ 006E 3327              clr R19
+ 0070 8E01              movw R16,R28
+ 0072 0E5F              subi R16,254  ; offset = 2
+ 0074 1F4F              sbci R17,255
+ 0076 04D0              xcall _wt24c_fc_pcf
+ 0078                   .dbline -2
+ 0078           L9:
+ 0078                   .dbline 0 ; func end
+ 0078 2396              adiw R28,3
+ 007A C990              ld R12,y+
+ 007C A990              ld R10,y+
+ 007E 0895              ret
+ 0080                   .dbsym l startcode 2 c
+ 0080                   .dbsym r ad 12 i
+ 0080                   .dbsym r p 10 c
+ 0080                   .dbend
+ 0080                   .dbfunc e wt24c_fc_pcf _wt24c_fc_pcf fpc
+ 0080           ;              t -> R22
+ 0080           ;              n -> R10
+ 0080           ;             ad -> R12,R13
+ 0080           ;              p -> R20,R21
+                        .even
+ 0080           _wt24c_fc_pcf::
+ 0080 0E940000          xcall push_xgsetF03C
+ 0084 6901              movw R12,R18
+ 0086 A801              movw R20,R16
+ 0088 A884              ldd R10,y+8
+ 008A                   .dbline -1
+ 008A                   .dbline 64
+ 008A           ; }
+ 008A           ; 
+ 008A           ; 
+ 008A           ; 
+ 008A           ; unsigned char * wt24c_fc_pcf(unsigned char *p, unsigned int ad, unsigned char n)
+ 008A           ; {
+ 008A                   .dbline 66
+ 008A           ; 
+ 008A           ;       unsigned char t=0;
+ 008A                   .dbline 68
+ 008A           ;       #if e2prom<32
+ 008A           ;       t=ad>>8;
+ 008A B601              movw R22,R12
+ 008C 672F              mov R22,R23
+ 008E 7727              clr R23
+ 0090                   .dbline 69
+ 0090           ;       t<<=1;
+ 0090 660F              lsl R22
+ 0092                   .dbline 72
+ 0092           ;       #endif
+ 0092           ;       
+ 0092           ;       i2cstart();                                     //发送起始信号
+ 0092 0E940000          xcall _i2cstart
+ 0096                   .dbline 74
+ 0096           ;               
+ 0096           ;       if(i2cwt(W_ADD_COM_PCF+t)==SLAW)//发送SLA_W, 写字节命令及器件地址
+ 0096 062F              mov R16,R22
+ 0098 0E55              subi R16,94    ; addi 162
+ 009A 0E940000          xcall _i2cwt
+ 009E 0831              cpi R16,24
+ 00A0 79F4              brne L11
+ 00A2           X2:
+ 00A2                   .dbline 75
+ 00A2           ;       {       
+ 00A2                   .dbline 79
+ 00A2           ;               #if e2prom>16
+ 00A2           ;               i2cwt(ad>>8);                   //ad_dst的高位到器件
+ 00A2           ;               #endif
+ 00A2           ;               i2cwt(ad);                              //ad_dst的低位到器件
+ 00A2 0C2D              mov R16,R12
+ 00A4 0E940000          xcall _i2cwt
+ 00A8                   .dbline 81
+ 00A8           ;                       
+ 00A8           ;               for(;n>0;n--)                   //发送要写入的数据
+ 00A8 07C0              xjmp L16
+ 00AA           L13:
+ 00AA                   .dbline 82
+ 00AA           ;               {
+ 00AA                   .dbline 83
+ 00AA           ;                   i2cwt(*p);
+ 00AA FA01              movw R30,R20
+ 00AC 0081              ldd R16,z+0
+ 00AE 0E940000          xcall _i2cwt
+ 00B2                   .dbline 84
+ 00B2           ;                       p++;
+ 00B2 4F5F              subi R20,255  ; offset = 1
+ 00B4 5F4F              sbci R21,255
+ 00B6                   .dbline 85
+ 00B6           ;               }
+ 00B6           L14:
+ 00B6                   .dbline 81
+ 00B6 AA94              dec R10
+ 00B8           L16:
+ 00B8                   .dbline 81
+ 00B8 80E0              ldi R24,0
+ 00BA 8A15              cp R24,R10
+ 00BC B0F3              brlo L13
+ 00BE           X3:
+ 00BE                   .dbline 86
+ 00BE           ;       }
+ 00BE 03C0              xjmp L12
+ 00C0           L11:
+ 00C0                   .dbline 87
+ 00C0           ;       else syserr=ERR_SLAW;           //写字节命令及器件地址错
+ 00C0 81E0              ldi R24,1
+ 00C2 80930000          sts _syserr,R24
+ 00C6           L12:
+ 00C6                   .dbline 89
+ 00C6           ;       
+ 00C6           ;       i2cstop();
+ 00C6 0E940000          xcall _i2cstop
+ 00CA                   .dbline 90
+ 00CA           ;     delay_nms(6);                                             //延时6ms
+ 00CA 06E0              ldi R16,6
+ 00CC 10E0              ldi R17,0
+ 00CE 0E940000          xcall _delay_nms
+ 00D2                   .dbline 92
+ 00D2           ;       
+ 00D2           ;       return(p);
+ 00D2 8A01              movw R16,R20
+ 00D4                   .dbline -2
+ 00D4           L10:
+ 00D4                   .dbline 0 ; func end
+ 00D4 0C940000          xjmp pop_xgsetF03C
+ 00D8                   .dbsym r t 22 c
+ 00D8                   .dbsym r n 10 c
+ 00D8                   .dbsym r ad 12 i
+ 00D8                   .dbsym r p 20 pc
+ 00D8                   .dbend
+ 00D8                   .dbfunc e wt24c _wt24c fV
+ 00D8           ;              n -> R12,R13
+ 00D8           ;            num -> R22,R23
+ 00D8           ;         ad_dst -> R20,R21
+ 00D8           ;          p_rsc -> R10,R11
+                        .even
+ 00D8           _wt24c::
+ 00D8 0E940000          xcall push_xgsetF03C
+ 00DC A901              movw R20,R18
+ 00DE 5801              movw R10,R16
+ 00E0 2197              sbiw R28,1
+ 00E2 6985              ldd R22,y+9
+ 00E4 7A85              ldd R23,y+10
+ 00E6                   .dbline -1
+ 00E6                   .dbline 107
+ 00E6           ; }
+ 00E6           ; 
+ 00E6           ; 
+ 00E6           ; /*************************************************************************
+ 00E6           ; ** 函数名称: 
+ 00E6           ; ** 功能描述: 向24Cxx写入数据
+ 00E6           ; ** 输　入: *p_rsc要输出数据的主机内存地址指针; ad_dst要写入数据的i2c的地址(双字节); num数据个数
+ 00E6           ; ** 输出        : 
+ 00E6           ; ** 全局变量: 无
+ 00E6           ; ** 调用模块: 
+ 00E6           ; ** 说明：ad_dst: ad_dst+(num-1)不能大于器件的最高地址; num必须>0;
+ 00E6           ; ** 注意：
+ 00E6           ; **************************************************************************/
+ 00E6           ; void wt24c(unsigned char *p_rsc, unsigned int ad_dst, unsigned int num)
+ 00E6           ; {
+ 00E6                   .dbline 110
+ 00E6           ;     unsigned int n;
+ 00E6           ; 
+ 00E6           ;     n=ad_dst/PAGE_SIZE;               //确定地址与块地址的差
+ 00E6 6A01              movw R12,R20
+ 00E8 D694              lsr R13
+ 00EA C794              ror R12
+ 00EC D694              lsr R13
+ 00EE C794              ror R12
+ 00F0 D694              lsr R13
+ 00F2 C794              ror R12
+ 00F4                   .dbline 111
+ 00F4           ;       if(n) n=(unsigned long)PAGE_SIZE*(n+1)-ad_dst;
+ 00F4 CC20              tst R12
+ 00F6 11F4              brne X4
+ 00F8 DD20              tst R13
+ 00FA A9F0              breq L18
+ 00FC           X4:
+ 00FC                   .dbline 111
+ 00FC 83E0              ldi R24,3
+ 00FE 90E0              ldi R25,0
+ 0100 8601              movw R16,R12
+ 0102 0F5F              subi R16,255  ; offset = 1
+ 0104 1F4F              sbci R17,255
+ 0106 2227              clr R18
+ 0108 3327              clr R19
+ 010A 8A93              st -y,R24
+ 010C 0E940000          xcall lsl32
+ 0110 1801              movw R2,R16
+ 0112 2901              movw R4,R18
+ 0114 3A01              movw R6,R20
+ 0116 8824              clr R8
+ 0118 9924              clr R9
+ 011A 2618              sub R2,R6
+ 011C 3708              sbc R3,R7
+ 011E 4808              sbc R4,R8
+ 0120 5908              sbc R5,R9
+ 0122 6101              movw R12,R2
+ 0124 05C0              xjmp L19
+ 0126           L18:
+ 0126                   .dbline 112
+ 0126           ;       else n=PAGE_SIZE-ad_dst;
+ 0126 88E0              ldi R24,8
+ 0128 90E0              ldi R25,0
+ 012A 6C01              movw R12,R24
+ 012C C41A              sub R12,R20
+ 012E D50A              sbc R13,R21
+ 0130           L19:
+ 0130                   .dbline 114
+ 0130           ;       
+ 0130           ;     if(n>=num)                //如果ad_dst所在的数据块的末尾地址 >= ad_dst + num, 就直接写入num个数据
+ 0130 C616              cp R12,R22
+ 0132 D706              cpc R13,R23
+ 0134 48F0              brlo L20
+ 0136           X5:
+ 0136                   .dbline 115
+ 0136           ;     {
+ 0136                   .dbline 116
+ 0136           ;               wt24c_fc(p_rsc, ad_dst, num);
+ 0136 6883              std y+0,R22
+ 0138 9A01              movw R18,R20
+ 013A 8501              movw R16,R10
+ 013C 61DF              xcall _wt24c_fc
+ 013E                   .dbline 117
+ 013E           ;       if(syserr!=0) return;
+ 013E 20900000          lds R2,_syserr
+ 0142 2220              tst R2
+ 0144 51F1              breq L21
+ 0146           X6:
+ 0146                   .dbline 117
+ 0146 29C0              xjmp L17
+ 0148           L20:
+ 0148                   .dbline 120
+ 0148           ;     }
+ 0148           ;     else                      //如果ad_dst所在的数据块末尾地址 < ad_dst + num, 就先写入ad_dst所在的数据块末尾地址与 ad_dst 之差个数据
+ 0148           ;     {
+ 0148                   .dbline 121
+ 0148           ;           p_rsc=wt24c_fc(p_rsc, ad_dst, n);
+ 0148 C882              std y+0,R12
+ 014A 9A01              movw R18,R20
+ 014C 8501              movw R16,R10
+ 014E 58DF              xcall _wt24c_fc
+ 0150 5801              movw R10,R16
+ 0152                   .dbline 122
+ 0152           ;       if(syserr!=0) return;
+ 0152 20900000          lds R2,_syserr
+ 0156 2220              tst R2
+ 0158 09F0              breq L24
+ 015A           X7:
+ 015A                   .dbline 122
+ 015A 1FC0              xjmp L17
+ 015C           L24:
+ 015C                   .dbline 124
+ 015C           ;               
+ 015C           ;               num-=n;     //更新剩下数据个数
+ 015C 6C19              sub R22,R12
+ 015E 7D09              sbc R23,R13
+ 0160                   .dbline 125
+ 0160           ;         ad_dst+=n;    //更新剩下数据的起始地址
+ 0160 4C0D              add R20,R12
+ 0162 5D1D              adc R21,R13
+ 0164 0FC0              xjmp L27
+ 0166           L26:
+ 0166                   .dbline 129
+ 0166           ; 
+ 0166           ;         //把剩下数据写入器件
+ 0166           ;         while(num>=PAGE_SIZE) //先按PAGE_SIZE为长度一页一页的写入
+ 0166           ;         {
+ 0166                   .dbline 130
+ 0166           ;                       p_rsc=wt24c_fc(p_rsc, ad_dst, PAGE_SIZE);
+ 0166 88E0              ldi R24,8
+ 0168 8883              std y+0,R24
+ 016A 9A01              movw R18,R20
+ 016C 8501              movw R16,R10
+ 016E 48DF              xcall _wt24c_fc
+ 0170 5801              movw R10,R16
+ 0172                   .dbline 131
+ 0172           ;               if(syserr!=0) return;
+ 0172 20900000          lds R2,_syserr
+ 0176 2220              tst R2
+ 0178 09F0              breq L29
+ 017A           X8:
+ 017A                   .dbline 131
+ 017A 0FC0              xjmp L17
+ 017C           L29:
+ 017C                   .dbline 133
+ 017C           ;               
+ 017C           ;             num-=PAGE_SIZE;           //更新剩余数据个数
+ 017C 6850              subi R22,8
+ 017E 7040              sbci R23,0
+ 0180                   .dbline 134
+ 0180           ;               ad_dst+=PAGE_SIZE;      //更新剩下数据的起始地址
+ 0180 485F              subi R20,248  ; offset = 8
+ 0182 5F4F              sbci R21,255
+ 0184                   .dbline 135
+ 0184           ;               }
+ 0184           L27:
+ 0184                   .dbline 128
+ 0184 6830              cpi R22,8
+ 0186 E0E0              ldi R30,0
+ 0188 7E07              cpc R23,R30
+ 018A 68F7              brsh L26
+ 018C           X9:
+ 018C                   .dbline 137
+ 018C           ;         
+ 018C           ;               if(num)                 //把最后剩下的小于一个PAGE_SIZE长度的数据写入器件
+ 018C 6030              cpi R22,0
+ 018E 6707              cpc R22,R23
+ 0190 21F0              breq L31
+ 0192           X10:
+ 0192                   .dbline 138
+ 0192           ;                       wt24c_fc(p_rsc, ad_dst, num);
+ 0192 6883              std y+0,R22
+ 0194 9A01              movw R18,R20
+ 0196 8501              movw R16,R10
+ 0198 33DF              xcall _wt24c_fc
+ 019A           L31:
+ 019A                   .dbline 139
+ 019A           ;     }
+ 019A           L21:
+ 019A                   .dbline -2
+ 019A           L17:
+ 019A                   .dbline 0 ; func end
+ 019A 2196              adiw R28,1
+ 019C 0C940000          xjmp pop_xgsetF03C
+ 01A0                   .dbsym r n 12 i
+ 01A0                   .dbsym r num 22 i
+ 01A0                   .dbsym r ad_dst 20 i
+ 01A0                   .dbsym r p_rsc 10 pc
+ 01A0                   .dbend
+ 01A0                   .dbfunc e rd24c _rd24c fV
+ 01A0           ;              t -> R10
+ 01A0           ;            num -> R22,R23
+ 01A0           ;         ad_rsc -> R12,R13
+ 01A0           ;          p_dst -> R20,R21
+                        .even
+ 01A0           _rd24c::
+ 01A0 0E940000          xcall push_xgsetF03C
+ 01A4 6901              movw R12,R18
+ 01A6 A801              movw R20,R16
+ 01A8 6885              ldd R22,y+8
+ 01AA 7985              ldd R23,y+9
+ 01AC                   .dbline -1
+ 01AC                   .dbline 152
+ 01AC           ; }
+ 01AC           ; /*************************************************************************
+ 01AC           ; ** 函数名称: 
+ 01AC           ; ** 功能描述: 从24cxx读出数据
+ 01AC           ; ** 输　入: *p_dst要读入数据的主机内存地址指针; ad_rsc要输出数据的i2c的地址(整形); num数据个数(整形)
+ 01AC           ; ** 输出        : 
+ 01AC           ; ** 全局变量: 无
+ 01AC           ; ** 调用模块: 
+ 01AC           ; ** 说明：ad_dst+(num-1)不能大于器件的最高地址; num必须>0;
+ 01AC           ; ** 注意：
+ 01AC           ; **************************************************************************/
+ 01AC           ; void rd24c(unsigned char *p_dst, unsigned int ad_rsc, unsigned int num)
+ 01AC           ; {
+ 01AC                   .dbline 156
+ 01AC           ; 
+ 01AC           ; 
+ 01AC           ;        
+ 01AC           ;     unsigned char t=0;
+ 01AC                   .dbline 159
+ 01AC           ; 
+ 01AC           ;       #if e2prom<32
+ 01AC           ;       t=ad_rsc>>8;
+ 01AC 5601              movw R10,R12
+ 01AE AB2C              mov R10,R11
+ 01B0 BB24              clr R11
+ 01B2                   .dbline 160
+ 01B2           ;       t<<=1;
+ 01B2 AA0C              lsl R10
+ 01B4                   .dbline 163
+ 01B4           ;       #endif
+ 01B4           ;       
+ 01B4           ;       i2cstart();                                     //发送起始信号
+ 01B4 0E940000          xcall _i2cstart
+ 01B8                   .dbline 165
+ 01B8           ;               
+ 01B8           ;       if(i2cwt(W_ADD_COM+t)==SLAW)//发送SLA_W, 写字节命令及器件地址
+ 01B8 0A2D              mov R16,R10
+ 01BA 0056              subi R16,96    ; addi 160
+ 01BC 0E940000          xcall _i2cwt
+ 01C0 0831              cpi R16,24
+ 01C2 B1F4              brne L34
+ 01C4           X11:
+ 01C4                   .dbline 166
+ 01C4           ;       {       
+ 01C4                   .dbline 170
+ 01C4           ;               #if e2prom>16
+ 01C4           ;               i2cwt(ad_rsc>>8);               //ad_rsc的高位,  发送要读出数据的地址
+ 01C4           ;               #endif
+ 01C4           ;               i2cwt(ad_rsc);                  //ad_rsc的低位
+ 01C4 0C2D              mov R16,R12
+ 01C6 0E940000          xcall _i2cwt
+ 01CA                   .dbline 172
+ 01CA           ;                               
+ 01CA           ;               i2cstart();                             //再发送起始信号
+ 01CA 0E940000          xcall _i2cstart
+ 01CE                   .dbline 173
+ 01CE           ;               i2cwt(R_ADD_COM+t);             //发送SLA_R, 读命令字节及器件地址
+ 01CE 0A2D              mov R16,R10
+ 01D0 0F55              subi R16,95    ; addi 161
+ 01D2 0E940000          xcall _i2cwt
+ 01D6                   .dbline 175
+ 01D6           ;                               
+ 01D6           ;               for(;num>0;num--)
+ 01D6 08C0              xjmp L39
+ 01D8           L36:
+ 01D8                   .dbline 176
+ 01D8           ;               {
+ 01D8                   .dbline 177
+ 01D8           ;                   *p_dst=i2crd();             //从器件读出一个字节
+ 01D8 0E940000          xcall _i2crd
+ 01DC FA01              movw R30,R20
+ 01DE 0083              std z+0,R16
+ 01E0                   .dbline 178
+ 01E0           ;                       p_dst++;
+ 01E0 4F5F              subi R20,255  ; offset = 1
+ 01E2 5F4F              sbci R21,255
+ 01E4                   .dbline 179
+ 01E4           ;               }
+ 01E4           L37:
+ 01E4                   .dbline 175
+ 01E4 6150              subi R22,1
+ 01E6 7040              sbci R23,0
+ 01E8           L39:
+ 01E8                   .dbline 175
+ 01E8 6030              cpi R22,0
+ 01EA 6707              cpc R22,R23
+ 01EC A9F7              brne L36
+ 01EE           X12:
+ 01EE                   .dbline 180
+ 01EE           ;       }
+ 01EE 03C0              xjmp L35
+ 01F0           L34:
+ 01F0                   .dbline 181
+ 01F0           ;       else syserr=ERR_SLAW;           //写字节命令及器件地址错或对方无应答
+ 01F0 81E0              ldi R24,1
+ 01F2 80930000          sts _syserr,R24
+ 01F6           L35:
+ 01F6                   .dbline 183
+ 01F6           ;               
+ 01F6           ;       i2cstop();
+ 01F6 0E940000          xcall _i2cstop
+ 01FA                   .dbline -2
+ 01FA           L33:
+ 01FA                   .dbline 0 ; func end
+ 01FA 0C940000          xjmp pop_xgsetF03C
+ 01FE                   .dbsym r t 10 c
+ 01FE                   .dbsym r num 22 i
+ 01FE                   .dbsym r ad_rsc 12 i
+ 01FE                   .dbsym r p_dst 20 pc
+ 01FE                   .dbend
+ 01FE                   .dbfunc e rd24c_pcf _rd24c_pcf fV
+ 01FE           ;              t -> R10
+ 01FE           ;            num -> R22,R23
+ 01FE           ;         ad_rsc -> R12,R13
+ 01FE           ;          p_dst -> R20,R21
+                        .even
+ 01FE           _rd24c_pcf::
+ 01FE 0E940000          xcall push_xgsetF03C
+ 0202 6901              movw R12,R18
+ 0204 A801              movw R20,R16
+ 0206 6885              ldd R22,y+8
+ 0208 7985              ldd R23,y+9
+ 020A                   .dbline -1
+ 020A                   .dbline 194
+ 020A           ; 
+ 020A           ; }
+ 020A           ; 
+ 020A           ; 
+ 020A           ; 
+ 020A           ; 
+ 020A           ; 
+ 020A           ; 
+ 020A           ; 
+ 020A           ; void rd24c_pcf(unsigned char *p_dst, unsigned int ad_rsc, unsigned int num)
+ 020A           ; {
+ 020A                   .dbline 196
+ 020A           ; 
+ 020A           ;     unsigned char t=0;
+ 020A                   .dbline 198
+ 020A           ;       #if e2prom<32
+ 020A           ;       t=ad_rsc>>8;
+ 020A 5601              movw R10,R12
+ 020C AB2C              mov R10,R11
+ 020E BB24              clr R11
+ 0210                   .dbline 199
+ 0210           ;       t<<=1;
+ 0210 AA0C              lsl R10
+ 0212                   .dbline 202
+ 0212           ;       #endif
+ 0212           ;       
+ 0212           ;       i2cstart();                                     //发送起始信号
+ 0212 0E940000          xcall _i2cstart
+ 0216                   .dbline 204
+ 0216           ;               
+ 0216           ;       if(i2cwt(W_ADD_COM_PCF+t)==SLAW)//发送SLA_W, 写字节命令及器件地址
+ 0216 0A2D              mov R16,R10
+ 0218 0E55              subi R16,94    ; addi 162
+ 021A 0E940000          xcall _i2cwt
+ 021E 0831              cpi R16,24
+ 0220 B1F4              brne L41
+ 0222           X13:
+ 0222                   .dbline 205
+ 0222           ;       {       
+ 0222                   .dbline 209
+ 0222           ;               #if e2prom>16
+ 0222           ;               i2cwt(ad_rsc>>8);               //ad_rsc的高位,  发送要读出数据的地址
+ 0222           ;               #endif
+ 0222           ;               i2cwt(ad_rsc);                  //ad_rsc的低位
+ 0222 0C2D              mov R16,R12
+ 0224 0E940000          xcall _i2cwt
+ 0228                   .dbline 211
+ 0228           ;                               
+ 0228           ;               i2cstart();                             //再发送起始信号
+ 0228 0E940000          xcall _i2cstart
+ 022C                   .dbline 212
+ 022C           ;               i2cwt(R_ADD_COM_PCF+t);         //发送SLA_R, 读命令字节及器件地址
+ 022C 0A2D              mov R16,R10
+ 022E 0D55              subi R16,93    ; addi 163
+ 0230 0E940000          xcall _i2cwt
+ 0234                   .dbline 214
+ 0234           ;                               
+ 0234           ;               for(;num>0;num--)
+ 0234 08C0              xjmp L46
+ 0236           L43:
+ 0236                   .dbline 215
+ 0236           ;               {
+ 0236                   .dbline 216
+ 0236           ;                   *p_dst=i2crd();             //从器件读出一个字节
+ 0236 0E940000          xcall _i2crd
+ 023A FA01              movw R30,R20
+ 023C 0083              std z+0,R16
+ 023E                   .dbline 217
+ 023E           ;                       p_dst++;
+ 023E 4F5F              subi R20,255  ; offset = 1
+ 0240 5F4F              sbci R21,255
+ 0242                   .dbline 218
+ 0242           ;               }
+ 0242           L44:
+ 0242                   .dbline 214
+ 0242 6150              subi R22,1
+ 0244 7040              sbci R23,0
+ 0246           L46:
+ 0246                   .dbline 214
+ 0246 6030              cpi R22,0
+ 0248 6707              cpc R22,R23
+ 024A A9F7              brne L43
+ 024C           X14:
+ 024C                   .dbline 219
+ 024C           ;       }
+ 024C 03C0              xjmp L42
+ 024E           L41:
+ 024E                   .dbline 220
+ 024E           ;       else syserr=ERR_SLAW;           //写字节命令及器件地址错或对方无应答
+ 024E 81E0              ldi R24,1
+ 0250 80930000          sts _syserr,R24
+ 0254           L42:
+ 0254                   .dbline 222
+ 0254           ;               
+ 0254           ;       i2cstop();
+ 0254 0E940000          xcall _i2cstop
+ 0258                   .dbline -2
+ 0258           L40:
+ 0258                   .dbline 0 ; func end
+ 0258 0C940000          xjmp pop_xgsetF03C
+ 025C                   .dbsym r t 10 c
+ 025C                   .dbsym r num 22 i
+ 025C                   .dbsym r ad_rsc 12 i
+ 025C                   .dbsym r p_dst 20 pc
+ 025C                   .dbend
+ 025C                   .dbfunc e pcf_stop _pcf_stop fV
+ 025C           ;       stopcode -> y+1
+                        .even
+ 025C           _pcf_stop::
+ 025C 2297              sbiw R28,2
+ 025E                   .dbline -1
+ 025E                   .dbline 229
+ 025E           ; 
+ 025E           ; }
+ 025E           ; 
+ 025E           ; 
+ 025E           ; 
+ 025E           ; void pcf_stop(void)
+ 025E           ; {
+ 025E                   .dbline 230
+ 025E           ;  unsigned char stopcode=0x20;
+ 025E 80E2              ldi R24,32
+ 0260 8983              std y+1,R24
+ 0262                   .dbline 231
+ 0262           ;  wt24c_fc_pcf(&stopcode,0,1);
+ 0262 81E0              ldi R24,1
+ 0264 8883              std y+0,R24
+ 0266 2227              clr R18
+ 0268 3327              clr R19
+ 026A 8E01              movw R16,R28
+ 026C 0F5F              subi R16,255  ; offset = 1
+ 026E 1F4F              sbci R17,255
+ 0270 07DF              xcall _wt24c_fc_pcf
+ 0272                   .dbline -2
+ 0272           L47:
+ 0272                   .dbline 0 ; func end
+ 0272 2296              adiw R28,2
+ 0274 0895              ret
+ 0276                   .dbsym l stopcode 1 c
+ 0276                   .dbend
+ 0276                   .dbfunc e pcf_start _pcf_start fV
+ 0276           ;      startcode -> y+1
+                        .even
+ 0276           _pcf_start::
+ 0276 2297              sbiw R28,2
+ 0278                   .dbline -1
+ 0278                   .dbline 234
+ 0278           ; }
+ 0278           ; void pcf_start(void)
+ 0278           ; {
+ 0278                   .dbline 235
+ 0278           ;  unsigned char startcode=0x00;
+ 0278 2224              clr R2
+ 027A 2982              std y+1,R2
+ 027C                   .dbline 236
+ 027C           ;   wt24c_fc_pcf(&startcode,0,1);
+ 027C 81E0              ldi R24,1
+ 027E 8883              std y+0,R24
+ 0280 2227              clr R18
+ 0282 3327              clr R19
+ 0284 8E01              movw R16,R28
+ 0286 0F5F              subi R16,255  ; offset = 1
+ 0288 1F4F              sbci R17,255
+ 028A FADE              xcall _wt24c_fc_pcf
+ 028C                   .dbline -2
+ 028C           L48:
+ 028C                   .dbline 0 ; func end
+ 028C 2296              adiw R28,2
+ 028E 0895              ret
+ 0290                   .dbsym l startcode 1 c
+ 0290                   .dbend
+ 0290                   .dbfunc e pcfset _pcfset fpc
+ 0290           ;              n -> R14
+ 0290           ;             ad -> R12,R13
+ 0290           ;              p -> R10,R11
+                        .even
+ 0290           _pcfset::
+ 0290 0E940000          xcall push_xgset00FC
+ 0294 6901              movw R12,R18
+ 0296 5801              movw R10,R16
+ 0298 2197              sbiw R28,1
+ 029A EF80              ldd R14,y+7
+ 029C                   .dbline -1
+ 029C                   .dbline 239
+ 029C           ; }
+ 029C           ; 
+ 029C           ; unsigned char * pcfset(unsigned char *p, unsigned int ad, unsigned char n){
+ 029C                   .dbline 240
+ 029C           ;                pcf_stop();
+ 029C DFDF              xcall _pcf_stop
+ 029E                   .dbline 241
+ 029E           ;                wt24c_fc_pcf(p,ad,n);
+ 029E E882              std y+0,R14
+ 02A0 9601              movw R18,R12
+ 02A2 8501              movw R16,R10
+ 02A4 EDDE              xcall _wt24c_fc_pcf
+ 02A6                   .dbline 242
+ 02A6           ;                pcf_start();
+ 02A6 E7DF              xcall _pcf_start
+ 02A8                   .dbline 243
+ 02A8           ;                return(p);              
+ 02A8 8501              movw R16,R10
+ 02AA                   .dbline -2
+ 02AA           L49:
+ 02AA                   .dbline 0 ; func end
+ 02AA 2196              adiw R28,1
+ 02AC 0C940000          xjmp pop_xgset00FC
+ 02B0                   .dbsym r n 14 c
+ 02B0                   .dbsym r ad 12 i
+ 02B0                   .dbsym r p 10 pc
+ 02B0                   .dbend
+ 02B0                   .dbfunc e pcfread _pcfread fV
+ 02B0           ;            num -> R14,R15
+ 02B0           ;         ad_rsc -> R12,R13
+ 02B0           ;          p_dst -> R10,R11
+                        .even
+ 02B0           _pcfread::
+ 02B0 0E940000          xcall push_xgset00FC
+ 02B4 6901              movw R12,R18
+ 02B6 5801              movw R10,R16
+ 02B8 2297              sbiw R28,2
+ 02BA E884              ldd R14,y+8
+ 02BC F984              ldd R15,y+9
+ 02BE                   .dbline -1
+ 02BE                   .dbline 246
+ 02BE           ; }
+ 02BE           ; 
+ 02BE           ; void pcfread(unsigned char *p_dst, unsigned int ad_rsc, unsigned int num){     
+ 02BE                   .dbline 247
+ 02BE           ;        rd24c_pcf(p_dst,ad_rsc,num);
+ 02BE F982              std y+1,R15
+ 02C0 E882              std y+0,R14
+ 02C2 9601              movw R18,R12
+ 02C4 8501              movw R16,R10
+ 02C6 9BDF              xcall _rd24c_pcf
+ 02C8                   .dbline -2
+ 02C8           L50:
+ 02C8                   .dbline 0 ; func end
+ 02C8 2296              adiw R28,2
+ 02CA 0C940000          xjmp pop_xgset00FC
+ 02CE                   .dbsym r num 14 i
+ 02CE                   .dbsym r ad_rsc 12 i
+ 02CE                   .dbsym r p_dst 10 pc
+ 02CE                   .dbend
+                        .area bss(ram, con, rel)
+ 0000                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\AT24C01.c
+ 0000           _syserr::
+ 0000                   .blkb 1
+ 0001                   .dbsym e syserr _syserr c
+ 0001           ; }
+ 0001           ; 
+ 0001           ; 

@@ -1,0 +1,43 @@
+/************************************************
+文件：main.c
+用途：
+注意：内部8M晶振
+创建：2008.4.1
+修改：2008.4.1
+Copy Right  (c)  www.avrvi.com  AVR与虚拟仪器
+************************************************/
+
+#include "config.h"
+unsigned char *tem="123456";
+void main(void)
+{
+     unsigned char *W_Buff="www.avrvi.com",*R_Buff="0",i=0;
+	 
+	 CLI();
+	 Com_init();
+	 twi_init();
+	 SEI();	 
+	 
+	 
+	  		 Com_putstring ("24C01 Write: www.avrvi.com\n\n",28,&RTbuf_UART0);
+			 
+			 ///test
+			 pcfset(tem);
+ 	  		 delay_nms(10000);
+			 pcfread(tem);
+			 Com_putstring (tem,7,&RTbuf_UART0);
+ 			 ///test_end
+			 
+ 	  		 wt24c(W_Buff,0x00,13);
+ 	  		 delay_nms(500);
+ 	  		 Com_putstring ("24C01 Read: ",12,&RTbuf_UART0);
+ 	  		 rd24c(R_Buff,0x00,13);
+ 	  		 Com_putstring (R_Buff,13,&RTbuf_UART0);
+ 	  		 Com_putstring ("\n\n",2,&RTbuf_UART0);
+ 	  		 delay_nms(500);
+	 while(1)
+	 {
+	  ;
+	 }
+}
+

@@ -1,0 +1,84 @@
+                        .module spi.c
+                        .area text(rom, con, rel)
+ 0000                   .dbfile ..\source\lib\spi.c
+ 0000                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\spi.c
+ 0000                   .dbfunc e spi_init _spi_init fV
+                        .even
+ 0000           _spi_init::
+ 0000                   .dbline -1
+ 0000                   .dbline 21
+ 0000           ; /************************************************
+ 0000           ; 文件：spi.c
+ 0000           ; 用途：SPI驱动
+ 0000           ; 注意：
+ 0000           ; 创建：2008.1.25
+ 0000           ; 修改：2008.1.25
+ 0000           ; Copy Right  (c)  www.avrvi.com  AVR与虚拟仪器
+ 0000           ; ************************************************/
+ 0000           ; #include "..\config.h"
+ 0000           ; /*************************************************************************
+ 0000           ; ** 函数名称: spi_init(void)
+ 0000           ; ** 功能描述: SPI初始化
+ 0000           ; ** 输　入: 
+ 0000           ; ** 输出        : 
+ 0000           ; ** 全局变量: 无
+ 0000           ; ** 调用模块: 
+ 0000           ; ** 说明：
+ 0000           ; ** 注意：
+ 0000           ; **************************************************************************/
+ 0000           ; void spi_init(void)
+ 0000           ; {
+ 0000                   .dbline 22
+ 0000           ;        DDRB |= (1<<MOSI)|(1<<SCK)|(1<<SS);//设置MOSI，SCK输出
+ 0000 87B3              in R24,0x17
+ 0002 8760              ori R24,7
+ 0004 87BB              out 0x17,R24
+ 0006                   .dbline 23
+ 0006           ;        SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0)|(1<<SPR1);//使能SPI，主机模式
+ 0006 83E5              ldi R24,83
+ 0008 8DB9              out 0xd,R24
+ 000A                   .dbline -2
+ 000A           L2:
+ 000A                   .dbline 0 ; func end
+ 000A 0895              ret
+ 000C                   .dbend
+ 000C                   .dbfunc e SPI_MasterTransmit _SPI_MasterTransmit fV
+ 000C           ;           Data -> R16
+                        .even
+ 000C           _SPI_MasterTransmit::
+ 000C                   .dbline -1
+ 000C                   .dbline 36
+ 000C           ; }
+ 000C           ; /*************************************************************************
+ 000C           ; ** 函数名称: SPI_MasterTransmit(char Data)
+ 000C           ; ** 功能描述: SPI主机发送数据
+ 000C           ; ** 输　入: Data 需要通过SPI传输的数据
+ 000C           ; ** 输出        : 
+ 000C           ; ** 全局变量: 无
+ 000C           ; ** 调用模块: 
+ 000C           ; ** 说明：
+ 000C           ; ** 注意：
+ 000C           ; **************************************************************************/
+ 000C           ; void SPI_MasterTransmit(char Data)
+ 000C           ; {
+ 000C                   .dbline 38
+ 000C           ;        /* 启动数据传输 */
+ 000C           ;        SPDR = Data;
+ 000C 0FB9              out 0xf,R16
+ 000E           L4:
+ 000E                   .dbline 41
+ 000E           ;        /* 等待传输结束 */
+ 000E           ;        while(!(SPSR & (1<<SPIF)))
+ 000E           ;        ;
+ 000E           L5:
+ 000E                   .dbline 40
+ 000E 779B              sbis 0xe,7
+ 0010 FECF              rjmp L4
+ 0012           X0:
+ 0012                   .dbline -2
+ 0012           L3:
+ 0012                   .dbline 0 ; func end
+ 0012 0895              ret
+ 0014                   .dbsym r Data 16 c
+ 0014                   .dbend
+ 0014           ; }

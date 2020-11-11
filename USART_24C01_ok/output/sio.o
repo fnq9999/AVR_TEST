@@ -1,0 +1,505 @@
+XL
+H 5 areas 1F global symbols
+M sio.c
+S div32s Ref0000
+S push_xgset300C Ref0000
+S push_xgset003C Ref0000
+S push_xgsetF00C Ref0000
+S push_xgset30FC Ref0000
+S push_xgsetF0FC Ref0000
+S push_arg4 Ref0000
+S pop_xgset300C Ref0000
+S pop_xgset003C Ref0000
+S pop_xgsetF00C Ref0000
+S pop_xgset30FC Ref0000
+S pop_xgsetF0FC Ref0000
+S mod8u Ref0000
+A text size 45E flags 0
+dbfile ..\source\lib\sio.c
+dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\sio.c
+dbstruct 208 .1
+dbfield 0 R_front c
+dbfield 1 R_rear c
+dbfield 2 R_count c
+dbfield 3 R_overflow c
+dbfield 4 R_buf A[100:100]c
+dbfield 104 T_front c
+dbfield 105 T_rear c
+dbfield 106 T_count c
+dbfield 107 T_buf A[100:100]c
+dbfield 207 T_disabled c
+dbend
+dbfunc e Com_init 0 fV
+dbline FFFFFFFF 0
+dbline 2B 0
+dbline 2F 0
+dbline 30 6
+dbline 31 C
+dbline 32 10
+dbline 38 12
+dbline 3B 18
+dbline 4A 1E
+dbline FFFFFFFE 22
+dbline 0 22
+dbfunc e Com_baudrate 24 fV
+dbsym r tmp A i
+dbsym r baudrate A i
+dbline FFFFFFFF 2A
+dbline 57 2A
+dbline 59 2A
+dbline 5B 72
+dbline 5C 7A
+dbline FFFFFFFE 7C
+dbline 0 7C
+dbfunc e Com_putchar 80 fc
+dbsym r RTbuf C pS[.1]
+dbsym r c A c
+dbline FFFFFFFF 88
+dbline 6D 88
+dbline 6F 88
+dbline 70 90
+dbline 71 94
+dbline 72 94
+dbline 73 9A
+dbline FFFFFFFE 9C
+dbline 0 9C
+dbfunc e Com_putstring A0 fV
+dbsym r i E c
+dbsym r RTbuf C pS[.1]
+dbsym r len 14 c
+dbsym r p A pc
+dbline FFFFFFFF AC
+dbline 80 AC
+dbline 83 AC
+dbline 83 B0
+dbline 84 B0
+dbline 85 B4
+dbline 85 B4
+dbline 84 C6
+dbline 84 C8
+dbline 86 CC
+dbline 88 CE
+dbline 88 CE
+dbline 89 DA
+dbline 89 DA
+dbline 8A E4
+dbline FFFFFFFE E4
+dbline 0 E4
+dbfunc e Com_getchar E8 fc
+dbsym r ts 14 pc
+dbsym r RTbuf A pS[.1]
+dbsym l mode 6 c
+dbline FFFFFFFF F4
+dbline 99 F4
+dbline A0 F4
+dbline A1 F8
+dbline A2 106
+dbline A2 106
+dbline A3 10E
+dbline A5 11C
+dbline FFFFFFFE 120
+dbline 0 120
+dbfunc e Com_Rbuf_Clear 12A fV
+dbsym r RTbuf A pS[.1]
+dbline FFFFFFFF 130
+dbline AA 130
+dbline AB 130
+dbline FFFFFFFE 134
+dbline 0 134
+dbfunc e Com_getstring 13A fc
+dbsym r ts 16 pc
+dbsym r i A c
+dbsym r RTbuf C pS[.1]
+dbsym r len E c
+dbsym r p 14 pc
+dbline FFFFFFFF 148
+dbline B0 148
+dbline B2 148
+dbline B3 14A
+dbline B5 14E
+dbline B5 154
+dbline B6 154
+dbline B6 156
+dbline BA 156
+dbline BB 164
+dbline BC 172
+dbline BD 17E
+dbline C1 18C
+dbline B6 18C
+dbline B6 18E
+dbline C2 192
+dbline C3 196
+dbline C5 196
+dbline C6 196
+dbline C7 1A2
+dbline C9 1A4
+dbline C9 1A4
+dbline CC 1AE
+dbline FFFFFFFE 1B0
+dbline 0 1B0
+dbfunc e Com_R_count 1B6 fc
+dbsym r RTbuf 10 pS[.1]
+dbline FFFFFFFF 1B6
+dbline DC 1B6
+dbline DD 1B6
+dbline FFFFFFFE 1BA
+dbline 0 1BA
+dbfunc e Rbuf_init 1BC fV
+dbsym r RTbuf 10 pS[.1]
+dbline FFFFFFFF 1BC
+dbline E9 1BC
+dbline EA 1BC
+dbline EB 1C2
+dbline EC 1C4
+dbline ED 1C6
+dbline FFFFFFFE 1C8
+dbline 0 1C8
+dbfunc e Tbuf_init 1CA fV
+dbsym r RTbuf 10 pS[.1]
+dbline FFFFFFFF 1CA
+dbline F9 1CA
+dbline FA 1CA
+dbline FB 1D8
+dbline FC 1E2
+dbline FD 1EC
+dbline FFFFFFFE 1F4
+dbline 0 1F4
+dbfunc e Rbuf_empty 1F6 fc
+dbsym r RTbuf 10 pS[.1]
+dbline FFFFFFFF 1FA
+dbline 109 1FA
+dbline 10A 1FA
+dbline FFFFFFFE 20E
+dbline 0 20E
+dbfunc e Tbuf_full 214 fc
+dbsym r RTbuf 10 pS[.1]
+dbline FFFFFFFF 218
+dbline 130 218
+dbline 131 218
+dbline FFFFFFFE 230
+dbline 0 230
+dbfunc e Tbuf_putchar 236 fV
+dbsym r RTbuf 14 pS[.1]
+dbsym r x A c
+dbline FFFFFFFF 23E
+dbline 150 23E
+dbline 151 23E
+dbline 151 248
+dbline 152 248
+dbline 152 248
+dbline 152 24A
+dbline 152 24A
+dbline 153 24A
+dbline 153 25A
+dbline 154 25A
+dbline 155 25C
+dbline 156 264
+dbline 156 266
+dbline 157 266
+dbline 158 274
+dbline 159 28A
+dbline 15A 29E
+dbline 15B 29E
+dbline 15B 29E
+dbline 15B 2A0
+dbline 15B 2A0
+dbline 15C 2A0
+dbline FFFFFFFE 2A0
+dbline 0 2A0
+dbfunc e Rbuf_getchar 2A4 fc
+dbsym r Btemp A c
+dbsym r RTbuf 14 pS[.1]
+dbline FFFFFFFF 2AA
+dbline 182 2AA
+dbline 183 2AA
+dbline 184 2AC
+dbline 184 2B4
+dbline 185 2B4
+dbline 186 2C4
+dbline 186 2C4
+dbline 186 2C6
+dbline 186 2C6
+dbline 187 2C6
+dbline 188 2D2
+dbline 189 2E2
+dbline 18A 2E4
+dbline 18B 2E4
+dbline FFFFFFFE 2E6
+dbline 0 2E6
+dbfunc e uart0_rx_isr 2EA fV
+dbsym r data A c
+dbsym r status 16 c
+dbsym r RTbuf 14 pS[.1]
+dbline FFFFFFFF 302
+dbline 1AA 302
+dbline 1AD 302
+dbline 1AF 306
+dbline 1B0 308
+dbline 1B2 30A
+dbline 1B2 312
+dbline 1B3 312
+dbline 1B3 31C
+dbline 1B4 31C
+dbline 1B5 328
+dbline 1B6 338
+dbline 1B7 34E
+dbline 1B7 350
+dbline 1B8 350
+dbline 1B9 356
+dbline 1BA 356
+dbline FFFFFFFE 356
+dbline 0 356
+dbfunc e getstr 370 fV
+dbsym r data A c
+dbsym r status 16 c
+dbsym r RTbuf 14 pS[.1]
+dbline FFFFFFFF 374
+dbline 1C2 374
+dbline 1C5 374
+dbline 1C7 378
+dbline 1C8 37A
+dbline 1CA 37C
+dbline 1CA 384
+dbline 1CB 384
+dbline 1CB 38E
+dbline 1CC 38E
+dbline 1CD 39A
+dbline 1CE 3AA
+dbline 1CF 3C0
+dbline 1CF 3C2
+dbline 1D0 3C2
+dbline 1D1 3C8
+dbline 1D2 3C8
+dbline FFFFFFFE 3C8
+dbline 0 3C8
+dbfunc e uart0_tx_isr 3CC fV
+dbsym r RTbuf 14 pS[.1]
+dbline FFFFFFFF 3E4
+dbline 1DC 3E4
+dbline 1E0 3E4
+dbline 1E1 3E8
+dbline 1E1 3FC
+dbline 1E2 3FC
+dbline 1E3 412
+dbline 1E4 420
+dbline 1E5 438
+dbline 1E6 43A
+dbline FFFFFFFE 444
+dbline 0 444
+S _Rbuf_init Def01BC
+S _Tbuf_full Def0214
+S _Tbuf_init Def01CA
+S _Com_baudrate Def0024
+S _Rbuf_getchar Def02A4
+S _uart0_rx_isr Def02EA
+S _uart0_tx_isr Def03CC
+S _Tbuf_putchar Def0236
+S _Rbuf_empty Def01F6
+S _Com_init Def0000
+S _Com_Rbuf_Clear Def012A
+S _Com_getstring Def013A
+S _Com_R_count Def01B6
+S _Com_getchar Def00E8
+S _Com_putstring Def00A0
+S _Com_putchar Def0080
+S _getstr Def0370
+A vector size 54 flags C
+A bss size D0 flags 20
+dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\sio.c
+dbsym e RTbuf_UART0 0 S[.1]
+S _RTbuf_UART0 Def0000
+A data size A flags 20
+dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\sio.c
+A idata size A flags 0
+T 00 00 00 E0 10 E0 E2 D0
+R 00 00 00 00 20 02 02 00 00 00 40 04 02 00 00 00
+T 06 00 00 E0 10 E0 D8 D0 22 24 2A B8 2B B8 86 E0
+R 00 00 00 00 20 02 02 00 00 00 40 04 02 00 00 00
+T 14 00 80 93 95 00 8A B1 88 69 8A B9 00 E8 15 E2
+R 00 00 00 00
+T 22 00 00 C0
+R 00 00 00 00
+T 24 00 0E 94 00 00 58 01 15 01 44 24 55 24 40 E0
+R 00 00 00 00 12 04 03 00
+T 32 00 52 E1 6A E7 70 E0 5A 92 4A 92 3A 92 2A 92
+R 00 00 00 00
+T 40 00 8A 01 9B 01 0E 94 00 00 40 E1 50 E0 60 E0
+R 00 00 00 00 12 08 00 00
+T 4E 00 70 E0 7A 93 6A 93 5A 93 4A 93 0E 94 00 00
+R 00 00 00 00 12 0E 00 00
+T 5C 00 18 01 29 01 41 E0 50 E0 60 E0 70 E0 24 1A
+R 00 00 00 00
+T 6A 00 35 0A 46 0A 57 0A 51 01 23 2C 33 24 20 92
+R 00 00 00 00
+T 78 00 90 00 A9 B8 0C 94 00 00
+R 00 00 00 00 12 08 09 00
+T 80 00 0E 94 00 00 69 01 A0 2E 86 01 C4 D0 00 23
+R 00 00 00 00 12 04 02 00
+T 8E 00 11 F0 00 27 04 C0 96 01 0A 2D CE D0 01 E0
+R 00 00 00 00
+T 9C 00 0C 94 00 00
+R 00 00 00 00 12 04 08 00
+T A0 00 0E 94 00 00 42 2F 58 01 C8 84 D9 84 44 23
+R 00 00 00 00 12 04 04 00
+T AE 00 79 F0 EE 24 0A C0 96 01 EE 2D FF 27 EA 0D
+R 00 00 00 00
+T BC 00 FB 1D 00 81 DF DF 00 23 B9 F3 E3 94 E4 16
+R 00 00 00 00
+T CA 00 A0 F3 0B C0 96 01 F5 01 00 81 D5 DF 00 23
+R 00 00 00 00
+T D8 00 D1 F3 F5 01 81 91 5F 01 8A 30 A9 F7
+R 00 00 00 00
+T E4 00 0C 94 00 00
+R 00 00 00 00 12 04 0A 00
+T E8 00 0E 94 00 00 0E 94 00 00 59 01 22 97
+R 00 00 00 00 12 04 06 00 12 08 01 00
+T F4 00 40 E0 50 E0
+R 00 00 00 00 20 02 03 00 05 00 40 04 03 00 05 00
+T F8 00 80 E0 90 E0 99 83 88 83 24 E0 8A 01 CD DF
+R 00 00 00 00 20 02 02 00 00 00 40 04 02 00 00 00
+T 06 01 85 01 56 D0 00 23 E1 F3 80 E0 90 E0 99 83
+R 00 00 00 00 20 0A 02 00 00 00 40 0C 02 00 00 00
+T 14 01 88 83 24 E0 8A 01 C2 DF 85 01 C2 D0 22 96
+R 00 00 00 00
+T 22 01 0E 94 00 00 24 96 08 95
+R 00 00 00 00 12 04 07 00
+T 2A 01 AA 92 BA 92 58 01 85 01 44 D0 B9 90 A9 90
+R 00 00 00 00
+T 38 01 08 95
+R 00 00 00 00
+T 3A 01 0E 94 00 00 E2 2E A8 01 22 97 CC 84 DD 84
+R 00 00 00 00 12 04 05 00
+T 48 01 AA 24 60 E0 70 E0 80 E0 8E 15 08 F5 1C C0
+R 00 00 00 00 20 04 03 00 00 00 40 06 03 00 00 00
+T 56 01 80 E0 90 E0 99 83 88 83 24 E0 8B 01 9E DF
+R 00 00 00 00 20 02 02 00 00 00 40 04 02 00 00 00
+T 64 01 80 E0 90 E0 99 83 88 83 24 E0 8B 01 97 DF
+R 00 00 00 00 20 02 02 00 00 00 40 04 02 00 00 00
+T 72 01 96 01 01 E0 B8 DF FA 01 01 93 AF 01 80 E0
+R 00 00 00 00 20 0E 02 00 00 00
+T 80 01 90 E0 99 83 88 83 24 E0 8B 01 8A DF A3 94
+R 00 00 00 00 40 02 02 00 00 00
+T 8E 01 AE 14 10 F3 0E 2D 0D C0 96 01 01 E0 A6 DF
+R 00 00 00 00
+T 9C 01 FA 01 01 93 AF 01 A3 94 FA 01 31 97 80 81
+R 00 00 00 00
+T AA 01 8A 30 A1 F7 0A 2D 22 96 0C 94 00 00
+R 00 00 00 00 12 0C 0B 00
+T B6 01 F8 01 02 81 08 95
+R 00 00 00 00
+T BC 01 22 24 F8 01 20 82 21 82 22 82 23 82 08 95
+R 00 00 00 00
+T CA 01 22 24 F8 01 E8 59 FF 4F 20 82 E8 56 F0 40
+R 00 00 00 00
+T D8 01 E7 59 FF 4F 20 82 E9 56 F0 40 E6 59 FF 4F
+R 00 00 00 00
+T E6 01 20 82 EA 56 F0 40 81 E0 E1 53 FF 4F 80 83
+R 00 00 00 00
+T F4 01 08 95
+R 00 00 00 00
+T F6 01 4A 93 5A 93 F8 01 22 80 22 20 19 F4 41 E0
+R 00 00 00 00
+T 04 02 50 E0 02 C0 44 27 55 27 04 2F 59 91 49 91
+R 00 00 00 00
+T 12 02 08 95
+R 00 00 00 00
+T 14 02 4A 93 5A 93 F8 01 E6 59 FF 4F 80 81 84 36
+R 00 00 00 00
+T 22 02 19 F4 41 E0 50 E0 02 C0 44 27 55 27 04 2F
+R 00 00 00 00
+T 30 02 59 91 49 91 08 95
+R 00 00 00 00
+T 36 02 0E 94 00 00 A9 01 A0 2E 8A 01 E9 DF 00 23
+R 00 00 00 00 12 04 01 00
+T 44 02 09 F0 2C C0 56 98 FA 01 E1 53 FF 4F 20 80
+R 00 00 00 00
+T 52 02 EF 5C F0 40 22 20 31 F0 AC B8 22 24 E1 53
+R 00 00 00 00
+T 60 02 FF 4F 20 82 1C C0 CA 01 86 59 9F 4F FC 01
+R 00 00 00 00
+T 6E 02 80 81 8F 5F 80 83 CA 01 85 59 9F 4F FA 01
+R 00 00 00 00
+T 7C 02 E7 59 FF 4F E0 81 FF 27 E8 0F F9 1F A0 82
+R 00 00 00 00
+T 8A 02 47 59 5F 4F 14 E6 FA 01 00 81 0F 5F
+R 00 00 00 00
+T 96 02 0E 94 00 00 FA 01 00 83 56 9A 0C 94 00 00
+R 00 00 00 00 12 04 0C 00 12 0E 07 00
+T A4 02 0E 94 00 00 A8 01 AA 24 8A 01 A3 DF 00 23
+R 00 00 00 00 12 04 01 00
+T B2 02 C1 F4 CA 01 04 96 FA 01 E0 81 FF 27 E8 0F
+R 00 00 00 00
+T C0 02 F9 1F A0 80 57 98 CA 01 02 96 FC 01 80 81
+R 00 00 00 00
+T CE 02 81 50 80 83 14 E6 FA 01 00 81 0F 5F
+R 00 00 00 00
+T DA 02 0E 94 00 00 FA 01 00 83 57 9A 0A 2D
+R 00 00 00 00 12 04 0C 00
+T E6 02 0C 94 00 00
+R 00 00 00 00 12 04 07 00
+T 48 00 0C 94 75 01
+R 00 00 01 00 10 04 00 00
+T EA 02 2A 92 3A 92 0A 93 1A 93 8A 93 9A 93 EA 93
+R 00 00 00 00
+T F8 02 FA 93 2F B6 2A 92 0E 94 00 00 40 E0
+R 00 00 00 00 12 0A 03 00 20 0C 02 00 00 00
+T 04 03 50 E0 6B B1 AC B0 86 2F 88 71 09 F0 22 C0
+R 00 00 00 00 40 02 02 00 00 00
+T 12 03 FA 01 82 81 84 36 08 F0 1A C0 CF 01 02 96
+R 00 00 00 00
+T 20 03 FC 01 80 81 8F 5F 80 83 CA 01 04 96 FA 01
+R 00 00 00 00
+T 2E 03 E1 81 FF 27 E8 0F F9 1F A0 82 CA 01 01 96
+R 00 00 00 00
+T 3C 03 1C 01 14 E6 FC 01 00 81 0F 5F 0E 94 00 00
+R 00 00 00 00 12 0E 0C 00
+T 4A 03 F1 01 00 83 03 C0 81 E0 FA 01 83 83
+R 00 00 00 00
+T 56 03 0E 94 00 00 29 90 2F BE F9 91 E9 91 99 91
+R 00 00 00 00 12 04 09 00
+T 64 03 89 91 19 91 09 91 39 90 29 90 18 95
+R 00 00 00 00
+T 70 03 0E 94 00 00 40 E0
+R 00 00 00 00 12 04 03 00 20 06 02 00 00 00
+T 76 03 50 E0 6B B1 AC B0 86 2F 88 71 09 F0 22 C0
+R 00 00 00 00 40 02 02 00 00 00
+T 84 03 FA 01 82 81 84 36 08 F0 1A C0 CF 01 02 96
+R 00 00 00 00
+T 92 03 FC 01 80 81 8F 5F 80 83 CA 01 04 96 FA 01
+R 00 00 00 00
+T A0 03 E1 81 FF 27 E8 0F F9 1F A0 82 CA 01 01 96
+R 00 00 00 00
+T AE 03 1C 01 14 E6 FC 01 00 81 0F 5F 0E 94 00 00
+R 00 00 00 00 12 0E 0C 00
+T BC 03 F1 01 00 83 03 C0 81 E0 FA 01 83 83
+R 00 00 00 00
+T C8 03 0C 94 00 00
+R 00 00 00 00 12 04 09 00
+T 50 00 0C 94 E6 01
+R 00 00 01 00 10 04 00 00
+T CC 03 2A 92 3A 92 0A 93 1A 93 8A 93 9A 93 EA 93
+R 00 00 00 00
+T DA 03 FA 93 2F B6 2A 92 4A 93 5A 93 40 E0 50 E0
+R 00 00 00 00 20 0C 02 00 00 00 40 0E 02 00 00 00
+T E8 03 80 E0 FA 01 E6 59 FF 4F 20 80 EA 56 F0 40
+R 00 00 00 00
+T F6 03 82 15 08 F0 1F C0 CF 01 85 59 9F 4F E8 59
+R 00 00 00 00
+T 04 04 FF 4F E0 81 FF 27 E8 0F F9 1F 20 80 2C B8
+R 00 00 00 00
+T 12 04 CA 01 86 59 9F 4F FC 01 80 81 81 50 80 83
+R 00 00 00 00
+T 20 04 CA 01 88 59 9F 4F 1C 01 14 E6 FC 01 00 81
+R 00 00 00 00
+T 2E 04 0F 5F 0E 94 00 00 F1 01 00 83 05 C0 81 E0
+R 00 00 00 00 12 06 0C 00
+T 3C 04 FA 01 E1 53 FF 4F 80 83 59 91 49 91 29 90
+R 00 00 00 00
+T 4A 04 2F BE F9 91 E9 91 99 91 89 91 19 91 09 91
+R 00 00 00 00
+T 58 04 39 90 29 90 18 95
+R 00 00 00 00
+T 00 00 3F 3F 3F 0A 00
+R 00 00 04 00
+T 05 00 3F 3F 21 0A 00
+R 00 00 04 00

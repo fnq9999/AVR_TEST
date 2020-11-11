@@ -1,0 +1,204 @@
+                        .module TWI.c
+                        .area text(rom, con, rel)
+ 0000                   .dbfile ..\source\lib\TWI.c
+ 0000                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\TWI.c
+ 0000                   .dbfunc e twi_init _twi_init fV
+                        .even
+ 0000           _twi_init::
+ 0000                   .dbline -1
+ 0000                   .dbline 21
+ 0000           ; /************************************************
+ 0000           ; 文件：TWI.c
+ 0000           ; 用途：TWI操作函数
+ 0000           ; 注意：
+ 0000           ; 创建：2008.1.26
+ 0000           ; 修改：2008.1.26
+ 0000           ; Copy Right  (c)  www.avrvi.com  AVR与虚拟仪器
+ 0000           ; ************************************************/
+ 0000           ; #include "..\config.h"
+ 0000           ; /*************************************************************************
+ 0000           ; ** 函数名称: twi_init(void)
+ 0000           ; ** 功能描述: i2c通信初始化
+ 0000           ; ** 输　入: 
+ 0000           ; ** 输出        : 
+ 0000           ; ** 全局变量: 无
+ 0000           ; ** 调用模块: 
+ 0000           ; ** 说明：
+ 0000           ; ** 注意：
+ 0000           ; **************************************************************************/
+ 0000           ; void twi_init(void)
+ 0000           ; {
+ 0000                   .dbline 22
+ 0000           ;  TWCR= 0x00; //disable twi
+ 0000 2224              clr R2
+ 0002 20927400          sts 116,R2
+ 0006                   .dbline 23
+ 0006           ;  TWBR= (1<<6) | (1<<5) | (1<<2); //set bit rate
+ 0006 84E6              ldi R24,100
+ 0008 80937000          sts 112,R24
+ 000C                   .dbline 24
+ 000C           ;  TWSR= 0x00; //set prescale
+ 000C 20927100          sts 113,R2
+ 0010                   .dbline 25
+ 0010           ;  TWAR= 0x00; //set slave address
+ 0010 20927200          sts 114,R2
+ 0014                   .dbline 26
+ 0014           ;  TWCR= (1<<TWEN); //enable twi
+ 0014 84E0              ldi R24,4
+ 0016 80937400          sts 116,R24
+ 001A                   .dbline -2
+ 001A           L2:
+ 001A                   .dbline 0 ; func end
+ 001A 0895              ret
+ 001C                   .dbend
+ 001C                   .dbfunc e i2cstart _i2cstart fV
+                        .even
+ 001C           _i2cstart::
+ 001C                   .dbline -1
+ 001C                   .dbline 39
+ 001C           ; }
+ 001C           ; /*************************************************************************
+ 001C           ; ** 函数名称: i2cstart(void)
+ 001C           ; ** 功能描述: i2c通信开始
+ 001C           ; ** 输　入: 
+ 001C           ; ** 输出        : 
+ 001C           ; ** 全局变量: 无
+ 001C           ; ** 调用模块: 
+ 001C           ; ** 说明：
+ 001C           ; ** 注意：
+ 001C           ; **************************************************************************/
+ 001C           ; void i2cstart(void)
+ 001C           ; { 
+ 001C                   .dbline 40
+ 001C           ;       TWCR = (1<<TWINT) | (1<<TWSTA) | (1<<TWEN); 
+ 001C 84EA              ldi R24,164
+ 001E 80937400          sts 116,R24
+ 0022           L4:
+ 0022                   .dbline 41
+ 0022           ;       while (!(TWCR & (1<<TWINT)));
+ 0022           L5:
+ 0022                   .dbline 41
+ 0022 20907400          lds R2,116
+ 0026 27FE              sbrs R2,7
+ 0028 FCCF              rjmp L4
+ 002A           X0:
+ 002A                   .dbline -2
+ 002A           L3:
+ 002A                   .dbline 0 ; func end
+ 002A 0895              ret
+ 002C                   .dbend
+ 002C                   .dbfunc e i2cwt _i2cwt fc
+ 002C           ;           data -> R16
+                        .even
+ 002C           _i2cwt::
+ 002C                   .dbline -1
+ 002C                   .dbline 54
+ 002C           ; }
+ 002C           ; /*************************************************************************
+ 002C           ; ** 函数名称: unsigned char i2cwt(unsigned char data)
+ 002C           ; ** 功能描述: i2c写数据,返回TWI状态
+ 002C           ; ** 输　入: 
+ 002C           ; ** 输  出: TWI状态
+ 002C           ; ** 全局变量: 无
+ 002C           ; ** 调用模块: 
+ 002C           ; ** 说明：
+ 002C           ; ** 注意：
+ 002C           ; **************************************************************************/
+ 002C           ; unsigned char i2cwt(unsigned char data)
+ 002C           ; { 
+ 002C                   .dbline 55
+ 002C           ;       TWDR = data;
+ 002C 00937300          sts 115,R16
+ 0030                   .dbline 56
+ 0030           ;       TWCR = (1<<TWINT) | (1<<TWEN);
+ 0030 84E8              ldi R24,132
+ 0032 80937400          sts 116,R24
+ 0036           L8:
+ 0036                   .dbline 57
+ 0036           ;       while (!(TWCR & (1<<TWINT)));
+ 0036           L9:
+ 0036                   .dbline 57
+ 0036 20907400          lds R2,116
+ 003A 27FE              sbrs R2,7
+ 003C FCCF              rjmp L8
+ 003E           X1:
+ 003E                   .dbline 58
+ 003E           ;       _NOP();
+ 003E 0000              nop
+ 0040                   .dbline 59
+ 0040           ;       return(TWSR&0b11111000);
+ 0040 00917100          lds R16,113
+ 0044 087F              andi R16,248
+ 0046                   .dbline -2
+ 0046           L7:
+ 0046                   .dbline 0 ; func end
+ 0046 0895              ret
+ 0048                   .dbsym r data 16 c
+ 0048                   .dbend
+ 0048                   .dbfunc e i2crd _i2crd fc
+                        .even
+ 0048           _i2crd::
+ 0048                   .dbline -1
+ 0048                   .dbline 72
+ 0048           ; }
+ 0048           ; /*************************************************************************
+ 0048           ; ** 函数名称: unsigned char i2crd(void)
+ 0048           ; ** 功能描述: i2c读数据
+ 0048           ; ** 输　入: 
+ 0048           ; ** 输出        : 读取的数据
+ 0048           ; ** 全局变量: 无
+ 0048           ; ** 调用模块: 
+ 0048           ; ** 说明：
+ 0048           ; ** 注意：
+ 0048           ; **************************************************************************/
+ 0048           ; unsigned char i2crd(void)
+ 0048           ; {
+ 0048                   .dbline 73
+ 0048           ;       TWCR= (1<<TWINT) | (1<<TWEA) | (1<<TWEN);
+ 0048 84EC              ldi R24,196
+ 004A 80937400          sts 116,R24
+ 004E           L12:
+ 004E                   .dbline 74
+ 004E           ;       while (!(TWCR & (1<<TWINT)));
+ 004E           L13:
+ 004E                   .dbline 74
+ 004E 20907400          lds R2,116
+ 0052 27FE              sbrs R2,7
+ 0054 FCCF              rjmp L12
+ 0056           X2:
+ 0056                   .dbline 75
+ 0056           ;       return(TWDR);
+ 0056 00917300          lds R16,115
+ 005A                   .dbline -2
+ 005A           L11:
+ 005A                   .dbline 0 ; func end
+ 005A 0895              ret
+ 005C                   .dbend
+ 005C                   .dbfunc e i2cstop _i2cstop fV
+                        .even
+ 005C           _i2cstop::
+ 005C                   .dbline -1
+ 005C                   .dbline 88
+ 005C           ; }
+ 005C           ; /*************************************************************************
+ 005C           ; ** 函数名称: i2cstop(void)
+ 005C           ; ** 功能描述: i2c停止
+ 005C           ; ** 输　入: 
+ 005C           ; ** 输出        : 
+ 005C           ; ** 全局变量: 无
+ 005C           ; ** 调用模块: 
+ 005C           ; ** 说明：
+ 005C           ; ** 注意：
+ 005C           ; **************************************************************************/
+ 005C           ; void i2cstop(void)
+ 005C           ; { 
+ 005C                   .dbline 89
+ 005C           ;    TWCR = (1<<TWINT) | (1<<TWSTO) | (1<<TWEN);
+ 005C 84E9              ldi R24,148
+ 005E 80937400          sts 116,R24
+ 0062                   .dbline -2
+ 0062           L15:
+ 0062                   .dbline 0 ; func end
+ 0062 0895              ret
+ 0064                   .dbend
+ 0064           ; }

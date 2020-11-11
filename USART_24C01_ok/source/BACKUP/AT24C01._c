@@ -1,0 +1,250 @@
+/************************************************
+文件：AT24C01.c
+用途：AT24C01操作函数
+注意：
+创建：2008.1.26
+修改：2008.1.26
+Copy Right  (c)  www.avrvi.com  AVR与虚拟仪器
+************************************************/
+#include "..\config.h"
+unsigned char syserr;
+/*************************************************************************
+** 函数名称: unsigned char * wt24c_fc(unsigned char *p, unsigned int ad, unsigned char n)
+** 功能描述: 向24Cxx写入数据wt24c_h()所要调用的函数
+** 输　入: 
+** 输出	 : 返回写入n个字节后的主机内存指针
+** 全局变量: 无
+** 调用模块: 
+** 说明：
+** 注意：
+**************************************************************************/
+
+
+
+unsigned char * wt24c_fc(unsigned char *p, unsigned int ad, unsigned char n)
+{
+	unsigned char t=0;
+
+	#if e2prom<32
+	t=ad>>8;
+	t<<=1;
+	#endif
+	
+	i2cstart();					//发送起始信号
+		
+	if(i2cwt(W_ADD_COM+t)==SLAW)//发送SLA_W, 写字节命令及器件地址
+	{	
+		#if e2prom>16
+		i2cwt(ad>>8);			//ad_dst的高位到器件
+		#endif
+		i2cwt(ad);				//ad_dst的低位到器件
+			
+		for(;n>0;n--)			//发送要写入的数据
+		{
+		    i2cwt(*p);
+			p++;
+		}
+	}
+	else syserr=ERR_SLAW;		//写字节命令及器件地址错
+	
+	i2cstop();
+    delay_nms(6);						//延时6ms
+	
+	return(p);
+}
+
+void pcf_set_byte(unsigned char p, unsigned int ad){
+ unsigned char startcode=p;
+  wt24c_fc_pcf(&startcode,ad,1);
+}
+
+
+
+unsigned char * wt24c_fc_pcf(unsigned char *p, unsigned int ad, unsigned char n)
+{
+
+	unsigned char t=0;
+	#if e2prom<32
+	t=ad>>8;
+	t<<=1;
+	#endif
+	
+	i2cstart();					//发送起始信号
+		
+	if(i2cwt(W_ADD_COM_PCF+t)==SLAW)//发送SLA_W, 写字节命令及器件地址
+	{	
+		#if e2prom>16
+		i2cwt(ad>>8);			//ad_dst的高位到器件
+		#endif
+		i2cwt(ad);				//ad_dst的低位到器件
+			
+		for(;n>0;n--)			//发送要写入的数据
+		{
+		    i2cwt(*p);
+			p++;
+		}
+	}
+	else syserr=ERR_SLAW;		//写字节命令及器件地址错
+	
+	i2cstop();
+    delay_nms(6);						//延时6ms
+	
+	return(p);
+}
+
+
+/*************************************************************************
+** 函数名称: 
+** 功能描述: 向24Cxx写入数据
+** 输　入: *p_rsc要输出数据的主机内存地址指针; ad_dst要写入数据的i2c的地址(双字节); num数据个数
+** 输出	 : 
+** 全局变量: 无
+** 调用模块: 
+** 说明：ad_dst: ad_dst+(num-1)不能大于器件的最高地址; num必须>0;
+** 注意：
+**************************************************************************/
+void wt24c(unsigned char *p_rsc, unsigned int ad_dst, unsigned int num)
+{
+    unsigned int n;
+
+    n=ad_dst/PAGE_SIZE;		//确定地址与块地址的差
+	if(n) n=(unsigned long)PAGE_SIZE*(n+1)-ad_dst;
+	else n=PAGE_SIZE-ad_dst;
+	
+    if(n>=num)		//如果ad_dst所在的数据块的末尾地址 >= ad_dst + num, 就直接写入num个数据
+    {
+	 	wt24c_fc(p_rsc, ad_dst, num);
+    	if(syserr!=0) return;
+    }
+    else			//如果ad_dst所在的数据块末尾地址 < ad_dst + num, 就先写入ad_dst所在的数据块末尾地址与 ad_dst 之差个数据
+    {
+	    p_rsc=wt24c_fc(p_rsc, ad_dst, n);
+    	if(syserr!=0) return;
+		
+		num-=n;     //更新剩下数据个数
+        ad_dst+=n;	//更新剩下数据的起始地址
+
+        //把剩下数据写入器件
+        while(num>=PAGE_SIZE)	//先按PAGE_SIZE为长度一页一页的写入
+        {
+		 	p_rsc=wt24c_fc(p_rsc, ad_dst, PAGE_SIZE);
+        	if(syserr!=0) return;
+        	
+            num-=PAGE_SIZE;		//更新剩余数据个数
+        	ad_dst+=PAGE_SIZE;	//更新剩下数据的起始地址
+		}
+        
+		if(num)			//把最后剩下的小于一个PAGE_SIZE长度的数据写入器件
+			wt24c_fc(p_rsc, ad_dst, num);
+    }
+}
+/*************************************************************************
+** 函数名称: 
+** 功能描述: 从24cxx读出数据
+** 输　入: *p_dst要读入数据的主机内存地址指针; ad_rsc要输出数据的i2c的地址(整形); num数据个数(整形)
+** 输出	 : 
+** 全局变量: 无
+** 调用模块: 
+** 说明：ad_dst+(num-1)不能大于器件的最高地址; num必须>0;
+** 注意：
+**************************************************************************/
+void rd24c(unsigned char *p_dst, unsigned int ad_rsc, unsigned int num)
+{
+
+
+ 	 
+    unsigned char t=0;
+
+	#if e2prom<32
+	t=ad_rsc>>8;
+	t<<=1;
+	#endif
+	
+	i2cstart();					//发送起始信号
+		
+	if(i2cwt(W_ADD_COM+t)==SLAW)//发送SLA_W, 写字节命令及器件地址
+	{	
+		#if e2prom>16
+		i2cwt(ad_rsc>>8);		//ad_rsc的高位,  发送要读出数据的地址
+		#endif
+		i2cwt(ad_rsc);			//ad_rsc的低位
+				
+		i2cstart();				//再发送起始信号
+		i2cwt(R_ADD_COM+t);		//发送SLA_R, 读命令字节及器件地址
+				
+		for(;num>0;num--)
+		{
+		    *p_dst=i2crd();		//从器件读出一个字节
+			p_dst++;
+		}
+	}
+	else syserr=ERR_SLAW;		//写字节命令及器件地址错或对方无应答
+		
+	i2cstop();
+
+}
+
+
+
+
+
+
+
+void rd24c_pcf(unsigned char *p_dst, unsigned int ad_rsc, unsigned int num)
+{
+
+    unsigned char t=0;
+	#if e2prom<32
+	t=ad_rsc>>8;
+	t<<=1;
+	#endif
+	
+	i2cstart();					//发送起始信号
+		
+	if(i2cwt(W_ADD_COM_PCF+t)==SLAW)//发送SLA_W, 写字节命令及器件地址
+	{	
+		#if e2prom>16
+		i2cwt(ad_rsc>>8);		//ad_rsc的高位,  发送要读出数据的地址
+		#endif
+		i2cwt(ad_rsc);			//ad_rsc的低位
+				
+		i2cstart();				//再发送起始信号
+		i2cwt(R_ADD_COM_PCF+t);		//发送SLA_R, 读命令字节及器件地址
+				
+		for(;num>0;num--)
+		{
+		    *p_dst=i2crd();		//从器件读出一个字节
+			p_dst++;
+		}
+	}
+	else syserr=ERR_SLAW;		//写字节命令及器件地址错或对方无应答
+		
+	i2cstop();
+
+}
+
+
+
+void pcf_stop(void)
+{
+ unsigned char stopcode=0x20;
+ wt24c_fc_pcf(&stopcode,0,1);
+}
+void pcf_start(void)
+{
+ unsigned char startcode=0x00;
+  wt24c_fc_pcf(&startcode,0,1);
+}
+
+unsigned char * pcfset(unsigned char *p, unsigned int ad, unsigned char n){
+		 pcf_stop();
+		 wt24c_fc_pcf(p,ad,n);
+		 pcf_start();
+		 return(p);		 
+}
+
+void pcfread(unsigned char *p_dst, unsigned int ad_rsc, unsigned int num){	 
+	 rd24c_pcf(p_dst,ad_rsc,num);
+}
+
+

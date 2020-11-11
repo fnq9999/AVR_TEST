@@ -1,0 +1,73 @@
+/************************************************
+文件：main.c
+用途：
+注意：内部8M晶振
+创建：2008.4.1
+修改：2008.4.1
+Copy Right  (c)  www.avrvi.com  AVR与虚拟仪器
+************************************************/
+
+#include "config.h"
+unsigned char tem[10];
+
+unsigned char tem2[20];
+
+/*
+void time_init()
+{
+   iic_send_add_byte(0x02,0x50);         //0秒
+        iic_send_add_byte(0x03,0x59);         //0分钟    
+    iic_send_add_byte(0x04,0x23);          //0小时             
+         iic_send_add_byte(0x05,0x26);  //26号
+         iic_send_add_byte(0x07,0x05);           //5月  20世纪的
+         iic_send_add_byte(0x08,0x14);         //2014年
+}
+*/
+void main(void)
+{
+     unsigned char *W_Buff="www.avrvi.com",*R_Buff="0",i=0;
+	 
+	 CLI();
+	 Com_init();
+	 twi_init();
+
+	 SEI();	 
+	 
+	 
+	  		 Com_putstring ("24C01 Write: www.avrvi.com\n\n",28,&RTbuf_UART0);
+			 
+			 /*
+			 ///test
+			 
+			 tem[0]=0x11;tem[1]=0x11;
+			 tem[2]=0x11;tem[3]=0x11;
+			 tem[4]=0x11;tem[5]=0x11;
+			 tem[6]=0x11;
+
+			 pcfset(tem);
+ 	  		 delay_nms(10000);
+			 pcfread(tem2);
+			 Com_putstring (tem2,5,&RTbuf_UART0);
+ 			 ///test_end
+			 */
+			 
+			 /// 8 is right before!
+			 delay_nms(500);		
+			 	 pcf_start();
+				 	 delay_nms(1000);
+			 pcfread(tem2,2,8);
+			 ///test 
+ 	  		 Com_putstring (tem2,15,&RTbuf_UART0);
+			 
+ 	  		 wt24c(W_Buff,0x00,13);
+ 	  		 delay_nms(500);
+ 	  		 Com_putstring ("24C01 Read: ",12,&RTbuf_UART0);
+ 	  		 rd24c(R_Buff,0x00,13);Com_putstring (R_Buff,13,&RTbuf_UART0);
+ 	  		 Com_putstring ("\n\n",2,&RTbuf_UART0);
+ 	  		 delay_nms(500);
+	 while(1)
+	 {
+	  ;
+	 }
+}
+

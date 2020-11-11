@@ -1,0 +1,51 @@
+XL
+H 1 areas 3 global symbols
+M key.c
+S _delay_nms Ref0000
+A text size 48 flags 0
+dbfile lib\key.c
+dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\key.c
+dbfunc e Key_init 0 fV
+dbline FFFFFFFF 0
+dbline 15 0
+dbline 16 0
+dbline 17 2
+dbline FFFFFFFE 8
+dbline 0 8
+dbfunc e get_key A fc
+dbsym l tmp 1 c
+dbsym r Key_Value 14 c
+dbline FFFFFFFF C
+dbline 24 C
+dbline 25 C
+dbline 27 E
+dbline 28 12
+dbline 29 16
+dbline 2A 16
+dbline 2B 1E
+dbline 2C 26
+dbline 2D 26
+dbline 2F 2A
+dbline 2F 2A
+dbline 30 32
+dbline 31 3A
+dbline 31 3A
+dbline 32 42
+dbline 33 42
+dbline 35 42
+dbline FFFFFFFE 44
+dbline 0 44
+S _get_key Def000A
+S _Key_init Def0000
+T 00 00 8C 98 82 B3 80 6F 82 BB 08 95
+R 00 00 00 00
+T 0A 00 4A 93 4F EF 40 B3 40 7F 40 3F B1 F0 02 E0
+R 00 00 00 00
+T 18 00 10 E0 0E 94 00 00 80 B3 80 7F 84 17 71 F4
+R 00 00 00 00 12 06 00 00
+T 26 00 40 B3 40 7F 80 B3 80 7F 80 3F E1 F7 01 E0
+R 00 00 00 00
+T 34 00 10 E0 0E 94 00 00 80 B3 80 7F 80 3F E1 F7
+R 00 00 00 00 12 06 00 00
+T 42 00 04 2F 49 91 08 95
+R 00 00 00 00

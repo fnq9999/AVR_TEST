@@ -1,0 +1,28 @@
+XL
+H 1 areas 2 global symbols
+M spi.c
+A text size 14 flags 0
+dbfile ..\source\lib\spi.c
+dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\spi.c
+dbfunc e spi_init 0 fV
+dbline FFFFFFFF 0
+dbline 15 0
+dbline 16 0
+dbline 17 6
+dbline FFFFFFFE A
+dbline 0 A
+dbfunc e SPI_MasterTransmit C fV
+dbsym r Data 10 c
+dbline FFFFFFFF C
+dbline 24 C
+dbline 26 C
+dbline 29 E
+dbline 28 E
+dbline FFFFFFFE 12
+dbline 0 12
+S _SPI_MasterTransmit Def000C
+S _spi_init Def0000
+T 00 00 87 B3 87 60 87 BB 83 E5 8D B9 08 95
+R 00 00 00 00
+T 0C 00 0F B9 77 9B FE CF 08 95
+R 00 00 00 00

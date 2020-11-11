@@ -1,0 +1,1 @@
+main.o AT24C01.o buzz.o delay.o hc595.o key.o sio.o TWI.o spi.o DS18B20.o 
