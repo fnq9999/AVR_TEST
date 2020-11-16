@@ -443,6 +443,35 @@ void uart0_rx_isr(void) {
 //SEI();
 }
 
+
+
+
+
+void getstr(void) {
+    unsigned char status,data;
+    siocirqueue *RTbuf;
+    RTbuf=&RTbuf_UART0;
+// CLI();
+    status=UCSR0A;
+    data=UDR0;
+//WDR(); //Î¹¹·
+    if((status & (FRAMING_ERROR | DATA_OVERRUN))==0) {
+        if(RTbuf->R_count<RBUF_SIZE) {
+            RTbuf->R_count++;
+            RTbuf->R_buf[RTbuf->R_rear]=data;
+            RTbuf->R_rear=(RTbuf->R_rear+1) % RBUF_SIZE;
+        } else {
+            RTbuf->R_overflow=1;
+        }
+    }
+//SEI();
+}
+
+
+
+
+
+
 #pragma interrupt_handler uart0_tx_isr: iv_USART0_TXC
 void uart0_tx_isr(void) {
 //CLI();

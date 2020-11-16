@@ -295,6 +295,6 @@ extern	void Com_putstring (unsigned char *p,unsigned char len,siocirqueue *RTbuf
 ********************************************************************************************************/
 extern unsigned char Com_getstring (unsigned char *p,unsigned char len,siocirqueue *RTbuf);
 extern void Com_Rbuf_Clear(siocirqueue *RTbuf);
-
+extern void Com_disable();
 
 #endif

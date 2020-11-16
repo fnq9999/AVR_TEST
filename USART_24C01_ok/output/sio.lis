@@ -57,12 +57,12 @@
  0000           ;     Tbuf_init(&RTbuf_UART0);              //初始化接收缓冲
  0000 00E0              ldi R16,<_RTbuf_UART0
  0002 10E0              ldi R17,>_RTbuf_UART0
- 0004 E2D0              xcall _Tbuf_init
+ 0004 E8D0              xcall _Tbuf_init
  0006                   .dbline 48
  0006           ;     Rbuf_init(&RTbuf_UART0);
  0006 00E0              ldi R16,<_RTbuf_UART0
  0008 10E0              ldi R17,>_RTbuf_UART0
- 000A D8D0              xcall _Rbuf_init
+ 000A DED0              xcall _Rbuf_init
  000C                   .dbline 49
  000C           ;     UCSR0B = 0x00; //disable while setting baud rate
  000C 2224              clr R2
@@ -107,1357 +107,1381 @@
  0022                   .dbline -2
  0022           L2:
  0022                   .dbline 0 ; func end
- 0022 00C0              xjmp _Com_baudrate
+ 0022 06C0              xjmp _Com_baudrate
  0024                   .dbend
- 0024                   .dbfunc e Com_baudrate _Com_baudrate fV
- 0024           ;            tmp -> R10,R11
- 0024           ;       baudrate -> R10,R11
+ 0024                   .dbfunc e Com_disable _Com_disable fV
                         .even
- 0024           _Com_baudrate::
- 0024 0E940000          xcall push_xgsetF00C
- 0028 5801              movw R10,R16
- 002A                   .dbline -1
- 002A                   .dbline 87
- 002A           ; 
- 002A           ; //SEI();                     // 开中断
- 002A           ; }
- 002A           ; /*********************************************************************************************************
- 002A           ; ** 函数名称: Com_baudrate
- 002A           ; ** 功能描述: 利用定时器T1产生由参数baudrate指定的波特率
- 002A           ; ** 输　入: baudrate指定的波特率
- 002A           ; ** 全局变量: 无
- 002A           ; ** 调用模块: 无
- 002A           ; ** 说明：
- 002A           ; ** 注意：
- 002A           ; ********************************************************************************************************/
- 002A           ; void Com_baudrate (unsigned int baudrate) {
- 002A                   .dbline 89
- 002A           ;     unsigned int tmp;
- 002A           ;     tmp= F_CPU/baudrate/16-1;
- 002A 1501              movw R2,R10
- 002C 4424              clr R4
- 002E 5524              clr R5
- 0030 40E0              ldi R20,0
- 0032 52E1              ldi R21,18
- 0034 6AE7              ldi R22,122
- 0036 70E0              ldi R23,0
- 0038 5A92              st -y,R5
- 003A 4A92              st -y,R4
- 003C 3A92              st -y,R3
- 003E 2A92              st -y,R2
- 0040 8A01              movw R16,R20
- 0042 9B01              movw R18,R22
- 0044 0E940000          xcall div32s
- 0048 40E1              ldi R20,16
- 004A 50E0              ldi R21,0
- 004C 60E0              ldi R22,0
- 004E 70E0              ldi R23,0
- 0050 7A93              st -y,R23
- 0052 6A93              st -y,R22
- 0054 5A93              st -y,R21
- 0056 4A93              st -y,R20
- 0058 0E940000          xcall div32s
- 005C 1801              movw R2,R16
- 005E 2901              movw R4,R18
- 0060 41E0              ldi R20,1
- 0062 50E0              ldi R21,0
- 0064 60E0              ldi R22,0
- 0066 70E0              ldi R23,0
- 0068 241A              sub R2,R20
- 006A 350A              sbc R3,R21
- 006C 460A              sbc R4,R22
- 006E 570A              sbc R5,R23
- 0070 5101              movw R10,R2
- 0072                   .dbline 91
- 0072           ; #if USEUART0
- 0072           ;     UBRR0H=(unsigned char)(tmp>>8);
- 0072 232C              mov R2,R3
- 0074 3324              clr R3
- 0076 20929000          sts 144,R2
- 007A                   .dbline 92
- 007A           ;     UBRR0L=(unsigned char)tmp;
- 007A A9B8              out 0x9,R10
- 007C                   .dbline -2
- 007C           L3:
- 007C                   .dbline 0 ; func end
- 007C 0C940000          xjmp pop_xgsetF00C
- 0080                   .dbsym r tmp 10 i
- 0080                   .dbsym r baudrate 10 i
- 0080                   .dbend
- 0080                   .dbfunc e Com_putchar _Com_putchar fc
- 0080                   .dbstruct 0 208 .1
- 0080                   .dbfield 0 R_front c
- 0080                   .dbfield 1 R_rear c
- 0080                   .dbfield 2 R_count c
- 0080                   .dbfield 3 R_overflow c
- 0080                   .dbfield 4 R_buf A[100:100]c
- 0080                   .dbfield 104 T_front c
- 0080                   .dbfield 105 T_rear c
- 0080                   .dbfield 106 T_count c
- 0080                   .dbfield 107 T_buf A[100:100]c
- 0080                   .dbfield 207 T_disabled c
- 0080                   .dbend
- 0080           ;          RTbuf -> R12,R13
- 0080           ;              c -> R10
+ 0024           _Com_disable::
+ 0024                   .dbline -1
+ 0024                   .dbline 80
+ 0024           ; 
+ 0024           ; //SEI();                     // 开中断
+ 0024           ; }
+ 0024           ; 
+ 0024           ; 
+ 0024           ; void Com_disable(){
+ 0024                   .dbline 81
+ 0024           ;      UCSR0A=0x00;
+ 0024 2224              clr R2
+ 0026 2BB8              out 0xb,R2
+ 0028                   .dbline 82
+ 0028           ;      UCSR0B=0x00;
+ 0028 2AB8              out 0xa,R2
+ 002A                   .dbline 83
+ 002A           ;      UCSR0C=0x00;
+ 002A 20929500          sts 149,R2
+ 002E                   .dbline -2
+ 002E           L3:
+ 002E                   .dbline 0 ; func end
+ 002E 0895              ret
+ 0030                   .dbend
+ 0030                   .dbfunc e Com_baudrate _Com_baudrate fV
+ 0030           ;            tmp -> R10,R11
+ 0030           ;       baudrate -> R10,R11
                         .even
- 0080           _Com_putchar::
- 0080 0E940000          xcall push_xgset003C
- 0084 6901              movw R12,R18
- 0086 A02E              mov R10,R16
- 0088                   .dbline -1
- 0088                   .dbline 109
- 0088           ; #endif
- 0088           ; #if USEUART1
- 0088           ;     UBRR1H=(unsigned char)(tmp>>8);
- 0088           ;     UBRR1L=(unsigned char)tmp;
- 0088           ; #endif
- 0088           ; }
- 0088           ; /*********************************************************************************************************
- 0088           ; ** 函数名称: Com_putchar
- 0088           ; ** 功能描述: 从串行口输出一个字符c
- 0088           ; ** 输　入: c:输出字符
- 0088           ; ** 输出        : 0:失败 1:成功
- 0088           ; ** 全局变量: 无
- 0088           ; ** 调用模块:
- 0088           ; ** 说明：
- 0088           ; ** 注意：
- 0088           ; ********************************************************************************************************/
- 0088           ; unsigned char Com_putchar (unsigned char c,siocirqueue *RTbuf) {
- 0088                   .dbline 111
- 0088           ; //WDR(); //喂狗
- 0088           ;     if (Tbuf_full(RTbuf))
- 0088 8601              movw R16,R12
- 008A C4D0              xcall _Tbuf_full
- 008C 0023              tst R16
- 008E 11F0              breq L5
- 0090           X0:
- 0090                   .dbline 112
- 0090           ;         return(0);
- 0090 0027              clr R16
- 0092 04C0              xjmp L4
- 0094           L5:
- 0094                   .dbline 113
- 0094           ;     else {
- 0094                   .dbline 114
- 0094           ;         Tbuf_putchar(c,RTbuf);                                // 将数据加入到发送缓冲区并开中断
- 0094 9601              movw R18,R12
- 0096 0A2D              mov R16,R10
- 0098 CED0              xcall _Tbuf_putchar
- 009A                   .dbline 115
- 009A           ;         return(1);
- 009A 01E0              ldi R16,1
- 009C                   .dbline -2
- 009C           L4:
- 009C                   .dbline 0 ; func end
- 009C 0C940000          xjmp pop_xgset003C
- 00A0                   .dbsym r RTbuf 12 pS[.1]
- 00A0                   .dbsym r c 10 c
- 00A0                   .dbend
- 00A0                   .dbfunc e Com_putstring _Com_putstring fV
- 00A0           ;              i -> R14
- 00A0           ;          RTbuf -> R12,R13
- 00A0           ;            len -> R20
- 00A0           ;              p -> R10,R11
+ 0030           _Com_baudrate::
+ 0030 0E940000          xcall push_xgsetF00C
+ 0034 5801              movw R10,R16
+ 0036                   .dbline -1
+ 0036                   .dbline 94
+ 0036           ; }
+ 0036           ; /*********************************************************************************************************
+ 0036           ; ** 函数名称: Com_baudrate
+ 0036           ; ** 功能描述: 利用定时器T1产生由参数baudrate指定的波特率
+ 0036           ; ** 输　入: baudrate指定的波特率
+ 0036           ; ** 全局变量: 无
+ 0036           ; ** 调用模块: 无
+ 0036           ; ** 说明：
+ 0036           ; ** 注意：
+ 0036           ; ********************************************************************************************************/
+ 0036           ; void Com_baudrate (unsigned int baudrate) {
+ 0036                   .dbline 96
+ 0036           ;     unsigned int tmp;
+ 0036           ;     tmp= F_CPU/baudrate/16-1;
+ 0036 1501              movw R2,R10
+ 0038 4424              clr R4
+ 003A 5524              clr R5
+ 003C 40E0              ldi R20,0
+ 003E 52E1              ldi R21,18
+ 0040 6AE7              ldi R22,122
+ 0042 70E0              ldi R23,0
+ 0044 5A92              st -y,R5
+ 0046 4A92              st -y,R4
+ 0048 3A92              st -y,R3
+ 004A 2A92              st -y,R2
+ 004C 8A01              movw R16,R20
+ 004E 9B01              movw R18,R22
+ 0050 0E940000          xcall div32s
+ 0054 40E1              ldi R20,16
+ 0056 50E0              ldi R21,0
+ 0058 60E0              ldi R22,0
+ 005A 70E0              ldi R23,0
+ 005C 7A93              st -y,R23
+ 005E 6A93              st -y,R22
+ 0060 5A93              st -y,R21
+ 0062 4A93              st -y,R20
+ 0064 0E940000          xcall div32s
+ 0068 1801              movw R2,R16
+ 006A 2901              movw R4,R18
+ 006C 41E0              ldi R20,1
+ 006E 50E0              ldi R21,0
+ 0070 60E0              ldi R22,0
+ 0072 70E0              ldi R23,0
+ 0074 241A              sub R2,R20
+ 0076 350A              sbc R3,R21
+ 0078 460A              sbc R4,R22
+ 007A 570A              sbc R5,R23
+ 007C 5101              movw R10,R2
+ 007E                   .dbline 98
+ 007E           ; #if USEUART0
+ 007E           ;     UBRR0H=(unsigned char)(tmp>>8);
+ 007E 232C              mov R2,R3
+ 0080 3324              clr R3
+ 0082 20929000          sts 144,R2
+ 0086                   .dbline 99
+ 0086           ;     UBRR0L=(unsigned char)tmp;
+ 0086 A9B8              out 0x9,R10
+ 0088                   .dbline -2
+ 0088           L4:
+ 0088                   .dbline 0 ; func end
+ 0088 0C940000          xjmp pop_xgsetF00C
+ 008C                   .dbsym r tmp 10 i
+ 008C                   .dbsym r baudrate 10 i
+ 008C                   .dbend
+ 008C                   .dbfunc e Com_putchar _Com_putchar fc
+ 008C                   .dbstruct 0 208 .1
+ 008C                   .dbfield 0 R_front c
+ 008C                   .dbfield 1 R_rear c
+ 008C                   .dbfield 2 R_count c
+ 008C                   .dbfield 3 R_overflow c
+ 008C                   .dbfield 4 R_buf A[100:100]c
+ 008C                   .dbfield 104 T_front c
+ 008C                   .dbfield 105 T_rear c
+ 008C                   .dbfield 106 T_count c
+ 008C                   .dbfield 107 T_buf A[100:100]c
+ 008C                   .dbfield 207 T_disabled c
+ 008C                   .dbend
+ 008C           ;          RTbuf -> R12,R13
+ 008C           ;              c -> R10
                         .even
- 00A0           _Com_putstring::
- 00A0 0E940000          xcall push_xgset30FC
- 00A4 422F              mov R20,R18
- 00A6 5801              movw R10,R16
- 00A8 C884              ldd R12,y+8
- 00AA D984              ldd R13,y+9
- 00AC                   .dbline -1
- 00AC                   .dbline 128
- 00AC           ;     }
- 00AC           ; }
- 00AC           ; /*********************************************************************************************************
- 00AC           ; ** 函数名称: Com_putstring
- 00AC           ; ** 功能描述: 从串行口输出一个字符串
- 00AC           ; ** 输　入: p:指向输出字符串 len:输出长度
- 00AC           ; ** 输出        :
- 00AC           ; ** 全局变量: 无
- 00AC           ; ** 调用模块:
- 00AC           ; ** 说明：
- 00AC           ; ** 注意：
- 00AC           ; ********************************************************************************************************/
- 00AC           ; void Com_putstring (unsigned char *p,unsigned char len,siocirqueue *RTbuf) {
- 00AC                   .dbline 131
- 00AC           ;     unsigned char i;
- 00AC           ; //WDR(); //喂狗
- 00AC           ;     if (len!=0 ) {
- 00AC 4423              tst R20
- 00AE 79F0              breq L21
- 00B0           X1:
- 00B0                   .dbline 131
- 00B0                   .dbline 132
- 00B0           ;         for(i=0; i<len; i++)
- 00B0 EE24              clr R14
- 00B2 0AC0              xjmp L13
- 00B4           L14:
- 00B4                   .dbline 133
- 00B4           ;             while(Com_putchar(p[i],RTbuf)==0);//WDR(); //喂狗;
- 00B4           L15:
- 00B4                   .dbline 133
- 00B4 9601              movw R18,R12
- 00B6 EE2D              mov R30,R14
- 00B8 FF27              clr R31
- 00BA EA0D              add R30,R10
- 00BC FB1D              adc R31,R11
- 00BE 0081              ldd R16,z+0
- 00C0 DFDF              xcall _Com_putchar
- 00C2 0023              tst R16
- 00C4 B9F3              breq L14
- 00C6           X2:
- 00C6           L11:
- 00C6                   .dbline 132
- 00C6 E394              inc R14
- 00C8           L13:
- 00C8                   .dbline 132
- 00C8 E416              cp R14,R20
- 00CA A0F3              brlo L15
- 00CC           X3:
- 00CC                   .dbline 134
- 00CC           ;     } else {
- 00CC 0BC0              xjmp L9
- 00CE           L20:
- 00CE                   .dbline 136
- 00CE           ;         do {
- 00CE           ;             while(Com_putchar(*p,RTbuf)==0);//WDR(); //喂狗;
- 00CE           L21:
- 00CE                   .dbline 136
- 00CE 9601              movw R18,R12
- 00D0 F501              movw R30,R10
- 00D2 0081              ldd R16,z+0
- 00D4 D5DF              xcall _Com_putchar
- 00D6 0023              tst R16
- 00D8 D1F3              breq L20
- 00DA           X4:
- 00DA                   .dbline 137
- 00DA           ;         } while(*p++!='\n');
- 00DA           L18:
- 00DA                   .dbline 137
- 00DA F501              movw R30,R10
- 00DC 8191              ld R24,Z+
- 00DE 5F01              movw R10,R30
- 00E0 8A30              cpi R24,10
- 00E2 A9F7              brne L21
- 00E4           X5:
- 00E4                   .dbline 138
- 00E4           ;     }
- 00E4           L9:
- 00E4                   .dbline -2
- 00E4           L7:
- 00E4                   .dbline 0 ; func end
- 00E4 0C940000          xjmp pop_xgset30FC
- 00E8                   .dbsym r i 14 c
- 00E8                   .dbsym r RTbuf 12 pS[.1]
- 00E8                   .dbsym r len 20 c
- 00E8                   .dbsym r p 10 pc
- 00E8                   .dbend
- 00E8                   .dbfunc e Com_getchar _Com_getchar fc
- 00E8           ;             ts -> R20,R21
- 00E8           ;          RTbuf -> R10,R11
- 00E8           ;           mode -> <dead>
+ 008C           _Com_putchar::
+ 008C 0E940000          xcall push_xgset003C
+ 0090 6901              movw R12,R18
+ 0092 A02E              mov R10,R16
+ 0094                   .dbline -1
+ 0094                   .dbline 116
+ 0094           ; #endif
+ 0094           ; #if USEUART1
+ 0094           ;     UBRR1H=(unsigned char)(tmp>>8);
+ 0094           ;     UBRR1L=(unsigned char)tmp;
+ 0094           ; #endif
+ 0094           ; }
+ 0094           ; /*********************************************************************************************************
+ 0094           ; ** 函数名称: Com_putchar
+ 0094           ; ** 功能描述: 从串行口输出一个字符c
+ 0094           ; ** 输　入: c:输出字符
+ 0094           ; ** 输出        : 0:失败 1:成功
+ 0094           ; ** 全局变量: 无
+ 0094           ; ** 调用模块:
+ 0094           ; ** 说明：
+ 0094           ; ** 注意：
+ 0094           ; ********************************************************************************************************/
+ 0094           ; unsigned char Com_putchar (unsigned char c,siocirqueue *RTbuf) {
+ 0094                   .dbline 118
+ 0094           ; //WDR(); //喂狗
+ 0094           ;     if (Tbuf_full(RTbuf))
+ 0094 8601              movw R16,R12
+ 0096 C4D0              xcall _Tbuf_full
+ 0098 0023              tst R16
+ 009A 11F0              breq L6
+ 009C           X0:
+ 009C                   .dbline 119
+ 009C           ;         return(0);
+ 009C 0027              clr R16
+ 009E 04C0              xjmp L5
+ 00A0           L6:
+ 00A0                   .dbline 120
+ 00A0           ;     else {
+ 00A0                   .dbline 121
+ 00A0           ;         Tbuf_putchar(c,RTbuf);                                // 将数据加入到发送缓冲区并开中断
+ 00A0 9601              movw R18,R12
+ 00A2 0A2D              mov R16,R10
+ 00A4 CED0              xcall _Tbuf_putchar
+ 00A6                   .dbline 122
+ 00A6           ;         return(1);
+ 00A6 01E0              ldi R16,1
+ 00A8                   .dbline -2
+ 00A8           L5:
+ 00A8                   .dbline 0 ; func end
+ 00A8 0C940000          xjmp pop_xgset003C
+ 00AC                   .dbsym r RTbuf 12 pS[.1]
+ 00AC                   .dbsym r c 10 c
+ 00AC                   .dbend
+ 00AC                   .dbfunc e Com_putstring _Com_putstring fV
+ 00AC           ;              i -> R14
+ 00AC           ;          RTbuf -> R12,R13
+ 00AC           ;            len -> R20
+ 00AC           ;              p -> R10,R11
                         .even
- 00E8           _Com_getchar::
- 00E8 0E940000          xcall push_arg4
- 00EC 0E940000          xcall push_xgset300C
- 00F0 5901              movw R10,R18
- 00F2 2297              sbiw R28,2
- 00F4                   .dbline -1
- 00F4                   .dbline 153
- 00F4           ; 
- 00F4           ; }
- 00F4           ; /*********************************************************************************************************
- 00F4           ; ** 函数名称: Com_getchar
- 00F4           ; ** 功能描述: 从串行口输入一个字符
- 00F4           ; ** 输　入: mode：0不需等待，在调用函数前检测Com_R_count的值
- 00F4           ; **              1 等待数据到来
- 00F4           ; ** 输出        : 读入的字符
- 00F4           ; ** 全局变量: 无
- 00F4           ; ** 调用模块:
- 00F4           ; ** 说明：
- 00F4           ; ** 注意：
- 00F4           ; ********************************************************************************************************/
- 00F4           ; 
- 00F4           ; unsigned char Com_getchar (unsigned char mode,siocirqueue *RTbuf) {
- 00F4                   .dbline 160
- 00F4           ; //WDR(); //喂狗
- 00F4           ; //    Delay(Delay_Comget,MaxLimit_Comget_Delay);
- 00F4           ; //    if (mode>0) while(Com_R_count(RTbuf)==0 && !DelayOvf(Delay_Comget))//WDR(); //喂狗;
- 00F4           ; //    if (DelayOvf(Delay_Comget))
- 00F4           ; //        return 0;    //时间超时
- 00F4           ; //    else
- 00F4           ;       unsigned char *ts="??!\n";
- 00F4 40E0              ldi R20,<L24
- 00F6 50E0              ldi R21,>L24
- 00F8                   .dbline 161
- 00F8           ;       Com_putstring (ts,4,&RTbuf_UART0);
- 00F8 80E0              ldi R24,<_RTbuf_UART0
- 00FA 90E0              ldi R25,>_RTbuf_UART0
- 00FC 9983              std y+1,R25
- 00FE 8883              std y+0,R24
- 0100 24E0              ldi R18,4
- 0102 8A01              movw R16,R20
- 0104 CDDF              xcall _Com_putstring
- 0106           L25:
- 0106                   .dbline 162
- 0106           ;     while(!Com_R_count(RTbuf));
- 0106           L26:
- 0106                   .dbline 162
- 0106 8501              movw R16,R10
- 0108 56D0              xcall _Com_R_count
- 010A 0023              tst R16
- 010C E1F3              breq L25
- 010E           X6:
- 010E                   .dbline 163
- 010E           ;       Com_putstring (ts,4,&RTbuf_UART0);
- 010E 80E0              ldi R24,<_RTbuf_UART0
- 0110 90E0              ldi R25,>_RTbuf_UART0
- 0112 9983              std y+1,R25
- 0114 8883              std y+0,R24
- 0116 24E0              ldi R18,4
- 0118 8A01              movw R16,R20
- 011A C2DF              xcall _Com_putstring
- 011C                   .dbline 165
- 011C           ;       
- 011C           ;     return (Rbuf_getchar(RTbuf));// 串行口输入正确，返回输入的字符
- 011C 8501              movw R16,R10
- 011E C2D0              xcall _Rbuf_getchar
- 0120                   .dbline -2
- 0120           L23:
- 0120                   .dbline 0 ; func end
- 0120 2296              adiw R28,2
- 0122 0E940000          xcall pop_xgset300C
- 0126 2496              adiw R28,4
- 0128 0895              ret
- 012A                   .dbsym r ts 20 pc
- 012A                   .dbsym r RTbuf 10 pS[.1]
- 012A                   .dbsym l mode 6 c
- 012A                   .dbend
- 012A                   .dbfunc e Com_Rbuf_Clear _Com_Rbuf_Clear fV
- 012A           ;          RTbuf -> R10,R11
+ 00AC           _Com_putstring::
+ 00AC 0E940000          xcall push_xgset30FC
+ 00B0 422F              mov R20,R18
+ 00B2 5801              movw R10,R16
+ 00B4 C884              ldd R12,y+8
+ 00B6 D984              ldd R13,y+9
+ 00B8                   .dbline -1
+ 00B8                   .dbline 135
+ 00B8           ;     }
+ 00B8           ; }
+ 00B8           ; /*********************************************************************************************************
+ 00B8           ; ** 函数名称: Com_putstring
+ 00B8           ; ** 功能描述: 从串行口输出一个字符串
+ 00B8           ; ** 输　入: p:指向输出字符串 len:输出长度
+ 00B8           ; ** 输出        :
+ 00B8           ; ** 全局变量: 无
+ 00B8           ; ** 调用模块:
+ 00B8           ; ** 说明：
+ 00B8           ; ** 注意：
+ 00B8           ; ********************************************************************************************************/
+ 00B8           ; void Com_putstring (unsigned char *p,unsigned char len,siocirqueue *RTbuf) {
+ 00B8                   .dbline 138
+ 00B8           ;     unsigned char i;
+ 00B8           ; //WDR(); //喂狗
+ 00B8           ;     if (len!=0 ) {
+ 00B8 4423              tst R20
+ 00BA 79F0              breq L22
+ 00BC           X1:
+ 00BC                   .dbline 138
+ 00BC                   .dbline 139
+ 00BC           ;         for(i=0; i<len; i++)
+ 00BC EE24              clr R14
+ 00BE 0AC0              xjmp L14
+ 00C0           L15:
+ 00C0                   .dbline 140
+ 00C0           ;             while(Com_putchar(p[i],RTbuf)==0);//WDR(); //喂狗;
+ 00C0           L16:
+ 00C0                   .dbline 140
+ 00C0 9601              movw R18,R12
+ 00C2 EE2D              mov R30,R14
+ 00C4 FF27              clr R31
+ 00C6 EA0D              add R30,R10
+ 00C8 FB1D              adc R31,R11
+ 00CA 0081              ldd R16,z+0
+ 00CC DFDF              xcall _Com_putchar
+ 00CE 0023              tst R16
+ 00D0 B9F3              breq L15
+ 00D2           X2:
+ 00D2           L12:
+ 00D2                   .dbline 139
+ 00D2 E394              inc R14
+ 00D4           L14:
+ 00D4                   .dbline 139
+ 00D4 E416              cp R14,R20
+ 00D6 A0F3              brlo L16
+ 00D8           X3:
+ 00D8                   .dbline 141
+ 00D8           ;     } else {
+ 00D8 0BC0              xjmp L10
+ 00DA           L21:
+ 00DA                   .dbline 143
+ 00DA           ;         do {
+ 00DA           ;             while(Com_putchar(*p,RTbuf)==0);//WDR(); //喂狗;
+ 00DA           L22:
+ 00DA                   .dbline 143
+ 00DA 9601              movw R18,R12
+ 00DC F501              movw R30,R10
+ 00DE 0081              ldd R16,z+0
+ 00E0 D5DF              xcall _Com_putchar
+ 00E2 0023              tst R16
+ 00E4 D1F3              breq L21
+ 00E6           X4:
+ 00E6                   .dbline 144
+ 00E6           ;         } while(*p++!='\n');
+ 00E6           L19:
+ 00E6                   .dbline 144
+ 00E6 F501              movw R30,R10
+ 00E8 8191              ld R24,Z+
+ 00EA 5F01              movw R10,R30
+ 00EC 8A30              cpi R24,10
+ 00EE A9F7              brne L22
+ 00F0           X5:
+ 00F0                   .dbline 145
+ 00F0           ;     }
+ 00F0           L10:
+ 00F0                   .dbline -2
+ 00F0           L8:
+ 00F0                   .dbline 0 ; func end
+ 00F0 0C940000          xjmp pop_xgset30FC
+ 00F4                   .dbsym r i 14 c
+ 00F4                   .dbsym r RTbuf 12 pS[.1]
+ 00F4                   .dbsym r len 20 c
+ 00F4                   .dbsym r p 10 pc
+ 00F4                   .dbend
+ 00F4                   .dbfunc e Com_getchar _Com_getchar fc
+ 00F4           ;             ts -> R20,R21
+ 00F4           ;          RTbuf -> R10,R11
+ 00F4           ;           mode -> <dead>
                         .even
- 012A           _Com_Rbuf_Clear::
- 012A AA92              st -y,R10
- 012C BA92              st -y,R11
- 012E 5801              movw R10,R16
- 0130                   .dbline -1
- 0130                   .dbline 170
- 0130           ; }
- 0130           ; 
- 0130           ; 
- 0130           ; 
- 0130           ; void Com_Rbuf_Clear(siocirqueue *RTbuf) {
- 0130                   .dbline 171
- 0130           ;     Rbuf_init(RTbuf);
- 0130 8501              movw R16,R10
- 0132 44D0              xcall _Rbuf_init
- 0134                   .dbline -2
- 0134           L28:
- 0134                   .dbline 0 ; func end
- 0134 B990              ld R11,y+
- 0136 A990              ld R10,y+
- 0138 0895              ret
- 013A                   .dbsym r RTbuf 10 pS[.1]
- 013A                   .dbend
- 013A                   .dbfunc e Com_getstring _Com_getstring fc
- 013A           ;             ts -> R22,R23
- 013A           ;              i -> R10
- 013A           ;          RTbuf -> R12,R13
- 013A           ;            len -> R14
- 013A           ;              p -> R20,R21
+ 00F4           _Com_getchar::
+ 00F4 0E940000          xcall push_arg4
+ 00F8 0E940000          xcall push_xgset300C
+ 00FC 5901              movw R10,R18
+ 00FE 2297              sbiw R28,2
+ 0100                   .dbline -1
+ 0100                   .dbline 160
+ 0100           ; 
+ 0100           ; }
+ 0100           ; /*********************************************************************************************************
+ 0100           ; ** 函数名称: Com_getchar
+ 0100           ; ** 功能描述: 从串行口输入一个字符
+ 0100           ; ** 输　入: mode：0不需等待，在调用函数前检测Com_R_count的值
+ 0100           ; **              1 等待数据到来
+ 0100           ; ** 输出        : 读入的字符
+ 0100           ; ** 全局变量: 无
+ 0100           ; ** 调用模块:
+ 0100           ; ** 说明：
+ 0100           ; ** 注意：
+ 0100           ; ********************************************************************************************************/
+ 0100           ; 
+ 0100           ; unsigned char Com_getchar (unsigned char mode,siocirqueue *RTbuf) {
+ 0100                   .dbline 167
+ 0100           ; //WDR(); //喂狗
+ 0100           ; //    Delay(Delay_Comget,MaxLimit_Comget_Delay);
+ 0100           ; //    if (mode>0) while(Com_R_count(RTbuf)==0 && !DelayOvf(Delay_Comget))//WDR(); //喂狗;
+ 0100           ; //    if (DelayOvf(Delay_Comget))
+ 0100           ; //        return 0;    //时间超时
+ 0100           ; //    else
+ 0100           ;       unsigned char *ts="??!\n";
+ 0100 40E0              ldi R20,<L25
+ 0102 50E0              ldi R21,>L25
+ 0104                   .dbline 168
+ 0104           ;       Com_putstring (ts,4,&RTbuf_UART0);
+ 0104 80E0              ldi R24,<_RTbuf_UART0
+ 0106 90E0              ldi R25,>_RTbuf_UART0
+ 0108 9983              std y+1,R25
+ 010A 8883              std y+0,R24
+ 010C 24E0              ldi R18,4
+ 010E 8A01              movw R16,R20
+ 0110 CDDF              xcall _Com_putstring
+ 0112           L26:
+ 0112                   .dbline 169
+ 0112           ;     while(!Com_R_count(RTbuf));
+ 0112           L27:
+ 0112                   .dbline 169
+ 0112 8501              movw R16,R10
+ 0114 56D0              xcall _Com_R_count
+ 0116 0023              tst R16
+ 0118 E1F3              breq L26
+ 011A           X6:
+ 011A                   .dbline 170
+ 011A           ;       Com_putstring (ts,4,&RTbuf_UART0);
+ 011A 80E0              ldi R24,<_RTbuf_UART0
+ 011C 90E0              ldi R25,>_RTbuf_UART0
+ 011E 9983              std y+1,R25
+ 0120 8883              std y+0,R24
+ 0122 24E0              ldi R18,4
+ 0124 8A01              movw R16,R20
+ 0126 C2DF              xcall _Com_putstring
+ 0128                   .dbline 172
+ 0128           ;       
+ 0128           ;     return (Rbuf_getchar(RTbuf));// 串行口输入正确，返回输入的字符
+ 0128 8501              movw R16,R10
+ 012A C2D0              xcall _Rbuf_getchar
+ 012C                   .dbline -2
+ 012C           L24:
+ 012C                   .dbline 0 ; func end
+ 012C 2296              adiw R28,2
+ 012E 0E940000          xcall pop_xgset300C
+ 0132 2496              adiw R28,4
+ 0134 0895              ret
+ 0136                   .dbsym r ts 20 pc
+ 0136                   .dbsym r RTbuf 10 pS[.1]
+ 0136                   .dbsym l mode 6 c
+ 0136                   .dbend
+ 0136                   .dbfunc e Com_Rbuf_Clear _Com_Rbuf_Clear fV
+ 0136           ;          RTbuf -> R10,R11
                         .even
- 013A           _Com_getstring::
- 013A 0E940000          xcall push_xgsetF0FC
- 013E E22E              mov R14,R18
- 0140 A801              movw R20,R16
- 0142 2297              sbiw R28,2
- 0144 CC84              ldd R12,y+12
- 0146 DD84              ldd R13,y+13
- 0148                   .dbline -1
- 0148                   .dbline 176
- 0148           ; }
- 0148           ; 
- 0148           ; 
- 0148           ; 
- 0148           ; unsigned char Com_getstring (unsigned char *p,unsigned char len,siocirqueue *RTbuf) {
- 0148                   .dbline 178
- 0148           ; 
- 0148           ;     unsigned char i=0;
- 0148 AA24              clr R10
- 014A                   .dbline 179
- 014A           ;       unsigned char *ts="???\n";
- 014A 60E0              ldi R22,<L30
- 014C 70E0              ldi R23,>L30
- 014E                   .dbline 181
- 014E           ;     //WDR(); //喂狗
- 014E           ;     if (len>0 ) {
- 014E 80E0              ldi R24,0
- 0150 8E15              cp R24,R14
- 0152 08F5              brsh L31
- 0154           X7:
- 0154                   .dbline 181
- 0154                   .dbline 182
- 0154           ;         for(i=0; i<len; i++) {
- 0154 1CC0              xjmp L36
- 0156           L33:
- 0156                   .dbline 182
+ 0136           _Com_Rbuf_Clear::
+ 0136 AA92              st -y,R10
+ 0138 BA92              st -y,R11
+ 013A 5801              movw R10,R16
+ 013C                   .dbline -1
+ 013C                   .dbline 177
+ 013C           ; }
+ 013C           ; 
+ 013C           ; 
+ 013C           ; 
+ 013C           ; void Com_Rbuf_Clear(siocirqueue *RTbuf) {
+ 013C                   .dbline 178
+ 013C           ;     Rbuf_init(RTbuf);
+ 013C 8501              movw R16,R10
+ 013E 44D0              xcall _Rbuf_init
+ 0140                   .dbline -2
+ 0140           L29:
+ 0140                   .dbline 0 ; func end
+ 0140 B990              ld R11,y+
+ 0142 A990              ld R10,y+
+ 0144 0895              ret
+ 0146                   .dbsym r RTbuf 10 pS[.1]
+ 0146                   .dbend
+ 0146                   .dbfunc e Com_getstring _Com_getstring fc
+ 0146           ;             ts -> R22,R23
+ 0146           ;              i -> R10
+ 0146           ;          RTbuf -> R12,R13
+ 0146           ;            len -> R14
+ 0146           ;              p -> R20,R21
+                        .even
+ 0146           _Com_getstring::
+ 0146 0E940000          xcall push_xgsetF0FC
+ 014A E22E              mov R14,R18
+ 014C A801              movw R20,R16
+ 014E 2297              sbiw R28,2
+ 0150 CC84              ldd R12,y+12
+ 0152 DD84              ldd R13,y+13
+ 0154                   .dbline -1
+ 0154                   .dbline 183
+ 0154           ; }
+ 0154           ; 
+ 0154           ; 
+ 0154           ; 
+ 0154           ; unsigned char Com_getstring (unsigned char *p,unsigned char len,siocirqueue *RTbuf) {
+ 0154                   .dbline 185
+ 0154           ; 
+ 0154           ;     unsigned char i=0;
+ 0154 AA24              clr R10
  0156                   .dbline 186
- 0156           ;             //WDR(); //喂狗
- 0156           ;                       
- 0156           ;                       //debug_start
- 0156           ;                       Com_putstring (ts,4,&RTbuf_UART0);
- 0156 80E0              ldi R24,<_RTbuf_UART0
- 0158 90E0              ldi R25,>_RTbuf_UART0
- 015A 9983              std y+1,R25
- 015C 8883              std y+0,R24
- 015E 24E0              ldi R18,4
- 0160 8B01              movw R16,R22
- 0162 9EDF              xcall _Com_putstring
- 0164                   .dbline 187
- 0164           ;                       Com_putstring (ts,4,&RTbuf_UART0);
- 0164 80E0              ldi R24,<_RTbuf_UART0
- 0166 90E0              ldi R25,>_RTbuf_UART0
- 0168 9983              std y+1,R25
- 016A 8883              std y+0,R24
- 016C 24E0              ldi R18,4
- 016E 8B01              movw R16,R22
- 0170 97DF              xcall _Com_putstring
- 0172                   .dbline 188
- 0172           ;             *p++=Com_getchar(1,RTbuf);
- 0172 9601              movw R18,R12
- 0174 01E0              ldi R16,1
- 0176 B8DF              xcall _Com_getchar
- 0178 FA01              movw R30,R20
- 017A 0193              st Z+,R16
- 017C AF01              movw R20,R30
- 017E                   .dbline 189
- 017E           ;                       Com_putstring (ts,4,&RTbuf_UART0);
- 017E 80E0              ldi R24,<_RTbuf_UART0
- 0180 90E0              ldi R25,>_RTbuf_UART0
- 0182 9983              std y+1,R25
- 0184 8883              std y+0,R24
- 0186 24E0              ldi R18,4
- 0188 8B01              movw R16,R22
- 018A 8ADF              xcall _Com_putstring
- 018C                   .dbline 193
- 018C           ;                       
- 018C           ;                       
- 018C           ;                       //debug_start
- 018C           ;         }
- 018C           L34:
- 018C                   .dbline 182
- 018C A394              inc R10
- 018E           L36:
- 018E                   .dbline 182
- 018E AE14              cp R10,R14
- 0190 10F3              brlo L33
- 0192           X8:
- 0192                   .dbline 194
- 0192           ;         return(len);
- 0192 0E2D              mov R16,R14
- 0194 0DC0              xjmp L29
- 0196           L31:
- 0196                   .dbline 195
- 0196           ;     } else {
- 0196           L37:
- 0196                   .dbline 197
- 0196           ; 
- 0196           ;         do {
- 0196                   .dbline 198
- 0196           ;             *p++=Com_getchar(1,RTbuf);
- 0196 9601              movw R18,R12
- 0198 01E0              ldi R16,1
- 019A A6DF              xcall _Com_getchar
- 019C FA01              movw R30,R20
- 019E 0193              st Z+,R16
- 01A0 AF01              movw R20,R30
- 01A2                   .dbline 199
- 01A2           ;             i++;
- 01A2 A394              inc R10
- 01A4                   .dbline 201
- 01A4           ;             //WDR(); //喂狗
- 01A4           ;         } while(*(p-1)!='\n');
- 01A4           L38:
- 01A4                   .dbline 201
- 01A4 FA01              movw R30,R20
- 01A6 3197              sbiw R30,1
- 01A8 8081              ldd R24,z+0
- 01AA 8A30              cpi R24,10
- 01AC A1F7              brne L37
- 01AE           X9:
- 01AE                   .dbline 204
- 01AE           ; //                    *p++=Com_getchar(1,RTbuf);
- 01AE           ; //                    *(p)=0;
- 01AE           ;         return(i);
- 01AE 0A2D              mov R16,R10
- 01B0                   .dbline -2
- 01B0           L29:
- 01B0                   .dbline 0 ; func end
- 01B0 2296              adiw R28,2
- 01B2 0C940000          xjmp pop_xgsetF0FC
- 01B6                   .dbsym r ts 22 pc
- 01B6                   .dbsym r i 10 c
- 01B6                   .dbsym r RTbuf 12 pS[.1]
- 01B6                   .dbsym r len 14 c
- 01B6                   .dbsym r p 20 pc
- 01B6                   .dbend
- 01B6                   .dbfunc e Com_R_count _Com_R_count fc
- 01B6           ;          RTbuf -> R16,R17
+ 0156           ;       unsigned char *ts="???\n";
+ 0156 60E0              ldi R22,<L31
+ 0158 70E0              ldi R23,>L31
+ 015A                   .dbline 188
+ 015A           ;     //WDR(); //喂狗
+ 015A           ;     if (len>0 ) {
+ 015A 80E0              ldi R24,0
+ 015C 8E15              cp R24,R14
+ 015E 08F5              brsh L32
+ 0160           X7:
+ 0160                   .dbline 188
+ 0160                   .dbline 189
+ 0160           ;         for(i=0; i<len; i++) {
+ 0160 1CC0              xjmp L37
+ 0162           L34:
+ 0162                   .dbline 189
+ 0162                   .dbline 193
+ 0162           ;             //WDR(); //喂狗
+ 0162           ;                       
+ 0162           ;                       //debug_start
+ 0162           ;                       Com_putstring (ts,4,&RTbuf_UART0);
+ 0162 80E0              ldi R24,<_RTbuf_UART0
+ 0164 90E0              ldi R25,>_RTbuf_UART0
+ 0166 9983              std y+1,R25
+ 0168 8883              std y+0,R24
+ 016A 24E0              ldi R18,4
+ 016C 8B01              movw R16,R22
+ 016E 9EDF              xcall _Com_putstring
+ 0170                   .dbline 194
+ 0170           ;                       Com_putstring (ts,4,&RTbuf_UART0);
+ 0170 80E0              ldi R24,<_RTbuf_UART0
+ 0172 90E0              ldi R25,>_RTbuf_UART0
+ 0174 9983              std y+1,R25
+ 0176 8883              std y+0,R24
+ 0178 24E0              ldi R18,4
+ 017A 8B01              movw R16,R22
+ 017C 97DF              xcall _Com_putstring
+ 017E                   .dbline 195
+ 017E           ;             *p++=Com_getchar(1,RTbuf);
+ 017E 9601              movw R18,R12
+ 0180 01E0              ldi R16,1
+ 0182 B8DF              xcall _Com_getchar
+ 0184 FA01              movw R30,R20
+ 0186 0193              st Z+,R16
+ 0188 AF01              movw R20,R30
+ 018A                   .dbline 196
+ 018A           ;                       Com_putstring (ts,4,&RTbuf_UART0);
+ 018A 80E0              ldi R24,<_RTbuf_UART0
+ 018C 90E0              ldi R25,>_RTbuf_UART0
+ 018E 9983              std y+1,R25
+ 0190 8883              std y+0,R24
+ 0192 24E0              ldi R18,4
+ 0194 8B01              movw R16,R22
+ 0196 8ADF              xcall _Com_putstring
+ 0198                   .dbline 200
+ 0198           ;                       
+ 0198           ;                       
+ 0198           ;                       //debug_start
+ 0198           ;         }
+ 0198           L35:
+ 0198                   .dbline 189
+ 0198 A394              inc R10
+ 019A           L37:
+ 019A                   .dbline 189
+ 019A AE14              cp R10,R14
+ 019C 10F3              brlo L34
+ 019E           X8:
+ 019E                   .dbline 201
+ 019E           ;         return(len);
+ 019E 0E2D              mov R16,R14
+ 01A0 0DC0              xjmp L30
+ 01A2           L32:
+ 01A2                   .dbline 202
+ 01A2           ;     } else {
+ 01A2           L38:
+ 01A2                   .dbline 204
+ 01A2           ; 
+ 01A2           ;         do {
+ 01A2                   .dbline 205
+ 01A2           ;             *p++=Com_getchar(1,RTbuf);
+ 01A2 9601              movw R18,R12
+ 01A4 01E0              ldi R16,1
+ 01A6 A6DF              xcall _Com_getchar
+ 01A8 FA01              movw R30,R20
+ 01AA 0193              st Z+,R16
+ 01AC AF01              movw R20,R30
+ 01AE                   .dbline 206
+ 01AE           ;             i++;
+ 01AE A394              inc R10
+ 01B0                   .dbline 208
+ 01B0           ;             //WDR(); //喂狗
+ 01B0           ;         } while(*(p-1)!='\n');
+ 01B0           L39:
+ 01B0                   .dbline 208
+ 01B0 FA01              movw R30,R20
+ 01B2 3197              sbiw R30,1
+ 01B4 8081              ldd R24,z+0
+ 01B6 8A30              cpi R24,10
+ 01B8 A1F7              brne L38
+ 01BA           X9:
+ 01BA                   .dbline 211
+ 01BA           ; //                    *p++=Com_getchar(1,RTbuf);
+ 01BA           ; //                    *(p)=0;
+ 01BA           ;         return(i);
+ 01BA 0A2D              mov R16,R10
+ 01BC                   .dbline -2
+ 01BC           L30:
+ 01BC                   .dbline 0 ; func end
+ 01BC 2296              adiw R28,2
+ 01BE 0C940000          xjmp pop_xgsetF0FC
+ 01C2                   .dbsym r ts 22 pc
+ 01C2                   .dbsym r i 10 c
+ 01C2                   .dbsym r RTbuf 12 pS[.1]
+ 01C2                   .dbsym r len 14 c
+ 01C2                   .dbsym r p 20 pc
+ 01C2                   .dbend
+ 01C2                   .dbfunc e Com_R_count _Com_R_count fc
+ 01C2           ;          RTbuf -> R16,R17
                         .even
- 01B6           _Com_R_count::
- 01B6                   .dbline -1
- 01B6                   .dbline 220
- 01B6           ;     }
- 01B6           ; 
- 01B6           ; }
- 01B6           ; 
- 01B6           ; 
- 01B6           ; /*********************************************************************************************************
- 01B6           ; ** 函数名称: Com_R_count
- 01B6           ; ** 功能描述: 返回接收缓冲区字符个数函数
- 01B6           ; ** 输　入:
- 01B6           ; ** 输出        : 字符个数
- 01B6           ; ** 全局变量: 无
- 01B6           ; ** 调用模块:
- 01B6           ; ** 说明：
- 01B6           ; ** 注意：
- 01B6           ; ********************************************************************************************************/
- 01B6           ; unsigned char Com_R_count(siocirqueue *RTbuf) {
- 01B6                   .dbline 221
- 01B6           ;     return RTbuf->R_count;
- 01B6 F801              movw R30,R16
- 01B8 0281              ldd R16,z+2
- 01BA                   .dbline -2
- 01BA           L40:
- 01BA                   .dbline 0 ; func end
- 01BA 0895              ret
- 01BC                   .dbsym r RTbuf 16 pS[.1]
- 01BC                   .dbend
- 01BC                   .dbfunc e Rbuf_init _Rbuf_init fV
- 01BC           ;          RTbuf -> R16,R17
+ 01C2           _Com_R_count::
+ 01C2                   .dbline -1
+ 01C2                   .dbline 227
+ 01C2           ;     }
+ 01C2           ; 
+ 01C2           ; }
+ 01C2           ; 
+ 01C2           ; 
+ 01C2           ; /*********************************************************************************************************
+ 01C2           ; ** 函数名称: Com_R_count
+ 01C2           ; ** 功能描述: 返回接收缓冲区字符个数函数
+ 01C2           ; ** 输　入:
+ 01C2           ; ** 输出        : 字符个数
+ 01C2           ; ** 全局变量: 无
+ 01C2           ; ** 调用模块:
+ 01C2           ; ** 说明：
+ 01C2           ; ** 注意：
+ 01C2           ; ********************************************************************************************************/
+ 01C2           ; unsigned char Com_R_count(siocirqueue *RTbuf) {
+ 01C2                   .dbline 228
+ 01C2           ;     return RTbuf->R_count;
+ 01C2 F801              movw R30,R16
+ 01C4 0281              ldd R16,z+2
+ 01C6                   .dbline -2
+ 01C6           L41:
+ 01C6                   .dbline 0 ; func end
+ 01C6 0895              ret
+ 01C8                   .dbsym r RTbuf 16 pS[.1]
+ 01C8                   .dbend
+ 01C8                   .dbfunc e Rbuf_init _Rbuf_init fV
+ 01C8           ;          RTbuf -> R16,R17
                         .even
- 01BC           _Rbuf_init::
- 01BC                   .dbline -1
- 01BC                   .dbline 233
- 01BC           ; }
- 01BC           ; /*********************************************************************************************************
- 01BC           ; ** 函数名称: Rbuf_init
- 01BC           ; ** 功能描述: 接收缓冲区初始化
- 01BC           ; ** 输　入:
- 01BC           ; ** 输出        :
- 01BC           ; ** 全局变量: 无
- 01BC           ; ** 调用模块:
- 01BC           ; ** 说明：
- 01BC           ; ** 注意：
- 01BC           ; ********************************************************************************************************/
- 01BC           ; void Rbuf_init(siocirqueue *RTbuf) {
- 01BC                   .dbline 234
- 01BC           ;     RTbuf->R_front=0;
- 01BC 2224              clr R2
- 01BE F801              movw R30,R16
- 01C0 2082              std z+0,R2
- 01C2                   .dbline 235
- 01C2           ;     RTbuf->R_rear=0;
- 01C2 2182              std z+1,R2
- 01C4                   .dbline 236
- 01C4           ;     RTbuf->R_count=0;
- 01C4 2282              std z+2,R2
- 01C6                   .dbline 237
- 01C6           ;     RTbuf->R_overflow=0;
- 01C6 2382              std z+3,R2
- 01C8                   .dbline -2
- 01C8           L41:
- 01C8                   .dbline 0 ; func end
- 01C8 0895              ret
- 01CA                   .dbsym r RTbuf 16 pS[.1]
- 01CA                   .dbend
- 01CA                   .dbfunc e Tbuf_init _Tbuf_init fV
- 01CA           ;          RTbuf -> R16,R17
+ 01C8           _Rbuf_init::
+ 01C8                   .dbline -1
+ 01C8                   .dbline 240
+ 01C8           ; }
+ 01C8           ; /*********************************************************************************************************
+ 01C8           ; ** 函数名称: Rbuf_init
+ 01C8           ; ** 功能描述: 接收缓冲区初始化
+ 01C8           ; ** 输　入:
+ 01C8           ; ** 输出        :
+ 01C8           ; ** 全局变量: 无
+ 01C8           ; ** 调用模块:
+ 01C8           ; ** 说明：
+ 01C8           ; ** 注意：
+ 01C8           ; ********************************************************************************************************/
+ 01C8           ; void Rbuf_init(siocirqueue *RTbuf) {
+ 01C8                   .dbline 241
+ 01C8           ;     RTbuf->R_front=0;
+ 01C8 2224              clr R2
+ 01CA F801              movw R30,R16
+ 01CC 2082              std z+0,R2
+ 01CE                   .dbline 242
+ 01CE           ;     RTbuf->R_rear=0;
+ 01CE 2182              std z+1,R2
+ 01D0                   .dbline 243
+ 01D0           ;     RTbuf->R_count=0;
+ 01D0 2282              std z+2,R2
+ 01D2                   .dbline 244
+ 01D2           ;     RTbuf->R_overflow=0;
+ 01D2 2382              std z+3,R2
+ 01D4                   .dbline -2
+ 01D4           L42:
+ 01D4                   .dbline 0 ; func end
+ 01D4 0895              ret
+ 01D6                   .dbsym r RTbuf 16 pS[.1]
+ 01D6                   .dbend
+ 01D6                   .dbfunc e Tbuf_init _Tbuf_init fV
+ 01D6           ;          RTbuf -> R16,R17
                         .even
- 01CA           _Tbuf_init::
- 01CA                   .dbline -1
- 01CA                   .dbline 249
- 01CA           ; }
- 01CA           ; /*********************************************************************************************************
- 01CA           ; ** 函数名称: Tbuf_init
- 01CA           ; ** 功能描述: 发送缓冲区初始化
- 01CA           ; ** 输　入:
- 01CA           ; ** 输出        :
- 01CA           ; ** 全局变量: 无
- 01CA           ; ** 调用模块:
- 01CA           ; ** 说明：
- 01CA           ; ** 注意：
- 01CA           ; ********************************************************************************************************/
- 01CA           ; void Tbuf_init(siocirqueue *RTbuf) {
- 01CA                   .dbline 250
- 01CA           ;     RTbuf->T_front=0;
- 01CA 2224              clr R2
- 01CC F801              movw R30,R16
- 01CE E859              subi R30,152  ; addi 104
- 01D0 FF4F              sbci R31,255
- 01D2 2082              std z+0,R2
- 01D4 E856              subi R30,104
- 01D6 F040              sbci R31,0
- 01D8                   .dbline 251
- 01D8           ;     RTbuf->T_rear=0;
- 01D8 E759              subi R30,151  ; addi 105
- 01DA FF4F              sbci R31,255
- 01DC 2082              std z+0,R2
- 01DE E956              subi R30,105
- 01E0 F040              sbci R31,0
- 01E2                   .dbline 252
- 01E2           ;     RTbuf->T_count=0;
- 01E2 E659              subi R30,150  ; addi 106
- 01E4 FF4F              sbci R31,255
- 01E6 2082              std z+0,R2
- 01E8 EA56              subi R30,106
- 01EA F040              sbci R31,0
- 01EC                   .dbline 253
- 01EC           ;     RTbuf->T_disabled=1;
- 01EC 81E0              ldi R24,1
- 01EE E153              subi R30,49  ; addi 207
+ 01D6           _Tbuf_init::
+ 01D6                   .dbline -1
+ 01D6                   .dbline 256
+ 01D6           ; }
+ 01D6           ; /*********************************************************************************************************
+ 01D6           ; ** 函数名称: Tbuf_init
+ 01D6           ; ** 功能描述: 发送缓冲区初始化
+ 01D6           ; ** 输　入:
+ 01D6           ; ** 输出        :
+ 01D6           ; ** 全局变量: 无
+ 01D6           ; ** 调用模块:
+ 01D6           ; ** 说明：
+ 01D6           ; ** 注意：
+ 01D6           ; ********************************************************************************************************/
+ 01D6           ; void Tbuf_init(siocirqueue *RTbuf) {
+ 01D6                   .dbline 257
+ 01D6           ;     RTbuf->T_front=0;
+ 01D6 2224              clr R2
+ 01D8 F801              movw R30,R16
+ 01DA E859              subi R30,152  ; addi 104
+ 01DC FF4F              sbci R31,255
+ 01DE 2082              std z+0,R2
+ 01E0 E856              subi R30,104
+ 01E2 F040              sbci R31,0
+ 01E4                   .dbline 258
+ 01E4           ;     RTbuf->T_rear=0;
+ 01E4 E759              subi R30,151  ; addi 105
+ 01E6 FF4F              sbci R31,255
+ 01E8 2082              std z+0,R2
+ 01EA E956              subi R30,105
+ 01EC F040              sbci R31,0
+ 01EE                   .dbline 259
+ 01EE           ;     RTbuf->T_count=0;
+ 01EE E659              subi R30,150  ; addi 106
  01F0 FF4F              sbci R31,255
- 01F2 8083              std z+0,R24
- 01F4                   .dbline -2
- 01F4           L42:
- 01F4                   .dbline 0 ; func end
- 01F4 0895              ret
- 01F6                   .dbsym r RTbuf 16 pS[.1]
- 01F6                   .dbend
- 01F6                   .dbfunc e Rbuf_empty _Rbuf_empty fc
- 01F6           ;          RTbuf -> R16,R17
+ 01F2 2082              std z+0,R2
+ 01F4 EA56              subi R30,106
+ 01F6 F040              sbci R31,0
+ 01F8                   .dbline 260
+ 01F8           ;     RTbuf->T_disabled=1;
+ 01F8 81E0              ldi R24,1
+ 01FA E153              subi R30,49  ; addi 207
+ 01FC FF4F              sbci R31,255
+ 01FE 8083              std z+0,R24
+ 0200                   .dbline -2
+ 0200           L43:
+ 0200                   .dbline 0 ; func end
+ 0200 0895              ret
+ 0202                   .dbsym r RTbuf 16 pS[.1]
+ 0202                   .dbend
+ 0202                   .dbfunc e Rbuf_empty _Rbuf_empty fc
+ 0202           ;          RTbuf -> R16,R17
                         .even
- 01F6           _Rbuf_empty::
- 01F6 4A93              st -y,R20
- 01F8 5A93              st -y,R21
- 01FA                   .dbline -1
- 01FA                   .dbline 265
- 01FA           ; }
- 01FA           ; /*********************************************************************************************************
- 01FA           ; ** 函数名称: Rbuf_empty
- 01FA           ; ** 功能描述: 接收缓冲区判空
- 01FA           ; ** 输　入:
- 01FA           ; ** 输出        :  TRUE 空 FALSE 非空
- 01FA           ; ** 全局变量: 无
- 01FA           ; ** 调用模块:
- 01FA           ; ** 说明：
- 01FA           ; ** 注意：
- 01FA           ; ********************************************************************************************************/
- 01FA           ; unsigned char Rbuf_empty(siocirqueue *RTbuf) {
- 01FA                   .dbline 266
- 01FA           ;     return RTbuf->R_count==0;
- 01FA F801              movw R30,R16
- 01FC 2280              ldd R2,z+2
- 01FE 2220              tst R2
- 0200 19F4              brne L44
- 0202           X10:
- 0202 41E0              ldi R20,1
- 0204 50E0              ldi R21,0
- 0206 02C0              xjmp L45
- 0208           L44:
- 0208 4427              clr R20
- 020A 5527              clr R21
- 020C           L45:
- 020C 042F              mov R16,R20
- 020E                   .dbline -2
- 020E           L43:
- 020E                   .dbline 0 ; func end
- 020E 5991              ld R21,y+
- 0210 4991              ld R20,y+
- 0212 0895              ret
- 0214                   .dbsym r RTbuf 16 pS[.1]
- 0214                   .dbend
- 0214                   .dbfunc e Tbuf_full _Tbuf_full fc
- 0214           ;          RTbuf -> R16,R17
+ 0202           _Rbuf_empty::
+ 0202 4A93              st -y,R20
+ 0204 5A93              st -y,R21
+ 0206                   .dbline -1
+ 0206                   .dbline 272
+ 0206           ; }
+ 0206           ; /*********************************************************************************************************
+ 0206           ; ** 函数名称: Rbuf_empty
+ 0206           ; ** 功能描述: 接收缓冲区判空
+ 0206           ; ** 输　入:
+ 0206           ; ** 输出        :  TRUE 空 FALSE 非空
+ 0206           ; ** 全局变量: 无
+ 0206           ; ** 调用模块:
+ 0206           ; ** 说明：
+ 0206           ; ** 注意：
+ 0206           ; ********************************************************************************************************/
+ 0206           ; unsigned char Rbuf_empty(siocirqueue *RTbuf) {
+ 0206                   .dbline 273
+ 0206           ;     return RTbuf->R_count==0;
+ 0206 F801              movw R30,R16
+ 0208 2280              ldd R2,z+2
+ 020A 2220              tst R2
+ 020C 19F4              brne L45
+ 020E           X10:
+ 020E 41E0              ldi R20,1
+ 0210 50E0              ldi R21,0
+ 0212 02C0              xjmp L46
+ 0214           L45:
+ 0214 4427              clr R20
+ 0216 5527              clr R21
+ 0218           L46:
+ 0218 042F              mov R16,R20
+ 021A                   .dbline -2
+ 021A           L44:
+ 021A                   .dbline 0 ; func end
+ 021A 5991              ld R21,y+
+ 021C 4991              ld R20,y+
+ 021E 0895              ret
+ 0220                   .dbsym r RTbuf 16 pS[.1]
+ 0220                   .dbend
+ 0220                   .dbfunc e Tbuf_full _Tbuf_full fc
+ 0220           ;          RTbuf -> R16,R17
                         .even
- 0214           _Tbuf_full::
- 0214 4A93              st -y,R20
- 0216 5A93              st -y,R21
- 0218                   .dbline -1
- 0218                   .dbline 304
- 0218           ; }
- 0218           ; /*********************************************************************************************************
- 0218           ; ** 函数名称: Tbuf_empty
- 0218           ; ** 功能描述: 发送缓冲区判空
- 0218           ; ** 输　入:
- 0218           ; ** 输出        :  TRUE 空 FALSE 非空
- 0218           ; ** 全局变量: 无
- 0218           ; ** 调用模块:
- 0218           ; ** 说明：
- 0218           ; ** 注意：
- 0218           ; ********************************************************************************************************
- 0218           ; unsigned char Tbuf_empty(void){
- 0218           ;       return RTbuf->T_count==0;
- 0218           ;       }
- 0218           ; /*********************************************************************************************************
- 0218           ; ** 函数名称: Rbuf_full
- 0218           ; ** 功能描述: 接收缓冲区判满
- 0218           ; ** 输　入:
- 0218           ; ** 输出        :  TRUE 满 FALSE 非满
- 0218           ; ** 全局变量: 无
- 0218           ; ** 调用模块:
- 0218           ; ** 说明：
- 0218           ; ** 注意：
- 0218           ; ********************************************************************************************************
- 0218           ; unsigned char Rbuf_full (void){
- 0218           ;       return RTbuf->R_count==RBUF_SIZE;
- 0218           ;       }
- 0218           ; /*********************************************************************************************************
- 0218           ; ** 函数名称: Tbuf_full
- 0218           ; ** 功能描述: 发送缓冲区判满
- 0218           ; ** 输　入:
- 0218           ; ** 输出        :  TRUE 满 FALSE 非满
- 0218           ; ** 全局变量: 无
- 0218           ; ** 调用模块:
- 0218           ; ** 说明：
- 0218           ; ** 注意：
- 0218           ; ********************************************************************************************************/
- 0218           ; unsigned char Tbuf_full(siocirqueue *RTbuf) {
- 0218                   .dbline 305
- 0218           ;     return RTbuf->T_count==TBUF_SIZE;
- 0218 F801              movw R30,R16
- 021A E659              subi R30,150  ; addi 106
- 021C FF4F              sbci R31,255
- 021E 8081              ldd R24,z+0
- 0220 8436              cpi R24,100
- 0222 19F4              brne L47
- 0224           X11:
- 0224 41E0              ldi R20,1
- 0226 50E0              ldi R21,0
- 0228 02C0              xjmp L48
- 022A           L47:
- 022A 4427              clr R20
- 022C 5527              clr R21
- 022E           L48:
- 022E 042F              mov R16,R20
- 0230                   .dbline -2
- 0230           L46:
- 0230                   .dbline 0 ; func end
- 0230 5991              ld R21,y+
- 0232 4991              ld R20,y+
- 0234 0895              ret
- 0236                   .dbsym r RTbuf 16 pS[.1]
- 0236                   .dbend
- 0236                   .dbfunc e Tbuf_putchar _Tbuf_putchar fV
- 0236           ;          RTbuf -> R20,R21
- 0236           ;              x -> R10
+ 0220           _Tbuf_full::
+ 0220 4A93              st -y,R20
+ 0222 5A93              st -y,R21
+ 0224                   .dbline -1
+ 0224                   .dbline 311
+ 0224           ; }
+ 0224           ; /*********************************************************************************************************
+ 0224           ; ** 函数名称: Tbuf_empty
+ 0224           ; ** 功能描述: 发送缓冲区判空
+ 0224           ; ** 输　入:
+ 0224           ; ** 输出        :  TRUE 空 FALSE 非空
+ 0224           ; ** 全局变量: 无
+ 0224           ; ** 调用模块:
+ 0224           ; ** 说明：
+ 0224           ; ** 注意：
+ 0224           ; ********************************************************************************************************
+ 0224           ; unsigned char Tbuf_empty(void){
+ 0224           ;       return RTbuf->T_count==0;
+ 0224           ;       }
+ 0224           ; /*********************************************************************************************************
+ 0224           ; ** 函数名称: Rbuf_full
+ 0224           ; ** 功能描述: 接收缓冲区判满
+ 0224           ; ** 输　入:
+ 0224           ; ** 输出        :  TRUE 满 FALSE 非满
+ 0224           ; ** 全局变量: 无
+ 0224           ; ** 调用模块:
+ 0224           ; ** 说明：
+ 0224           ; ** 注意：
+ 0224           ; ********************************************************************************************************
+ 0224           ; unsigned char Rbuf_full (void){
+ 0224           ;       return RTbuf->R_count==RBUF_SIZE;
+ 0224           ;       }
+ 0224           ; /*********************************************************************************************************
+ 0224           ; ** 函数名称: Tbuf_full
+ 0224           ; ** 功能描述: 发送缓冲区判满
+ 0224           ; ** 输　入:
+ 0224           ; ** 输出        :  TRUE 满 FALSE 非满
+ 0224           ; ** 全局变量: 无
+ 0224           ; ** 调用模块:
+ 0224           ; ** 说明：
+ 0224           ; ** 注意：
+ 0224           ; ********************************************************************************************************/
+ 0224           ; unsigned char Tbuf_full(siocirqueue *RTbuf) {
+ 0224                   .dbline 312
+ 0224           ;     return RTbuf->T_count==TBUF_SIZE;
+ 0224 F801              movw R30,R16
+ 0226 E659              subi R30,150  ; addi 106
+ 0228 FF4F              sbci R31,255
+ 022A 8081              ldd R24,z+0
+ 022C 8436              cpi R24,100
+ 022E 19F4              brne L48
+ 0230           X11:
+ 0230 41E0              ldi R20,1
+ 0232 50E0              ldi R21,0
+ 0234 02C0              xjmp L49
+ 0236           L48:
+ 0236 4427              clr R20
+ 0238 5527              clr R21
+ 023A           L49:
+ 023A 042F              mov R16,R20
+ 023C                   .dbline -2
+ 023C           L47:
+ 023C                   .dbline 0 ; func end
+ 023C 5991              ld R21,y+
+ 023E 4991              ld R20,y+
+ 0240 0895              ret
+ 0242                   .dbsym r RTbuf 16 pS[.1]
+ 0242                   .dbend
+ 0242                   .dbfunc e Tbuf_putchar _Tbuf_putchar fV
+ 0242           ;          RTbuf -> R20,R21
+ 0242           ;              x -> R10
                         .even
- 0236           _Tbuf_putchar::
- 0236 0E940000          xcall push_xgset300C
- 023A A901              movw R20,R18
- 023C A02E              mov R10,R16
- 023E                   .dbline -1
- 023E                   .dbline 336
- 023E           ; }
- 023E           ; /*********************************************************************************************************
- 023E           ; ** 函数名称: Rbuf_putchar
- 023E           ; ** 功能描述: 把一个字符放入接收缓冲区
- 023E           ; ** 输　入:
- 023E           ; ** 输出        :
- 023E           ; ** 全局变量: 无
- 023E           ; ** 调用模块:
- 023E           ; ** 说明：
- 023E           ; ** 注意：
- 023E           ; ********************************************************************************************************
- 023E           ; void  Rbuf_putchar (unsigned char x){
- 023E           ;       if(!Rbuf_full()){
- 023E           ;               REV_DIS();
- 023E           ;               RTbuf->R_count++;
- 023E           ;               RTbuf->R_buf[RTbuf->R_rear]=x;
- 023E           ;               RTbuf->R_rear=(RTbuf->R_rear+1) % RBUF_SIZE;
- 023E           ;               REV_EN();
- 023E           ;       }
- 023E           ; }
- 023E           ; /*********************************************************************************************************
- 023E           ; ** 函数名称: Tbuf_putchar
- 023E           ; ** 功能描述: 把一个字符放入发送缓冲区
- 023E           ; ** 输　入:
- 023E           ; ** 输出        :
- 023E           ; ** 全局变量: 无
- 023E           ; ** 调用模块:
- 023E           ; ** 说明：
- 023E           ; ** 注意：
- 023E           ; ********************************************************************************************************/
- 023E           ; void Tbuf_putchar(unsigned char x,siocirqueue *RTbuf) {
- 023E                   .dbline 337
- 023E           ;     if(!Tbuf_full(RTbuf)) {
- 023E 8A01              movw R16,R20
- 0240 E9DF              xcall _Tbuf_full
- 0242 0023              tst R16
- 0244 09F0              breq X14
- 0246 2CC0              xjmp L50
- 0248           X14:
- 0248           X12:
- 0248                   .dbline 337
- 0248                   .dbline 338
- 0248           ;         TXC_DIS();
- 0248                   .dbline 338
- 0248 5698              cbi 0xa,6
- 024A                   .dbline 338
- 024A                   .dbline 338
- 024A                   .dbline 339
- 024A           ;         if (RTbuf->T_disabled) {
- 024A FA01              movw R30,R20
- 024C E153              subi R30,49  ; addi 207
- 024E FF4F              sbci R31,255
- 0250 2080              ldd R2,z+0
- 0252 EF5C              subi R30,207
- 0254 F040              sbci R31,0
- 0256 2220              tst R2
- 0258 31F0              breq L52
- 025A           X13:
- 025A                   .dbline 339
- 025A                   .dbline 340
- 025A           ;             UDR0=x;
- 025A ACB8              out 0xc,R10
- 025C                   .dbline 341
- 025C           ;             RTbuf->T_disabled=0;
- 025C 2224              clr R2
- 025E E153              subi R30,49  ; addi 207
- 0260 FF4F              sbci R31,255
- 0262 2082              std z+0,R2
- 0264                   .dbline 342
- 0264           ;         } else {
- 0264 1CC0              xjmp L53
- 0266           L52:
- 0266                   .dbline 342
- 0266                   .dbline 343
- 0266           ;             RTbuf->T_count++;
- 0266 CA01              movw R24,R20
- 0268 8659              subi R24,150  ; offset = 106
- 026A 9F4F              sbci R25,255
- 026C FC01              movw R30,R24
- 026E 8081              ldd R24,z+0
- 0270 8F5F              subi R24,255    ; addi 1
- 0272 8083              std z+0,R24
- 0274                   .dbline 344
- 0274           ;             RTbuf->T_buf[RTbuf->T_rear]=x;
- 0274 CA01              movw R24,R20
- 0276 8559              subi R24,149  ; offset = 107
- 0278 9F4F              sbci R25,255
- 027A FA01              movw R30,R20
- 027C E759              subi R30,151  ; addi 105
- 027E FF4F              sbci R31,255
- 0280 E081              ldd R30,z+0
- 0282 FF27              clr R31
- 0284 E80F              add R30,R24
- 0286 F91F              adc R31,R25
- 0288 A082              std z+0,R10
- 028A                   .dbline 345
- 028A           ;             RTbuf->T_rear=(RTbuf->T_rear+1) % TBUF_SIZE;
- 028A 4759              subi R20,151  ; offset = 105
- 028C 5F4F              sbci R21,255
- 028E 14E6              ldi R17,100
- 0290 FA01              movw R30,R20
- 0292 0081              ldd R16,z+0
- 0294 0F5F              subi R16,255    ; addi 1
- 0296 0E940000          xcall mod8u
- 029A FA01              movw R30,R20
- 029C 0083              std z+0,R16
- 029E                   .dbline 346
- 029E           ;         }
- 029E           L53:
- 029E                   .dbline 347
- 029E           ;         TXC_EN();
- 029E                   .dbline 347
- 029E 569A              sbi 0xa,6
- 02A0                   .dbline 347
- 02A0                   .dbline 347
- 02A0                   .dbline 348
- 02A0           ;     }
- 02A0           L50:
- 02A0                   .dbline -2
- 02A0           L49:
- 02A0                   .dbline 0 ; func end
- 02A0 0C940000          xjmp pop_xgset300C
- 02A4                   .dbsym r RTbuf 20 pS[.1]
- 02A4                   .dbsym r x 10 c
- 02A4                   .dbend
- 02A4                   .dbfunc e Rbuf_getchar _Rbuf_getchar fc
- 02A4           ;          Btemp -> R10
- 02A4           ;          RTbuf -> R20,R21
+ 0242           _Tbuf_putchar::
+ 0242 0E940000          xcall push_xgset300C
+ 0246 A901              movw R20,R18
+ 0248 A02E              mov R10,R16
+ 024A                   .dbline -1
+ 024A                   .dbline 343
+ 024A           ; }
+ 024A           ; /*********************************************************************************************************
+ 024A           ; ** 函数名称: Rbuf_putchar
+ 024A           ; ** 功能描述: 把一个字符放入接收缓冲区
+ 024A           ; ** 输　入:
+ 024A           ; ** 输出        :
+ 024A           ; ** 全局变量: 无
+ 024A           ; ** 调用模块:
+ 024A           ; ** 说明：
+ 024A           ; ** 注意：
+ 024A           ; ********************************************************************************************************
+ 024A           ; void  Rbuf_putchar (unsigned char x){
+ 024A           ;       if(!Rbuf_full()){
+ 024A           ;               REV_DIS();
+ 024A           ;               RTbuf->R_count++;
+ 024A           ;               RTbuf->R_buf[RTbuf->R_rear]=x;
+ 024A           ;               RTbuf->R_rear=(RTbuf->R_rear+1) % RBUF_SIZE;
+ 024A           ;               REV_EN();
+ 024A           ;       }
+ 024A           ; }
+ 024A           ; /*********************************************************************************************************
+ 024A           ; ** 函数名称: Tbuf_putchar
+ 024A           ; ** 功能描述: 把一个字符放入发送缓冲区
+ 024A           ; ** 输　入:
+ 024A           ; ** 输出        :
+ 024A           ; ** 全局变量: 无
+ 024A           ; ** 调用模块:
+ 024A           ; ** 说明：
+ 024A           ; ** 注意：
+ 024A           ; ********************************************************************************************************/
+ 024A           ; void Tbuf_putchar(unsigned char x,siocirqueue *RTbuf) {
+ 024A                   .dbline 344
+ 024A           ;     if(!Tbuf_full(RTbuf)) {
+ 024A 8A01              movw R16,R20
+ 024C E9DF              xcall _Tbuf_full
+ 024E 0023              tst R16
+ 0250 09F0              breq X14
+ 0252 2CC0              xjmp L51
+ 0254           X14:
+ 0254           X12:
+ 0254                   .dbline 344
+ 0254                   .dbline 345
+ 0254           ;         TXC_DIS();
+ 0254                   .dbline 345
+ 0254 5698              cbi 0xa,6
+ 0256                   .dbline 345
+ 0256                   .dbline 345
+ 0256                   .dbline 346
+ 0256           ;         if (RTbuf->T_disabled) {
+ 0256 FA01              movw R30,R20
+ 0258 E153              subi R30,49  ; addi 207
+ 025A FF4F              sbci R31,255
+ 025C 2080              ldd R2,z+0
+ 025E EF5C              subi R30,207
+ 0260 F040              sbci R31,0
+ 0262 2220              tst R2
+ 0264 31F0              breq L53
+ 0266           X13:
+ 0266                   .dbline 346
+ 0266                   .dbline 347
+ 0266           ;             UDR0=x;
+ 0266 ACB8              out 0xc,R10
+ 0268                   .dbline 348
+ 0268           ;             RTbuf->T_disabled=0;
+ 0268 2224              clr R2
+ 026A E153              subi R30,49  ; addi 207
+ 026C FF4F              sbci R31,255
+ 026E 2082              std z+0,R2
+ 0270                   .dbline 349
+ 0270           ;         } else {
+ 0270 1CC0              xjmp L54
+ 0272           L53:
+ 0272                   .dbline 349
+ 0272                   .dbline 350
+ 0272           ;             RTbuf->T_count++;
+ 0272 CA01              movw R24,R20
+ 0274 8659              subi R24,150  ; offset = 106
+ 0276 9F4F              sbci R25,255
+ 0278 FC01              movw R30,R24
+ 027A 8081              ldd R24,z+0
+ 027C 8F5F              subi R24,255    ; addi 1
+ 027E 8083              std z+0,R24
+ 0280                   .dbline 351
+ 0280           ;             RTbuf->T_buf[RTbuf->T_rear]=x;
+ 0280 CA01              movw R24,R20
+ 0282 8559              subi R24,149  ; offset = 107
+ 0284 9F4F              sbci R25,255
+ 0286 FA01              movw R30,R20
+ 0288 E759              subi R30,151  ; addi 105
+ 028A FF4F              sbci R31,255
+ 028C E081              ldd R30,z+0
+ 028E FF27              clr R31
+ 0290 E80F              add R30,R24
+ 0292 F91F              adc R31,R25
+ 0294 A082              std z+0,R10
+ 0296                   .dbline 352
+ 0296           ;             RTbuf->T_rear=(RTbuf->T_rear+1) % TBUF_SIZE;
+ 0296 4759              subi R20,151  ; offset = 105
+ 0298 5F4F              sbci R21,255
+ 029A 14E6              ldi R17,100
+ 029C FA01              movw R30,R20
+ 029E 0081              ldd R16,z+0
+ 02A0 0F5F              subi R16,255    ; addi 1
+ 02A2 0E940000          xcall mod8u
+ 02A6 FA01              movw R30,R20
+ 02A8 0083              std z+0,R16
+ 02AA                   .dbline 353
+ 02AA           ;         }
+ 02AA           L54:
+ 02AA                   .dbline 354
+ 02AA           ;         TXC_EN();
+ 02AA                   .dbline 354
+ 02AA 569A              sbi 0xa,6
+ 02AC                   .dbline 354
+ 02AC                   .dbline 354
+ 02AC                   .dbline 355
+ 02AC           ;     }
+ 02AC           L51:
+ 02AC                   .dbline -2
+ 02AC           L50:
+ 02AC                   .dbline 0 ; func end
+ 02AC 0C940000          xjmp pop_xgset300C
+ 02B0                   .dbsym r RTbuf 20 pS[.1]
+ 02B0                   .dbsym r x 10 c
+ 02B0                   .dbend
+ 02B0                   .dbfunc e Rbuf_getchar _Rbuf_getchar fc
+ 02B0           ;          Btemp -> R10
+ 02B0           ;          RTbuf -> R20,R21
                         .even
- 02A4           _Rbuf_getchar::
- 02A4 0E940000          xcall push_xgset300C
- 02A8 A801              movw R20,R16
- 02AA                   .dbline -1
- 02AA                   .dbline 386
- 02AA           ; }
- 02AA           ; /*********************************************************************************************************
- 02AA           ; ** 函数名称: Rbuf_getstring
- 02AA           ; ** 功能描述: 从接收缓冲区返回当前子串指针
- 02AA           ; ** 输　入:
- 02AA           ; ** 输出        :  当前子串指针
- 02AA           ; ** 全局变量: 无
- 02AA           ; ** 调用模块:
- 02AA           ; ** 说明：
- 02AA           ; ** 注意：
- 02AA           ; ********************************************************************************************************
- 02AA           ; unsigned char * Rbuf_getstring(void){
- 02AA           ;       return (RTbuf->R_buf[RTbuf->R_front]);
- 02AA           ; }
- 02AA           ; /*********************************************************************************************************
- 02AA           ; ** 函数名称: Tbuf_getstring
- 02AA           ; ** 功能描述: 从发送缓冲区返回当前子串指针
- 02AA           ; ** 输　入:
- 02AA           ; ** 输出        :  当前子串指针
- 02AA           ; ** 全局变量: 无
- 02AA           ; ** 调用模块:
- 02AA           ; ** 说明：
- 02AA           ; ** 注意：
- 02AA           ; ********************************************************************************************************
- 02AA           ; unsigned char * Tbuf_getstring(void){
- 02AA           ;       return (RTbuf->T_buf[RTbuf->T_front]);
- 02AA           ; }
- 02AA           ; /*********************************************************************************************************
- 02AA           ; ** 函数名称: Rbuf_putchar
- 02AA           ; ** 功能描述: 从接收缓冲区读一个字符
- 02AA           ; ** 输　入:
- 02AA           ; ** 输出        :  读字符
- 02AA           ; ** 全局变量: 无
- 02AA           ; ** 调用模块:
- 02AA           ; ** 说明：
- 02AA           ; ** 注意：
- 02AA           ; ********************************************************************************************************/
- 02AA           ; unsigned char Rbuf_getchar(siocirqueue *RTbuf) {
- 02AA                   .dbline 387
- 02AA           ;     unsigned char Btemp=0;
- 02AA AA24              clr R10
- 02AC                   .dbline 388
- 02AC           ;     if (!Rbuf_empty(RTbuf)) {
- 02AC 8A01              movw R16,R20
- 02AE A3DF              xcall _Rbuf_empty
- 02B0 0023              tst R16
- 02B2 C1F4              brne L55
- 02B4           X15:
- 02B4                   .dbline 388
- 02B4                   .dbline 389
- 02B4           ;         Btemp=RTbuf->R_buf[RTbuf->R_front];
- 02B4 CA01              movw R24,R20
- 02B6 0496              adiw R24,4
- 02B8 FA01              movw R30,R20
- 02BA E081              ldd R30,z+0
- 02BC FF27              clr R31
- 02BE E80F              add R30,R24
- 02C0 F91F              adc R31,R25
- 02C2 A080              ldd R10,z+0
- 02C4                   .dbline 390
- 02C4           ;         REV_DIS();
- 02C4                   .dbline 390
- 02C4 5798              cbi 0xa,7
- 02C6                   .dbline 390
- 02C6                   .dbline 390
- 02C6                   .dbline 391
- 02C6           ;         RTbuf->R_count--;
- 02C6 CA01              movw R24,R20
- 02C8 0296              adiw R24,2
- 02CA FC01              movw R30,R24
- 02CC 8081              ldd R24,z+0
- 02CE 8150              subi R24,1
- 02D0 8083              std z+0,R24
- 02D2                   .dbline 392
- 02D2           ;         RTbuf->R_front=(RTbuf->R_front+1) % RBUF_SIZE;
- 02D2 14E6              ldi R17,100
- 02D4 FA01              movw R30,R20
- 02D6 0081              ldd R16,z+0
- 02D8 0F5F              subi R16,255    ; addi 1
- 02DA 0E940000          xcall mod8u
- 02DE FA01              movw R30,R20
- 02E0 0083              std z+0,R16
- 02E2                   .dbline 393
- 02E2           ;         REV_EN();
- 02E2 579A              sbi 0xa,7
- 02E4                   .dbline 394
- 02E4           ;     }
- 02E4           L55:
- 02E4                   .dbline 395
- 02E4           ;     return (Btemp);
- 02E4 0A2D              mov R16,R10
- 02E6                   .dbline -2
- 02E6           L54:
- 02E6                   .dbline 0 ; func end
- 02E6 0C940000          xjmp pop_xgset300C
- 02EA                   .dbsym r Btemp 10 c
- 02EA                   .dbsym r RTbuf 20 pS[.1]
- 02EA                   .dbend
+ 02B0           _Rbuf_getchar::
+ 02B0 0E940000          xcall push_xgset300C
+ 02B4 A801              movw R20,R16
+ 02B6                   .dbline -1
+ 02B6                   .dbline 393
+ 02B6           ; }
+ 02B6           ; /*********************************************************************************************************
+ 02B6           ; ** 函数名称: Rbuf_getstring
+ 02B6           ; ** 功能描述: 从接收缓冲区返回当前子串指针
+ 02B6           ; ** 输　入:
+ 02B6           ; ** 输出        :  当前子串指针
+ 02B6           ; ** 全局变量: 无
+ 02B6           ; ** 调用模块:
+ 02B6           ; ** 说明：
+ 02B6           ; ** 注意：
+ 02B6           ; ********************************************************************************************************
+ 02B6           ; unsigned char * Rbuf_getstring(void){
+ 02B6           ;       return (RTbuf->R_buf[RTbuf->R_front]);
+ 02B6           ; }
+ 02B6           ; /*********************************************************************************************************
+ 02B6           ; ** 函数名称: Tbuf_getstring
+ 02B6           ; ** 功能描述: 从发送缓冲区返回当前子串指针
+ 02B6           ; ** 输　入:
+ 02B6           ; ** 输出        :  当前子串指针
+ 02B6           ; ** 全局变量: 无
+ 02B6           ; ** 调用模块:
+ 02B6           ; ** 说明：
+ 02B6           ; ** 注意：
+ 02B6           ; ********************************************************************************************************
+ 02B6           ; unsigned char * Tbuf_getstring(void){
+ 02B6           ;       return (RTbuf->T_buf[RTbuf->T_front]);
+ 02B6           ; }
+ 02B6           ; /*********************************************************************************************************
+ 02B6           ; ** 函数名称: Rbuf_putchar
+ 02B6           ; ** 功能描述: 从接收缓冲区读一个字符
+ 02B6           ; ** 输　入:
+ 02B6           ; ** 输出        :  读字符
+ 02B6           ; ** 全局变量: 无
+ 02B6           ; ** 调用模块:
+ 02B6           ; ** 说明：
+ 02B6           ; ** 注意：
+ 02B6           ; ********************************************************************************************************/
+ 02B6           ; unsigned char Rbuf_getchar(siocirqueue *RTbuf) {
+ 02B6                   .dbline 394
+ 02B6           ;     unsigned char Btemp=0;
+ 02B6 AA24              clr R10
+ 02B8                   .dbline 395
+ 02B8           ;     if (!Rbuf_empty(RTbuf)) {
+ 02B8 8A01              movw R16,R20
+ 02BA A3DF              xcall _Rbuf_empty
+ 02BC 0023              tst R16
+ 02BE C1F4              brne L56
+ 02C0           X15:
+ 02C0                   .dbline 395
+ 02C0                   .dbline 396
+ 02C0           ;         Btemp=RTbuf->R_buf[RTbuf->R_front];
+ 02C0 CA01              movw R24,R20
+ 02C2 0496              adiw R24,4
+ 02C4 FA01              movw R30,R20
+ 02C6 E081              ldd R30,z+0
+ 02C8 FF27              clr R31
+ 02CA E80F              add R30,R24
+ 02CC F91F              adc R31,R25
+ 02CE A080              ldd R10,z+0
+ 02D0                   .dbline 397
+ 02D0           ;         REV_DIS();
+ 02D0                   .dbline 397
+ 02D0 5798              cbi 0xa,7
+ 02D2                   .dbline 397
+ 02D2                   .dbline 397
+ 02D2                   .dbline 398
+ 02D2           ;         RTbuf->R_count--;
+ 02D2 CA01              movw R24,R20
+ 02D4 0296              adiw R24,2
+ 02D6 FC01              movw R30,R24
+ 02D8 8081              ldd R24,z+0
+ 02DA 8150              subi R24,1
+ 02DC 8083              std z+0,R24
+ 02DE                   .dbline 399
+ 02DE           ;         RTbuf->R_front=(RTbuf->R_front+1) % RBUF_SIZE;
+ 02DE 14E6              ldi R17,100
+ 02E0 FA01              movw R30,R20
+ 02E2 0081              ldd R16,z+0
+ 02E4 0F5F              subi R16,255    ; addi 1
+ 02E6 0E940000          xcall mod8u
+ 02EA FA01              movw R30,R20
+ 02EC 0083              std z+0,R16
+ 02EE                   .dbline 400
+ 02EE           ;         REV_EN();
+ 02EE 579A              sbi 0xa,7
+ 02F0                   .dbline 401
+ 02F0           ;     }
+ 02F0           L56:
+ 02F0                   .dbline 402
+ 02F0           ;     return (Btemp);
+ 02F0 0A2D              mov R16,R10
+ 02F2                   .dbline -2
+ 02F2           L55:
+ 02F2                   .dbline 0 ; func end
+ 02F2 0C940000          xjmp pop_xgset300C
+ 02F6                   .dbsym r Btemp 10 c
+ 02F6                   .dbsym r RTbuf 20 pS[.1]
+ 02F6                   .dbend
                         .area vector(rom, abs)
                         .org 72
- 0048 0C947501          jmp _uart0_rx_isr
+ 0048 0C947B01          jmp _uart0_rx_isr
                         .area text(rom, con, rel)
- 02EA                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\sio.c
- 02EA                   .dbfunc e uart0_rx_isr _uart0_rx_isr fV
- 02EA           ;           data -> R10
- 02EA           ;         status -> R22
- 02EA           ;          RTbuf -> R20,R21
+ 02F6                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\sio.c
+ 02F6                   .dbfunc e uart0_rx_isr _uart0_rx_isr fV
+ 02F6           ;           data -> R10
+ 02F6           ;         status -> R22
+ 02F6           ;          RTbuf -> R20,R21
                         .even
- 02EA           _uart0_rx_isr::
- 02EA 2A92              st -y,R2
- 02EC 3A92              st -y,R3
- 02EE 0A93              st -y,R16
- 02F0 1A93              st -y,R17
- 02F2 8A93              st -y,R24
- 02F4 9A93              st -y,R25
- 02F6 EA93              st -y,R30
- 02F8 FA93              st -y,R31
- 02FA 2FB6              IN R2,63
- 02FC 2A92              st -y,R2
- 02FE 0E940000          xcall push_xgsetF00C
- 0302                   .dbline -1
- 0302                   .dbline 426
- 0302           ; 
- 0302           ; }
- 0302           ; /*********************************************************************************************************
- 0302           ; ** 函数名称: Tbuf_getchar
- 0302           ; ** 功能描述: 从发送缓冲区读一个字符
- 0302           ; ** 输　入:
- 0302           ; ** 输出        :  读字符
- 0302           ; ** 全局变量: 无
- 0302           ; ** 调用模块:
- 0302           ; ** 说明：
- 0302           ; ** 注意：
- 0302           ; ********************************************************************************************************
- 0302           ; unsigned char Tbuf_getchar(void){
- 0302           ;       unsigned char Btemp;
- 0302           ;       if (!Tbuf_empty()){
- 0302           ;               Btemp=RTbuf->T_buf[RTbuf->T_front];
- 0302           ;               TXC_DIS();
- 0302           ;               RTbuf->T_count--;
- 0302           ;               RTbuf->T_front=(RTbuf->T_front+1) % TBUF_SIZE;
- 0302           ;               TXC_EN();
- 0302           ;               return (Btemp);
- 0302           ;       }
- 0302           ; }
- 0302           ; */
- 0302           ; 
- 0302           ; /******************************* 中断处理函数 ***************************
- 0302           ; * 功能：完成数据得的接收和发送
- 0302           ; ***********************************************************************/
- 0302           ; #if USEUART0
- 0302           ; #pragma interrupt_handler uart0_rx_isr:iv_USART0_RXC
- 0302           ; void uart0_rx_isr(void) {
- 0302                   .dbline 429
- 0302           ;     unsigned char status,data;
- 0302           ;     siocirqueue *RTbuf;
- 0302           ;     RTbuf=&RTbuf_UART0;
- 0302 40E0              ldi R20,<_RTbuf_UART0
- 0304 50E0              ldi R21,>_RTbuf_UART0
- 0306                   .dbline 431
- 0306           ; // CLI();
- 0306           ;     status=UCSR0A;
- 0306 6BB1              in R22,0xb
- 0308                   .dbline 432
- 0308           ;     data=UDR0;
- 0308 ACB0              in R10,0xc
- 030A                   .dbline 434
- 030A           ; //WDR(); //喂狗
- 030A           ;     if((status & (FRAMING_ERROR | DATA_OVERRUN))==0) {
- 030A 862F              mov R24,R22
- 030C 8871              andi R24,24
- 030E 09F0              breq X18
- 0310 22C0              xjmp L58
- 0312           X18:
- 0312           X16:
- 0312                   .dbline 434
- 0312                   .dbline 435
- 0312           ;         if(RTbuf->R_count<RBUF_SIZE) {
- 0312 FA01              movw R30,R20
- 0314 8281              ldd R24,z+2
- 0316 8436              cpi R24,100
- 0318 08F0              brlo X19
- 031A 1AC0              xjmp L60
- 031C           X19:
- 031C           X17:
- 031C                   .dbline 435
- 031C                   .dbline 436
- 031C           ;             RTbuf->R_count++;
- 031C CF01              movw R24,R30
- 031E 0296              adiw R24,2
- 0320 FC01              movw R30,R24
- 0322 8081              ldd R24,z+0
- 0324 8F5F              subi R24,255    ; addi 1
- 0326 8083              std z+0,R24
- 0328                   .dbline 437
- 0328           ;             RTbuf->R_buf[RTbuf->R_rear]=data;
- 0328 CA01              movw R24,R20
- 032A 0496              adiw R24,4
- 032C FA01              movw R30,R20
- 032E E181              ldd R30,z+1
- 0330 FF27              clr R31
- 0332 E80F              add R30,R24
- 0334 F91F              adc R31,R25
- 0336 A082              std z+0,R10
- 0338                   .dbline 438
- 0338           ;             RTbuf->R_rear=(RTbuf->R_rear+1) % RBUF_SIZE;
- 0338 CA01              movw R24,R20
- 033A 0196              adiw R24,1
- 033C 1C01              movw R2,R24
- 033E 14E6              ldi R17,100
- 0340 FC01              movw R30,R24
- 0342 0081              ldd R16,z+0
- 0344 0F5F              subi R16,255    ; addi 1
- 0346 0E940000          xcall mod8u
- 034A F101              movw R30,R2
- 034C 0083              std z+0,R16
- 034E                   .dbline 439
- 034E           ;         } else {
- 034E 03C0              xjmp L61
- 0350           L60:
- 0350                   .dbline 439
- 0350                   .dbline 440
- 0350           ;             RTbuf->R_overflow=1;
- 0350 81E0              ldi R24,1
- 0352 FA01              movw R30,R20
- 0354 8383              std z+3,R24
- 0356                   .dbline 441
- 0356           ;         }
- 0356           L61:
- 0356                   .dbline 442
- 0356           ;     }
- 0356           L58:
- 0356                   .dbline -2
- 0356           L57:
- 0356                   .dbline 0 ; func end
- 0356 0E940000          xcall pop_xgsetF00C
- 035A 2990              ld R2,y+
- 035C 2FBE              OUT 63,R2
- 035E F991              ld R31,y+
- 0360 E991              ld R30,y+
- 0362 9991              ld R25,y+
- 0364 8991              ld R24,y+
- 0366 1991              ld R17,y+
- 0368 0991              ld R16,y+
- 036A 3990              ld R3,y+
- 036C 2990              ld R2,y+
- 036E 1895              reti
- 0370                   .dbsym r data 10 c
- 0370                   .dbsym r status 22 c
- 0370                   .dbsym r RTbuf 20 pS[.1]
- 0370                   .dbend
- 0370                   .dbfunc e getstr _getstr fV
- 0370           ;           data -> R10
- 0370           ;         status -> R22
- 0370           ;          RTbuf -> R20,R21
+ 02F6           _uart0_rx_isr::
+ 02F6 2A92              st -y,R2
+ 02F8 3A92              st -y,R3
+ 02FA 0A93              st -y,R16
+ 02FC 1A93              st -y,R17
+ 02FE 8A93              st -y,R24
+ 0300 9A93              st -y,R25
+ 0302 EA93              st -y,R30
+ 0304 FA93              st -y,R31
+ 0306 2FB6              IN R2,63
+ 0308 2A92              st -y,R2
+ 030A 0E940000          xcall push_xgsetF00C
+ 030E                   .dbline -1
+ 030E                   .dbline 433
+ 030E           ; 
+ 030E           ; }
+ 030E           ; /*********************************************************************************************************
+ 030E           ; ** 函数名称: Tbuf_getchar
+ 030E           ; ** 功能描述: 从发送缓冲区读一个字符
+ 030E           ; ** 输　入:
+ 030E           ; ** 输出        :  读字符
+ 030E           ; ** 全局变量: 无
+ 030E           ; ** 调用模块:
+ 030E           ; ** 说明：
+ 030E           ; ** 注意：
+ 030E           ; ********************************************************************************************************
+ 030E           ; unsigned char Tbuf_getchar(void){
+ 030E           ;       unsigned char Btemp;
+ 030E           ;       if (!Tbuf_empty()){
+ 030E           ;               Btemp=RTbuf->T_buf[RTbuf->T_front];
+ 030E           ;               TXC_DIS();
+ 030E           ;               RTbuf->T_count--;
+ 030E           ;               RTbuf->T_front=(RTbuf->T_front+1) % TBUF_SIZE;
+ 030E           ;               TXC_EN();
+ 030E           ;               return (Btemp);
+ 030E           ;       }
+ 030E           ; }
+ 030E           ; */
+ 030E           ; 
+ 030E           ; /******************************* 中断处理函数 ***************************
+ 030E           ; * 功能：完成数据得的接收和发送
+ 030E           ; ***********************************************************************/
+ 030E           ; #if USEUART0
+ 030E           ; #pragma interrupt_handler uart0_rx_isr:iv_USART0_RXC
+ 030E           ; void uart0_rx_isr(void) {
+ 030E                   .dbline 436
+ 030E           ;     unsigned char status,data;
+ 030E           ;     siocirqueue *RTbuf;
+ 030E           ;     RTbuf=&RTbuf_UART0;
+ 030E 40E0              ldi R20,<_RTbuf_UART0
+ 0310 50E0              ldi R21,>_RTbuf_UART0
+ 0312                   .dbline 438
+ 0312           ; // CLI();
+ 0312           ;     status=UCSR0A;
+ 0312 6BB1              in R22,0xb
+ 0314                   .dbline 439
+ 0314           ;     data=UDR0;
+ 0314 ACB0              in R10,0xc
+ 0316                   .dbline 441
+ 0316           ; //WDR(); //喂狗
+ 0316           ;     if((status & (FRAMING_ERROR | DATA_OVERRUN))==0) {
+ 0316 862F              mov R24,R22
+ 0318 8871              andi R24,24
+ 031A 09F0              breq X18
+ 031C 22C0              xjmp L59
+ 031E           X18:
+ 031E           X16:
+ 031E                   .dbline 441
+ 031E                   .dbline 442
+ 031E           ;         if(RTbuf->R_count<RBUF_SIZE) {
+ 031E FA01              movw R30,R20
+ 0320 8281              ldd R24,z+2
+ 0322 8436              cpi R24,100
+ 0324 08F0              brlo X19
+ 0326 1AC0              xjmp L61
+ 0328           X19:
+ 0328           X17:
+ 0328                   .dbline 442
+ 0328                   .dbline 443
+ 0328           ;             RTbuf->R_count++;
+ 0328 CF01              movw R24,R30
+ 032A 0296              adiw R24,2
+ 032C FC01              movw R30,R24
+ 032E 8081              ldd R24,z+0
+ 0330 8F5F              subi R24,255    ; addi 1
+ 0332 8083              std z+0,R24
+ 0334                   .dbline 444
+ 0334           ;             RTbuf->R_buf[RTbuf->R_rear]=data;
+ 0334 CA01              movw R24,R20
+ 0336 0496              adiw R24,4
+ 0338 FA01              movw R30,R20
+ 033A E181              ldd R30,z+1
+ 033C FF27              clr R31
+ 033E E80F              add R30,R24
+ 0340 F91F              adc R31,R25
+ 0342 A082              std z+0,R10
+ 0344                   .dbline 445
+ 0344           ;             RTbuf->R_rear=(RTbuf->R_rear+1) % RBUF_SIZE;
+ 0344 CA01              movw R24,R20
+ 0346 0196              adiw R24,1
+ 0348 1C01              movw R2,R24
+ 034A 14E6              ldi R17,100
+ 034C FC01              movw R30,R24
+ 034E 0081              ldd R16,z+0
+ 0350 0F5F              subi R16,255    ; addi 1
+ 0352 0E940000          xcall mod8u
+ 0356 F101              movw R30,R2
+ 0358 0083              std z+0,R16
+ 035A                   .dbline 446
+ 035A           ;         } else {
+ 035A 03C0              xjmp L62
+ 035C           L61:
+ 035C                   .dbline 446
+ 035C                   .dbline 447
+ 035C           ;             RTbuf->R_overflow=1;
+ 035C 81E0              ldi R24,1
+ 035E FA01              movw R30,R20
+ 0360 8383              std z+3,R24
+ 0362                   .dbline 448
+ 0362           ;         }
+ 0362           L62:
+ 0362                   .dbline 449
+ 0362           ;     }
+ 0362           L59:
+ 0362                   .dbline -2
+ 0362           L58:
+ 0362                   .dbline 0 ; func end
+ 0362 0E940000          xcall pop_xgsetF00C
+ 0366 2990              ld R2,y+
+ 0368 2FBE              OUT 63,R2
+ 036A F991              ld R31,y+
+ 036C E991              ld R30,y+
+ 036E 9991              ld R25,y+
+ 0370 8991              ld R24,y+
+ 0372 1991              ld R17,y+
+ 0374 0991              ld R16,y+
+ 0376 3990              ld R3,y+
+ 0378 2990              ld R2,y+
+ 037A 1895              reti
+ 037C                   .dbsym r data 10 c
+ 037C                   .dbsym r status 22 c
+ 037C                   .dbsym r RTbuf 20 pS[.1]
+ 037C                   .dbend
+ 037C                   .dbfunc e getstr _getstr fV
+ 037C           ;           data -> R10
+ 037C           ;         status -> R22
+ 037C           ;          RTbuf -> R20,R21
                         .even
- 0370           _getstr::
- 0370 0E940000          xcall push_xgsetF00C
- 0374                   .dbline -1
- 0374                   .dbline 450
- 0374           ; //SEI();
- 0374           ; }
- 0374           ; 
- 0374           ; 
- 0374           ; 
- 0374           ; 
- 0374           ; 
- 0374           ; void getstr(void) {
- 0374                   .dbline 453
- 0374           ;     unsigned char status,data;
- 0374           ;     siocirqueue *RTbuf;
- 0374           ;     RTbuf=&RTbuf_UART0;
- 0374 40E0              ldi R20,<_RTbuf_UART0
- 0376 50E0              ldi R21,>_RTbuf_UART0
- 0378                   .dbline 455
- 0378           ; // CLI();
- 0378           ;     status=UCSR0A;
- 0378 6BB1              in R22,0xb
- 037A                   .dbline 456
- 037A           ;     data=UDR0;
- 037A ACB0              in R10,0xc
- 037C                   .dbline 458
- 037C           ; //WDR(); //喂狗
- 037C           ;     if((status & (FRAMING_ERROR | DATA_OVERRUN))==0) {
- 037C 862F              mov R24,R22
- 037E 8871              andi R24,24
- 0380 09F0              breq X22
- 0382 22C0              xjmp L63
- 0384           X22:
- 0384           X20:
- 0384                   .dbline 458
- 0384                   .dbline 459
- 0384           ;         if(RTbuf->R_count<RBUF_SIZE) {
- 0384 FA01              movw R30,R20
- 0386 8281              ldd R24,z+2
- 0388 8436              cpi R24,100
- 038A 08F0              brlo X23
- 038C 1AC0              xjmp L65
- 038E           X23:
- 038E           X21:
- 038E                   .dbline 459
- 038E                   .dbline 460
- 038E           ;             RTbuf->R_count++;
- 038E CF01              movw R24,R30
- 0390 0296              adiw R24,2
- 0392 FC01              movw R30,R24
- 0394 8081              ldd R24,z+0
- 0396 8F5F              subi R24,255    ; addi 1
- 0398 8083              std z+0,R24
- 039A                   .dbline 461
- 039A           ;             RTbuf->R_buf[RTbuf->R_rear]=data;
- 039A CA01              movw R24,R20
- 039C 0496              adiw R24,4
- 039E FA01              movw R30,R20
- 03A0 E181              ldd R30,z+1
- 03A2 FF27              clr R31
- 03A4 E80F              add R30,R24
- 03A6 F91F              adc R31,R25
- 03A8 A082              std z+0,R10
- 03AA                   .dbline 462
- 03AA           ;             RTbuf->R_rear=(RTbuf->R_rear+1) % RBUF_SIZE;
- 03AA CA01              movw R24,R20
- 03AC 0196              adiw R24,1
- 03AE 1C01              movw R2,R24
- 03B0 14E6              ldi R17,100
- 03B2 FC01              movw R30,R24
- 03B4 0081              ldd R16,z+0
- 03B6 0F5F              subi R16,255    ; addi 1
- 03B8 0E940000          xcall mod8u
- 03BC F101              movw R30,R2
- 03BE 0083              std z+0,R16
- 03C0                   .dbline 463
- 03C0           ;         } else {
- 03C0 03C0              xjmp L66
- 03C2           L65:
- 03C2                   .dbline 463
- 03C2                   .dbline 464
- 03C2           ;             RTbuf->R_overflow=1;
- 03C2 81E0              ldi R24,1
- 03C4 FA01              movw R30,R20
- 03C6 8383              std z+3,R24
- 03C8                   .dbline 465
- 03C8           ;         }
- 03C8           L66:
- 03C8                   .dbline 466
- 03C8           ;     }
- 03C8           L63:
- 03C8                   .dbline -2
- 03C8           L62:
- 03C8                   .dbline 0 ; func end
- 03C8 0C940000          xjmp pop_xgsetF00C
- 03CC                   .dbsym r data 10 c
- 03CC                   .dbsym r status 22 c
- 03CC                   .dbsym r RTbuf 20 pS[.1]
- 03CC                   .dbend
+ 037C           _getstr::
+ 037C 0E940000          xcall push_xgsetF00C
+ 0380                   .dbline -1
+ 0380                   .dbline 457
+ 0380           ; //SEI();
+ 0380           ; }
+ 0380           ; 
+ 0380           ; 
+ 0380           ; 
+ 0380           ; 
+ 0380           ; 
+ 0380           ; void getstr(void) {
+ 0380                   .dbline 460
+ 0380           ;     unsigned char status,data;
+ 0380           ;     siocirqueue *RTbuf;
+ 0380           ;     RTbuf=&RTbuf_UART0;
+ 0380 40E0              ldi R20,<_RTbuf_UART0
+ 0382 50E0              ldi R21,>_RTbuf_UART0
+ 0384                   .dbline 462
+ 0384           ; // CLI();
+ 0384           ;     status=UCSR0A;
+ 0384 6BB1              in R22,0xb
+ 0386                   .dbline 463
+ 0386           ;     data=UDR0;
+ 0386 ACB0              in R10,0xc
+ 0388                   .dbline 465
+ 0388           ; //WDR(); //喂狗
+ 0388           ;     if((status & (FRAMING_ERROR | DATA_OVERRUN))==0) {
+ 0388 862F              mov R24,R22
+ 038A 8871              andi R24,24
+ 038C 09F0              breq X22
+ 038E 22C0              xjmp L64
+ 0390           X22:
+ 0390           X20:
+ 0390                   .dbline 465
+ 0390                   .dbline 466
+ 0390           ;         if(RTbuf->R_count<RBUF_SIZE) {
+ 0390 FA01              movw R30,R20
+ 0392 8281              ldd R24,z+2
+ 0394 8436              cpi R24,100
+ 0396 08F0              brlo X23
+ 0398 1AC0              xjmp L66
+ 039A           X23:
+ 039A           X21:
+ 039A                   .dbline 466
+ 039A                   .dbline 467
+ 039A           ;             RTbuf->R_count++;
+ 039A CF01              movw R24,R30
+ 039C 0296              adiw R24,2
+ 039E FC01              movw R30,R24
+ 03A0 8081              ldd R24,z+0
+ 03A2 8F5F              subi R24,255    ; addi 1
+ 03A4 8083              std z+0,R24
+ 03A6                   .dbline 468
+ 03A6           ;             RTbuf->R_buf[RTbuf->R_rear]=data;
+ 03A6 CA01              movw R24,R20
+ 03A8 0496              adiw R24,4
+ 03AA FA01              movw R30,R20
+ 03AC E181              ldd R30,z+1
+ 03AE FF27              clr R31
+ 03B0 E80F              add R30,R24
+ 03B2 F91F              adc R31,R25
+ 03B4 A082              std z+0,R10
+ 03B6                   .dbline 469
+ 03B6           ;             RTbuf->R_rear=(RTbuf->R_rear+1) % RBUF_SIZE;
+ 03B6 CA01              movw R24,R20
+ 03B8 0196              adiw R24,1
+ 03BA 1C01              movw R2,R24
+ 03BC 14E6              ldi R17,100
+ 03BE FC01              movw R30,R24
+ 03C0 0081              ldd R16,z+0
+ 03C2 0F5F              subi R16,255    ; addi 1
+ 03C4 0E940000          xcall mod8u
+ 03C8 F101              movw R30,R2
+ 03CA 0083              std z+0,R16
+ 03CC                   .dbline 470
+ 03CC           ;         } else {
+ 03CC 03C0              xjmp L67
+ 03CE           L66:
+ 03CE                   .dbline 470
+ 03CE                   .dbline 471
+ 03CE           ;             RTbuf->R_overflow=1;
+ 03CE 81E0              ldi R24,1
+ 03D0 FA01              movw R30,R20
+ 03D2 8383              std z+3,R24
+ 03D4                   .dbline 472
+ 03D4           ;         }
+ 03D4           L67:
+ 03D4                   .dbline 473
+ 03D4           ;     }
+ 03D4           L64:
+ 03D4                   .dbline -2
+ 03D4           L63:
+ 03D4                   .dbline 0 ; func end
+ 03D4 0C940000          xjmp pop_xgsetF00C
+ 03D8                   .dbsym r data 10 c
+ 03D8                   .dbsym r status 22 c
+ 03D8                   .dbsym r RTbuf 20 pS[.1]
+ 03D8                   .dbend
                         .area vector(rom, abs)
                         .org 80
- 0050 0C94E601          jmp _uart0_tx_isr
+ 0050 0C94EC01          jmp _uart0_tx_isr
                         .area text(rom, con, rel)
- 03CC                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\sio.c
- 03CC                   .dbfunc e uart0_tx_isr _uart0_tx_isr fV
- 03CC           ;          RTbuf -> R20,R21
+ 03D8                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\sio.c
+ 03D8                   .dbfunc e uart0_tx_isr _uart0_tx_isr fV
+ 03D8           ;          RTbuf -> R20,R21
                         .even
- 03CC           _uart0_tx_isr::
- 03CC 2A92              st -y,R2
- 03CE 3A92              st -y,R3
- 03D0 0A93              st -y,R16
- 03D2 1A93              st -y,R17
- 03D4 8A93              st -y,R24
- 03D6 9A93              st -y,R25
- 03D8 EA93              st -y,R30
- 03DA FA93              st -y,R31
- 03DC 2FB6              IN R2,63
- 03DE 2A92              st -y,R2
- 03E0 4A93              st -y,R20
- 03E2 5A93              st -y,R21
- 03E4                   .dbline -1
- 03E4                   .dbline 476
- 03E4           ; //SEI();
- 03E4           ; }
- 03E4           ; 
- 03E4           ; 
- 03E4           ; 
- 03E4           ; 
- 03E4           ; 
- 03E4           ; 
- 03E4           ; #pragma interrupt_handler uart0_tx_isr: iv_USART0_TXC
- 03E4           ; void uart0_tx_isr(void) {
- 03E4                   .dbline 480
- 03E4           ; //CLI();
- 03E4           ;     siocirqueue *RTbuf;
- 03E4           ; //WDR(); //喂狗
- 03E4           ;     RTbuf=&RTbuf_UART0;
- 03E4 40E0              ldi R20,<_RTbuf_UART0
- 03E6 50E0              ldi R21,>_RTbuf_UART0
- 03E8                   .dbline 481
- 03E8           ;     if (RTbuf->T_count>0) {
- 03E8 80E0              ldi R24,0
- 03EA FA01              movw R30,R20
- 03EC E659              subi R30,150  ; addi 106
- 03EE FF4F              sbci R31,255
- 03F0 2080              ldd R2,z+0
- 03F2 EA56              subi R30,106
- 03F4 F040              sbci R31,0
- 03F6 8215              cp R24,R2
- 03F8 08F0              brlo X25
- 03FA 1FC0              xjmp L68
- 03FC           X25:
- 03FC           X24:
- 03FC                   .dbline 481
- 03FC                   .dbline 482
- 03FC           ;         UDR0=RTbuf->T_buf[RTbuf->T_front];
- 03FC CF01              movw R24,R30
- 03FE 8559              subi R24,149  ; offset = 107
- 0400 9F4F              sbci R25,255
- 0402 E859              subi R30,152  ; addi 104
- 0404 FF4F              sbci R31,255
- 0406 E081              ldd R30,z+0
- 0408 FF27              clr R31
- 040A E80F              add R30,R24
- 040C F91F              adc R31,R25
- 040E 2080              ldd R2,z+0
- 0410 2CB8              out 0xc,R2
- 0412                   .dbline 483
- 0412           ;         RTbuf->T_count--;
- 0412 CA01              movw R24,R20
- 0414 8659              subi R24,150  ; offset = 106
- 0416 9F4F              sbci R25,255
- 0418 FC01              movw R30,R24
- 041A 8081              ldd R24,z+0
- 041C 8150              subi R24,1
- 041E 8083              std z+0,R24
- 0420                   .dbline 484
- 0420           ;         RTbuf->T_front=(RTbuf->T_front+1) % TBUF_SIZE;
- 0420 CA01              movw R24,R20
- 0422 8859              subi R24,152  ; offset = 104
- 0424 9F4F              sbci R25,255
- 0426 1C01              movw R2,R24
- 0428 14E6              ldi R17,100
- 042A FC01              movw R30,R24
- 042C 0081              ldd R16,z+0
- 042E 0F5F              subi R16,255    ; addi 1
- 0430 0E940000          xcall mod8u
- 0434 F101              movw R30,R2
- 0436 0083              std z+0,R16
- 0438                   .dbline 485
- 0438           ;     } else
- 0438 05C0              xjmp L69
- 043A           L68:
- 043A                   .dbline 486
- 043A           ;         RTbuf->T_disabled=1;
- 043A 81E0              ldi R24,1
- 043C FA01              movw R30,R20
- 043E E153              subi R30,49  ; addi 207
- 0440 FF4F              sbci R31,255
- 0442 8083              std z+0,R24
- 0444           L69:
- 0444                   .dbline -2
- 0444           L67:
- 0444                   .dbline 0 ; func end
- 0444 5991              ld R21,y+
- 0446 4991              ld R20,y+
- 0448 2990              ld R2,y+
- 044A 2FBE              OUT 63,R2
- 044C F991              ld R31,y+
- 044E E991              ld R30,y+
- 0450 9991              ld R25,y+
- 0452 8991              ld R24,y+
- 0454 1991              ld R17,y+
- 0456 0991              ld R16,y+
- 0458 3990              ld R3,y+
- 045A 2990              ld R2,y+
- 045C 1895              reti
- 045E                   .dbsym r RTbuf 20 pS[.1]
- 045E                   .dbend
+ 03D8           _uart0_tx_isr::
+ 03D8 2A92              st -y,R2
+ 03DA 3A92              st -y,R3
+ 03DC 0A93              st -y,R16
+ 03DE 1A93              st -y,R17
+ 03E0 8A93              st -y,R24
+ 03E2 9A93              st -y,R25
+ 03E4 EA93              st -y,R30
+ 03E6 FA93              st -y,R31
+ 03E8 2FB6              IN R2,63
+ 03EA 2A92              st -y,R2
+ 03EC 4A93              st -y,R20
+ 03EE 5A93              st -y,R21
+ 03F0                   .dbline -1
+ 03F0                   .dbline 483
+ 03F0           ; //SEI();
+ 03F0           ; }
+ 03F0           ; 
+ 03F0           ; 
+ 03F0           ; 
+ 03F0           ; 
+ 03F0           ; 
+ 03F0           ; 
+ 03F0           ; #pragma interrupt_handler uart0_tx_isr: iv_USART0_TXC
+ 03F0           ; void uart0_tx_isr(void) {
+ 03F0                   .dbline 487
+ 03F0           ; //CLI();
+ 03F0           ;     siocirqueue *RTbuf;
+ 03F0           ; //WDR(); //喂狗
+ 03F0           ;     RTbuf=&RTbuf_UART0;
+ 03F0 40E0              ldi R20,<_RTbuf_UART0
+ 03F2 50E0              ldi R21,>_RTbuf_UART0
+ 03F4                   .dbline 488
+ 03F4           ;     if (RTbuf->T_count>0) {
+ 03F4 80E0              ldi R24,0
+ 03F6 FA01              movw R30,R20
+ 03F8 E659              subi R30,150  ; addi 106
+ 03FA FF4F              sbci R31,255
+ 03FC 2080              ldd R2,z+0
+ 03FE EA56              subi R30,106
+ 0400 F040              sbci R31,0
+ 0402 8215              cp R24,R2
+ 0404 08F0              brlo X25
+ 0406 1FC0              xjmp L69
+ 0408           X25:
+ 0408           X24:
+ 0408                   .dbline 488
+ 0408                   .dbline 489
+ 0408           ;         UDR0=RTbuf->T_buf[RTbuf->T_front];
+ 0408 CF01              movw R24,R30
+ 040A 8559              subi R24,149  ; offset = 107
+ 040C 9F4F              sbci R25,255
+ 040E E859              subi R30,152  ; addi 104
+ 0410 FF4F              sbci R31,255
+ 0412 E081              ldd R30,z+0
+ 0414 FF27              clr R31
+ 0416 E80F              add R30,R24
+ 0418 F91F              adc R31,R25
+ 041A 2080              ldd R2,z+0
+ 041C 2CB8              out 0xc,R2
+ 041E                   .dbline 490
+ 041E           ;         RTbuf->T_count--;
+ 041E CA01              movw R24,R20
+ 0420 8659              subi R24,150  ; offset = 106
+ 0422 9F4F              sbci R25,255
+ 0424 FC01              movw R30,R24
+ 0426 8081              ldd R24,z+0
+ 0428 8150              subi R24,1
+ 042A 8083              std z+0,R24
+ 042C                   .dbline 491
+ 042C           ;         RTbuf->T_front=(RTbuf->T_front+1) % TBUF_SIZE;
+ 042C CA01              movw R24,R20
+ 042E 8859              subi R24,152  ; offset = 104
+ 0430 9F4F              sbci R25,255
+ 0432 1C01              movw R2,R24
+ 0434 14E6              ldi R17,100
+ 0436 FC01              movw R30,R24
+ 0438 0081              ldd R16,z+0
+ 043A 0F5F              subi R16,255    ; addi 1
+ 043C 0E940000          xcall mod8u
+ 0440 F101              movw R30,R2
+ 0442 0083              std z+0,R16
+ 0444                   .dbline 492
+ 0444           ;     } else
+ 0444 05C0              xjmp L70
+ 0446           L69:
+ 0446                   .dbline 493
+ 0446           ;         RTbuf->T_disabled=1;
+ 0446 81E0              ldi R24,1
+ 0448 FA01              movw R30,R20
+ 044A E153              subi R30,49  ; addi 207
+ 044C FF4F              sbci R31,255
+ 044E 8083              std z+0,R24
+ 0450           L70:
+ 0450                   .dbline -2
+ 0450           L68:
+ 0450                   .dbline 0 ; func end
+ 0450 5991              ld R21,y+
+ 0452 4991              ld R20,y+
+ 0454 2990              ld R2,y+
+ 0456 2FBE              OUT 63,R2
+ 0458 F991              ld R31,y+
+ 045A E991              ld R30,y+
+ 045C 9991              ld R25,y+
+ 045E 8991              ld R24,y+
+ 0460 1991              ld R17,y+
+ 0462 0991              ld R16,y+
+ 0464 3990              ld R3,y+
+ 0466 2990              ld R2,y+
+ 0468 1895              reti
+ 046A                   .dbsym r RTbuf 20 pS[.1]
+ 046A                   .dbend
                         .area bss(ram, con, rel)
  0000                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\sio.c
  0000           _RTbuf_UART0::
@@ -1465,13 +1489,13 @@
  00D0                   .dbsym e RTbuf_UART0 _RTbuf_UART0 S[.1]
                         .area data(ram, con, rel)
  0000                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\sio.c
- 0000           L30:
+ 0000           L31:
  0000                   .blkb 5
                         .area idata
  0000 3F3F3F0A00        .byte 63,63,63,10,0
                         .area data(ram, con, rel)
  0005                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\sio.c
- 0005           L24:
+ 0005           L25:
  0005                   .blkb 5
                         .area idata
  0005 3F3F210A00        .byte 63,63,33,10,0

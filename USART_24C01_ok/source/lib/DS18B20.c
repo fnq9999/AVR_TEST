@@ -1,5 +1,5 @@
 #include "..\config.h"
-
+//#include <iom128v.h>
 char current_temp_display_buffer[]={"Temp:         "};
 unsigned char currentT=0;
 const unsigned char df_table[]={0,1,1,2,2,3,4,4,5,6,6,7,7,8,9,9};
@@ -9,17 +9,18 @@ unsigned char display_digit[]={0,0,0,0};
 
 
 
-
 //初始化DS18B20
 unsigned char init_ds18b20(void)
 {
  unsigned char status;
  DQ_DDR_1();
+ DQ_1();
  DQ_0();
  delay_nus(540); //主机拉低总线，占总线
  
  DQ_DDR_0();
- delay_nus(65); //PA4设为输入
+ DQ_1();
+ delay_nus(40); //PA4设为输入
  
  status=RD_DQ_VAL(); //读总线，为0时器件在线
  delay_nus(500);
@@ -38,6 +39,7 @@ unsigned char readonebyte(void) //读一字节
       DQ_0();      //拉低总线
 	  delay_nus(2);
       DQ_DDR_0();  //读PA4引脚
+	  delay_nus(10);
 	  if(RD_DQ_VAL())
 	  dat|=(1<<i); //数据存放在dat中
 	  delay_nus(80);
@@ -54,6 +56,7 @@ void writeonebyte(unsigned char dat) //写一字节
    {
       DQ_DDR_1();
       DQ_0();      //拉低,占总线
+	  delay_nus(10);//
 	  if(dat&i)
 	    DQ_1(); 
 	  else
@@ -66,12 +69,16 @@ void writeonebyte(unsigned char dat) //写一字节
 
 unsigned char read_temperature(void)
 {
+
   unsigned char temp;
-  if(init_ds18b20()!=0x00)
+//  CLI();
+  if(init_ds18b20()!=0x00){
      ds18b20_error=1;            //DS18B20发生故障
+//     msc_to_pc("DS18B20_ERROR\n");
+  }
  else
  {
-
+  // msc_to_pc("DS18B20_INIT_SUCCESS\n");
    writeonebyte(0xCC);           //跳过序列号匹配
    writeonebyte(0x44);           //启动测温
    init_ds18b20();
@@ -83,7 +90,9 @@ unsigned char read_temperature(void)
    
  }
  temp=temp_value[1];
+ //SEI();
  return temp;
+ 
 }
 
 //温度转换

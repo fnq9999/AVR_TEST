@@ -125,7 +125,13 @@ void main(void)
 	 CLI();
 	 Com_init();
 	 twi_init();
-	 SEI();
+     CLI();
+     ng= read_temperature();
+     delay_nms(500);
+     delay_nms(1000);
+     ng= read_temperature();
+     SEI();
+//         ng= read_temperature();
  	 //// init_process_end
 	 
 	 //pcf 
@@ -143,7 +149,8 @@ void main(void)
 
 
    	 msc_to_pc("led_test\n");
-
+     delay_nms(500);
+     Com_disable();
  PORTE = 0xFF;
  DDRE  = 0xFF;
 
@@ -154,14 +161,26 @@ void main(void)
 		  PORTE = 0xff;
 		  delay_nms(300);
 		 }
-
+         Com_init();
 //.///////////////////////led_test_end
+
+
+
+//8.ds18b20
+    
+
+    msc_to_pc("DS18B20\n");
+    convert_temp_data();
+    msc_to_pc(current_temp_display_buffer);
+    
+//8.ds18b20_end
+    
 
 
 
 /////////////////////////seg7
 
-   	 msc_to_pc("SEG7_test\n");
+   	 msc_to_pc("\nSEG7_test\n");
 		HC_595_init();
 		//  Seg7_Led_display(111*i)
 		 for(i=0;i<10;i++)
@@ -178,6 +197,7 @@ void main(void)
 
 
 /////////////////////////BUZZ_KEY_test
+
    	 msc_to_pc("BUZZ_KEY_test\n");
       DDRE = 0xFF;
        PORTE = 0xFF;
@@ -222,7 +242,7 @@ void main(void)
 
     }
 	
-	
+
 
 /////////////////////////BUZZ_KEY_test_end
 // 1.read the pcf_init_data
@@ -252,12 +272,7 @@ void main(void)
    	msc_to_pc("GET THE STRING:\n");
 	rd24c(R_Buff,0x00,10);
 	msc_to_pc(R_Buff);
-//8.ds18b20
-    
-    msc_to_pc("DS18B20\n");
-    ng= read_temperature();
-    convert_temp_data();
-    msc_to_pc(current_temp_display_buffer);
+
     
 while(1);
 ////////////////////////////////////////exp_process_end

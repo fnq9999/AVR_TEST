@@ -94,9 +94,9 @@
  0000           _init_ds18b20::
  0000 4A93              st -y,R20
  0002                   .dbline -1
- 0002                   .dbline 15
+ 0002                   .dbline 14
  0002           ; #include "..\config.h"
- 0002           ; 
+ 0002           ; //#include <iom128v.h>
  0002           ; char current_temp_display_buffer[]={"Temp:         "};
  0002           ; unsigned char currentT=0;
  0002           ; const unsigned char df_table[]={0,1,1,2,2,3,4,4,5,6,6,7,7,8,9,9};
@@ -106,509 +106,536 @@
  0002           ; 
  0002           ; 
  0002           ; 
- 0002           ; 
  0002           ; //初始化DS18B20
  0002           ; unsigned char init_ds18b20(void)
  0002           ; {
- 0002                   .dbline 17
+ 0002                   .dbline 16
  0002           ;  unsigned char status;
  0002           ;  DQ_DDR_1();
  0002 80916100          lds R24,97
  0006 8460              ori R24,4
  0008 80936100          sts 97,R24
- 000C                   .dbline 18
- 000C           ;  DQ_0();
+ 000C                   .dbline 17
+ 000C           ;  DQ_1();
  000C 80916200          lds R24,98
- 0010 8B7F              andi R24,251
+ 0010 8460              ori R24,4
  0012 80936200          sts 98,R24
- 0016                   .dbline 19
- 0016           ;  delay_nus(540); //主机拉低总线，占总线
- 0016 0CE1              ldi R16,540
- 0018 12E0              ldi R17,2
- 001A 0E940000          xcall _delay_nus
- 001E                   .dbline 21
- 001E           ;  
- 001E           ;  DQ_DDR_0();
- 001E 80916100          lds R24,97
- 0022 8B7F              andi R24,251
- 0024 80936100          sts 97,R24
- 0028                   .dbline 22
- 0028           ;  delay_nus(65); //PA4设为输入
- 0028 01E4              ldi R16,65
- 002A 10E0              ldi R17,0
- 002C 0E940000          xcall _delay_nus
- 0030                   .dbline 24
- 0030           ;  
- 0030           ;  status=RD_DQ_VAL(); //读总线，为0时器件在线
- 0030 40B1              in R20,0x0
- 0032 4470              andi R20,4
- 0034                   .dbline 25
- 0034           ;  delay_nus(500);
- 0034 04EF              ldi R16,500
- 0036 11E0              ldi R17,1
- 0038 0E940000          xcall _delay_nus
- 003C                   .dbline 26
- 003C           ;  DQ_1();        //释放总线
- 003C 80916200          lds R24,98
- 0040 8460              ori R24,4
- 0042 80936200          sts 98,R24
- 0046                   .dbline 27
- 0046           ;  return status;
- 0046 042F              mov R16,R20
- 0048                   .dbline -2
- 0048           L2:
- 0048                   .dbline 0 ; func end
- 0048 4991              ld R20,y+
- 004A 0895              ret
- 004C                   .dbsym r status 20 c
- 004C                   .dbend
- 004C                   .dbfunc e readonebyte _readonebyte fc
- 004C           ;            dat -> R10
- 004C           ;              i -> R20
+ 0016                   .dbline 18
+ 0016           ;  DQ_0();
+ 0016 80916200          lds R24,98
+ 001A 8B7F              andi R24,251
+ 001C 80936200          sts 98,R24
+ 0020                   .dbline 19
+ 0020           ;  delay_nus(540); //主机拉低总线，占总线
+ 0020 0CE1              ldi R16,540
+ 0022 12E0              ldi R17,2
+ 0024 0E940000          xcall _delay_nus
+ 0028                   .dbline 21
+ 0028           ;  
+ 0028           ;  DQ_DDR_0();
+ 0028 80916100          lds R24,97
+ 002C 8B7F              andi R24,251
+ 002E 80936100          sts 97,R24
+ 0032                   .dbline 22
+ 0032           ;  DQ_1();
+ 0032 80916200          lds R24,98
+ 0036 8460              ori R24,4
+ 0038 80936200          sts 98,R24
+ 003C                   .dbline 23
+ 003C           ;  delay_nus(40); //PA4设为输入
+ 003C 08E2              ldi R16,40
+ 003E 10E0              ldi R17,0
+ 0040 0E940000          xcall _delay_nus
+ 0044                   .dbline 25
+ 0044           ;  
+ 0044           ;  status=RD_DQ_VAL(); //读总线，为0时器件在线
+ 0044 40B1              in R20,0x0
+ 0046 4470              andi R20,4
+ 0048                   .dbline 26
+ 0048           ;  delay_nus(500);
+ 0048 04EF              ldi R16,500
+ 004A 11E0              ldi R17,1
+ 004C 0E940000          xcall _delay_nus
+ 0050                   .dbline 27
+ 0050           ;  DQ_1();        //释放总线
+ 0050 80916200          lds R24,98
+ 0054 8460              ori R24,4
+ 0056 80936200          sts 98,R24
+ 005A                   .dbline 28
+ 005A           ;  return status;
+ 005A 042F              mov R16,R20
+ 005C                   .dbline -2
+ 005C           L2:
+ 005C                   .dbline 0 ; func end
+ 005C 4991              ld R20,y+
+ 005E 0895              ret
+ 0060                   .dbsym r status 20 c
+ 0060                   .dbend
+ 0060                   .dbfunc e readonebyte _readonebyte fc
+ 0060           ;            dat -> R10
+ 0060           ;              i -> R20
                         .even
- 004C           _readonebyte::
- 004C AA92              st -y,R10
- 004E 4A93              st -y,R20
- 0050                   .dbline -1
- 0050                   .dbline 32
- 0050           ;  
- 0050           ; }
- 0050           ; 
- 0050           ; unsigned char readonebyte(void) //读一字节
- 0050           ; {
- 0050                   .dbline 33
- 0050           ;   unsigned char i=0,dat=0;
- 0050                   .dbline 33
- 0050 AA24              clr R10
- 0052                   .dbline 34
- 0052           ;    for(i=0;i<8;i++)
- 0052 4427              clr R20
- 0054 1FC0              xjmp L7
- 0056           L4:
- 0056                   .dbline 35
- 0056           ;    {  
- 0056                   .dbline 37
- 0056           ;      
- 0056           ;       DQ_DDR_1();
- 0056 80916100          lds R24,97
- 005A 8460              ori R24,4
- 005C 80936100          sts 97,R24
- 0060                   .dbline 38
- 0060           ;       DQ_0();      //拉低总线
- 0060 80916200          lds R24,98
- 0064 8B7F              andi R24,251
- 0066 80936200          sts 98,R24
- 006A                   .dbline 39
- 006A           ;         delay_nus(2);
- 006A 02E0              ldi R16,2
- 006C 10E0              ldi R17,0
- 006E 0E940000          xcall _delay_nus
- 0072                   .dbline 40
- 0072           ;       DQ_DDR_0();  //读PA4引脚
- 0072 80916100          lds R24,97
- 0076 8B7F              andi R24,251
- 0078 80936100          sts 97,R24
- 007C                   .dbline 41
- 007C           ;         if(RD_DQ_VAL())
- 007C 029B              sbis 0x0,2
- 007E 05C0              rjmp L8
- 0080           X0:
- 0080                   .dbline 42
- 0080           ;         dat|=(1<<i); //数据存放在dat中
- 0080 01E0              ldi R16,1
- 0082 142F              mov R17,R20
- 0084 0E940000          xcall lsl8
- 0088 A02A              or R10,R16
- 008A           L8:
- 008A                   .dbline 43
- 008A           ;         delay_nus(80);
- 008A 00E5              ldi R16,80
- 008C 10E0              ldi R17,0
- 008E 0E940000          xcall _delay_nus
- 0092                   .dbline 44
- 0092           ;    }
- 0092           L5:
- 0092                   .dbline 34
- 0092 4395              inc R20
- 0094           L7:
- 0094                   .dbline 34
- 0094 4830              cpi R20,8
- 0096 F8F2              brlo L4
- 0098           X1:
- 0098                   .dbline 45
- 0098           ;    return dat;
- 0098 0A2D              mov R16,R10
- 009A                   .dbline -2
- 009A           L3:
- 009A                   .dbline 0 ; func end
- 009A 4991              ld R20,y+
- 009C A990              ld R10,y+
- 009E 0895              ret
- 00A0                   .dbsym r dat 10 c
- 00A0                   .dbsym r i 20 c
- 00A0                   .dbend
- 00A0                   .dbfunc e writeonebyte _writeonebyte fV
- 00A0           ;              i -> R20
- 00A0           ;            dat -> R10
+ 0060           _readonebyte::
+ 0060 AA92              st -y,R10
+ 0062 4A93              st -y,R20
+ 0064                   .dbline -1
+ 0064                   .dbline 33
+ 0064           ;  
+ 0064           ; }
+ 0064           ; 
+ 0064           ; unsigned char readonebyte(void) //读一字节
+ 0064           ; {
+ 0064                   .dbline 34
+ 0064           ;   unsigned char i=0,dat=0;
+ 0064                   .dbline 34
+ 0064 AA24              clr R10
+ 0066                   .dbline 35
+ 0066           ;    for(i=0;i<8;i++)
+ 0066 4427              clr R20
+ 0068 23C0              xjmp L7
+ 006A           L4:
+ 006A                   .dbline 36
+ 006A           ;    {  
+ 006A                   .dbline 38
+ 006A           ;      
+ 006A           ;       DQ_DDR_1();
+ 006A 80916100          lds R24,97
+ 006E 8460              ori R24,4
+ 0070 80936100          sts 97,R24
+ 0074                   .dbline 39
+ 0074           ;       DQ_0();      //拉低总线
+ 0074 80916200          lds R24,98
+ 0078 8B7F              andi R24,251
+ 007A 80936200          sts 98,R24
+ 007E                   .dbline 40
+ 007E           ;         delay_nus(2);
+ 007E 02E0              ldi R16,2
+ 0080 10E0              ldi R17,0
+ 0082 0E940000          xcall _delay_nus
+ 0086                   .dbline 41
+ 0086           ;       DQ_DDR_0();  //读PA4引脚
+ 0086 80916100          lds R24,97
+ 008A 8B7F              andi R24,251
+ 008C 80936100          sts 97,R24
+ 0090                   .dbline 42
+ 0090           ;         delay_nus(10);
+ 0090 0AE0              ldi R16,10
+ 0092 10E0              ldi R17,0
+ 0094 0E940000          xcall _delay_nus
+ 0098                   .dbline 43
+ 0098           ;         if(RD_DQ_VAL())
+ 0098 029B              sbis 0x0,2
+ 009A 05C0              rjmp L8
+ 009C           X0:
+ 009C                   .dbline 44
+ 009C           ;         dat|=(1<<i); //数据存放在dat中
+ 009C 01E0              ldi R16,1
+ 009E 142F              mov R17,R20
+ 00A0 0E940000          xcall lsl8
+ 00A4 A02A              or R10,R16
+ 00A6           L8:
+ 00A6                   .dbline 45
+ 00A6           ;         delay_nus(80);
+ 00A6 00E5              ldi R16,80
+ 00A8 10E0              ldi R17,0
+ 00AA 0E940000          xcall _delay_nus
+ 00AE                   .dbline 46
+ 00AE           ;    }
+ 00AE           L5:
+ 00AE                   .dbline 35
+ 00AE 4395              inc R20
+ 00B0           L7:
+ 00B0                   .dbline 35
+ 00B0 4830              cpi R20,8
+ 00B2 D8F2              brlo L4
+ 00B4           X1:
+ 00B4                   .dbline 47
+ 00B4           ;    return dat;
+ 00B4 0A2D              mov R16,R10
+ 00B6                   .dbline -2
+ 00B6           L3:
+ 00B6                   .dbline 0 ; func end
+ 00B6 4991              ld R20,y+
+ 00B8 A990              ld R10,y+
+ 00BA 0895              ret
+ 00BC                   .dbsym r dat 10 c
+ 00BC                   .dbsym r i 20 c
+ 00BC                   .dbend
+ 00BC                   .dbfunc e writeonebyte _writeonebyte fV
+ 00BC           ;              i -> R20
+ 00BC           ;            dat -> R10
                         .even
- 00A0           _writeonebyte::
- 00A0 AA92              st -y,R10
- 00A2 4A93              st -y,R20
- 00A4 A02E              mov R10,R16
- 00A6                   .dbline -1
- 00A6                   .dbline 51
- 00A6           ; }
- 00A6           ; 
- 00A6           ; 
- 00A6           ; 
- 00A6           ; void writeonebyte(unsigned char dat) //写一字节
- 00A6           ; {
- 00A6                   .dbline 52
- 00A6           ;    unsigned char i=0x01;
- 00A6                   .dbline 53
- 00A6           ;    for(i=0x01;i!=0x00;i<<=1)
- 00A6 41E0              ldi R20,1
- 00A8 22C0              xjmp L14
- 00AA           L11:
- 00AA                   .dbline 54
- 00AA           ;    {
- 00AA                   .dbline 55
- 00AA           ;       DQ_DDR_1();
- 00AA 80916100          lds R24,97
- 00AE 8460              ori R24,4
- 00B0 80936100          sts 97,R24
- 00B4                   .dbline 56
- 00B4           ;       DQ_0();      //拉低,占总线
- 00B4 80916200          lds R24,98
- 00B8 8B7F              andi R24,251
- 00BA 80936200          sts 98,R24
- 00BE                   .dbline 57
- 00BE           ;         if(dat&i)
- 00BE 2A2C              mov R2,R10
- 00C0 2422              and R2,R20
- 00C2 31F0              breq L15
- 00C4           X2:
- 00C4                   .dbline 58
- 00C4           ;           DQ_1(); 
- 00C4 80916200          lds R24,98
- 00C8 8460              ori R24,4
- 00CA 80936200          sts 98,R24
- 00CE 05C0              xjmp L16
- 00D0           L15:
- 00D0                   .dbline 60
- 00D0           ;         else
- 00D0           ;           DQ_0(); 
+ 00BC           _writeonebyte::
+ 00BC AA92              st -y,R10
+ 00BE 4A93              st -y,R20
+ 00C0 A02E              mov R10,R16
+ 00C2                   .dbline -1
+ 00C2                   .dbline 53
+ 00C2           ; }
+ 00C2           ; 
+ 00C2           ; 
+ 00C2           ; 
+ 00C2           ; void writeonebyte(unsigned char dat) //写一字节
+ 00C2           ; {
+ 00C2                   .dbline 54
+ 00C2           ;    unsigned char i=0x01;
+ 00C2                   .dbline 55
+ 00C2           ;    for(i=0x01;i!=0x00;i<<=1)
+ 00C2 41E0              ldi R20,1
+ 00C4 26C0              xjmp L14
+ 00C6           L11:
+ 00C6                   .dbline 56
+ 00C6           ;    {
+ 00C6                   .dbline 57
+ 00C6           ;       DQ_DDR_1();
+ 00C6 80916100          lds R24,97
+ 00CA 8460              ori R24,4
+ 00CC 80936100          sts 97,R24
+ 00D0                   .dbline 58
+ 00D0           ;       DQ_0();      //拉低,占总线
  00D0 80916200          lds R24,98
  00D4 8B7F              andi R24,251
  00D6 80936200          sts 98,R24
- 00DA           L16:
- 00DA                   .dbline 61
- 00DA           ;         delay_nus(80);
- 00DA 00E5              ldi R16,80
+ 00DA                   .dbline 59
+ 00DA           ;         delay_nus(10);//
+ 00DA 0AE0              ldi R16,10
  00DC 10E0              ldi R17,0
  00DE 0E940000          xcall _delay_nus
- 00E2                   .dbline 62
- 00E2           ;         DQ_1(); 
- 00E2 80916200          lds R24,98
- 00E6 8460              ori R24,4
- 00E8 80936200          sts 98,R24
- 00EC                   .dbline 63
- 00EC           ;    }
- 00EC           L12:
- 00EC                   .dbline 53
- 00EC 440F              lsl R20
- 00EE           L14:
- 00EE                   .dbline 53
- 00EE 4423              tst R20
- 00F0 E1F6              brne L11
- 00F2           X3:
- 00F2                   .dbline -2
- 00F2           L10:
- 00F2                   .dbline 0 ; func end
- 00F2 4991              ld R20,y+
- 00F4 A990              ld R10,y+
- 00F6 0895              ret
- 00F8                   .dbsym r i 20 c
- 00F8                   .dbsym r dat 10 c
- 00F8                   .dbend
- 00F8                   .dbfunc e read_temperature _read_temperature fc
- 00F8           ;           temp -> R10
+ 00E2                   .dbline 60
+ 00E2           ;         if(dat&i)
+ 00E2 2A2C              mov R2,R10
+ 00E4 2422              and R2,R20
+ 00E6 31F0              breq L15
+ 00E8           X2:
+ 00E8                   .dbline 61
+ 00E8           ;           DQ_1(); 
+ 00E8 80916200          lds R24,98
+ 00EC 8460              ori R24,4
+ 00EE 80936200          sts 98,R24
+ 00F2 05C0              xjmp L16
+ 00F4           L15:
+ 00F4                   .dbline 63
+ 00F4           ;         else
+ 00F4           ;           DQ_0(); 
+ 00F4 80916200          lds R24,98
+ 00F8 8B7F              andi R24,251
+ 00FA 80936200          sts 98,R24
+ 00FE           L16:
+ 00FE                   .dbline 64
+ 00FE           ;         delay_nus(80);
+ 00FE 00E5              ldi R16,80
+ 0100 10E0              ldi R17,0
+ 0102 0E940000          xcall _delay_nus
+ 0106                   .dbline 65
+ 0106           ;         DQ_1(); 
+ 0106 80916200          lds R24,98
+ 010A 8460              ori R24,4
+ 010C 80936200          sts 98,R24
+ 0110                   .dbline 66
+ 0110           ;    }
+ 0110           L12:
+ 0110                   .dbline 55
+ 0110 440F              lsl R20
+ 0112           L14:
+ 0112                   .dbline 55
+ 0112 4423              tst R20
+ 0114 C1F6              brne L11
+ 0116           X3:
+ 0116                   .dbline -2
+ 0116           L10:
+ 0116                   .dbline 0 ; func end
+ 0116 4991              ld R20,y+
+ 0118 A990              ld R10,y+
+ 011A 0895              ret
+ 011C                   .dbsym r i 20 c
+ 011C                   .dbsym r dat 10 c
+ 011C                   .dbend
+ 011C                   .dbfunc e read_temperature _read_temperature fc
+ 011C           ;           temp -> R10
                         .even
- 00F8           _read_temperature::
- 00F8 AA92              st -y,R10
- 00FA                   .dbline -1
- 00FA                   .dbline 68
- 00FA           ; }
- 00FA           ; 
- 00FA           ; 
- 00FA           ; unsigned char read_temperature(void)
- 00FA           ; {
- 00FA                   .dbline 70
- 00FA           ;   unsigned char temp;
- 00FA           ;   if(init_ds18b20()!=0x00)
- 00FA 82DF              xcall _init_ds18b20
- 00FC 0023              tst R16
- 00FE 21F0              breq L18
- 0100           X4:
- 0100                   .dbline 71
- 0100           ;      ds18b20_error=1;            //DS18B20发生故障
- 0100 81E0              ldi R24,1
- 0102 80932000          sts _ds18b20_error,R24
- 0106 13C0              xjmp L19
- 0108           L18:
- 0108                   .dbline 73
- 0108           ;  else
- 0108           ;  {
- 0108                   .dbline 75
- 0108           ; 
- 0108           ;    writeonebyte(0xCC);           //跳过序列号匹配
- 0108 0CEC              ldi R16,204
- 010A CADF              xcall _writeonebyte
- 010C                   .dbline 76
- 010C           ;    writeonebyte(0x44);           //启动测温
- 010C 04E4              ldi R16,68
- 010E C8DF              xcall _writeonebyte
- 0110                   .dbline 77
- 0110           ;    init_ds18b20();
- 0110 77DF              xcall _init_ds18b20
- 0112                   .dbline 78
- 0112           ;    writeonebyte(0xCC);
- 0112 0CEC              ldi R16,204
- 0114 C5DF              xcall _writeonebyte
- 0116                   .dbline 79
- 0116           ;    writeonebyte(0xBE);           //读取温度寄存器
- 0116 0EEB              ldi R16,190
- 0118 C3DF              xcall _writeonebyte
- 011A                   .dbline 80
- 011A           ;    temp_value[0]=readonebyte();  //温度低8位
- 011A 98DF              xcall _readonebyte
- 011C 00932100          sts _temp_value,R16
- 0120                   .dbline 81
- 0120           ;    temp_value[1]=readonebyte();  //温度高8位
- 0120 95DF              xcall _readonebyte
- 0122 A02E              mov R10,R16
- 0124 A0922200          sts _temp_value+1,R10
- 0128                   .dbline 82
- 0128           ;    ds18b20_error=0;
- 0128 2224              clr R2
- 012A 20922000          sts _ds18b20_error,R2
- 012E                   .dbline 84
- 012E           ;    
- 012E           ;  }
- 012E           L19:
- 012E                   .dbline 85
- 012E           ;  temp=temp_value[1];
- 012E A0902200          lds R10,_temp_value+1
- 0132                   .dbline 86
- 0132           ;  return temp;
- 0132 0A2D              mov R16,R10
- 0134                   .dbline -2
- 0134           L17:
- 0134                   .dbline 0 ; func end
- 0134 A990              ld R10,y+
- 0136 0895              ret
- 0138                   .dbsym r temp 10 c
- 0138                   .dbend
- 0138                   .dbfunc e convert_temp_data _convert_temp_data fV
- 0138           ;             ng -> R20
+ 011C           _read_temperature::
+ 011C AA92              st -y,R10
+ 011E                   .dbline -1
+ 011E                   .dbline 71
+ 011E           ; }
+ 011E           ; 
+ 011E           ; 
+ 011E           ; unsigned char read_temperature(void)
+ 011E           ; {
+ 011E                   .dbline 75
+ 011E           ; 
+ 011E           ;   unsigned char temp;
+ 011E           ; //  CLI();
+ 011E           ;   if(init_ds18b20()!=0x00){
+ 011E 70DF              xcall _init_ds18b20
+ 0120 0023              tst R16
+ 0122 21F0              breq L18
+ 0124           X4:
+ 0124                   .dbline 75
+ 0124                   .dbline 76
+ 0124           ;      ds18b20_error=1;            //DS18B20发生故障
+ 0124 81E0              ldi R24,1
+ 0126 80932000          sts _ds18b20_error,R24
+ 012A                   .dbline 78
+ 012A           ; //     msc_to_pc("DS18B20_ERROR\n");
+ 012A           ;   }
+ 012A 13C0              xjmp L19
+ 012C           L18:
+ 012C                   .dbline 80
+ 012C           ;  else
+ 012C           ;  {
+ 012C                   .dbline 82
+ 012C           ;   // msc_to_pc("DS18B20_INIT_SUCCESS\n");
+ 012C           ;    writeonebyte(0xCC);           //跳过序列号匹配
+ 012C 0CEC              ldi R16,204
+ 012E C6DF              xcall _writeonebyte
+ 0130                   .dbline 83
+ 0130           ;    writeonebyte(0x44);           //启动测温
+ 0130 04E4              ldi R16,68
+ 0132 C4DF              xcall _writeonebyte
+ 0134                   .dbline 84
+ 0134           ;    init_ds18b20();
+ 0134 65DF              xcall _init_ds18b20
+ 0136                   .dbline 85
+ 0136           ;    writeonebyte(0xCC);
+ 0136 0CEC              ldi R16,204
+ 0138 C1DF              xcall _writeonebyte
+ 013A                   .dbline 86
+ 013A           ;    writeonebyte(0xBE);           //读取温度寄存器
+ 013A 0EEB              ldi R16,190
+ 013C BFDF              xcall _writeonebyte
+ 013E                   .dbline 87
+ 013E           ;    temp_value[0]=readonebyte();  //温度低8位
+ 013E 90DF              xcall _readonebyte
+ 0140 00932100          sts _temp_value,R16
+ 0144                   .dbline 88
+ 0144           ;    temp_value[1]=readonebyte();  //温度高8位
+ 0144 8DDF              xcall _readonebyte
+ 0146 A02E              mov R10,R16
+ 0148 A0922200          sts _temp_value+1,R10
+ 014C                   .dbline 89
+ 014C           ;    ds18b20_error=0;
+ 014C 2224              clr R2
+ 014E 20922000          sts _ds18b20_error,R2
+ 0152                   .dbline 91
+ 0152           ;    
+ 0152           ;  }
+ 0152           L19:
+ 0152                   .dbline 92
+ 0152           ;  temp=temp_value[1];
+ 0152 A0902200          lds R10,_temp_value+1
+ 0156                   .dbline 94
+ 0156           ;  //SEI();
+ 0156           ;  return temp;
+ 0156 0A2D              mov R16,R10
+ 0158                   .dbline -2
+ 0158           L17:
+ 0158                   .dbline 0 ; func end
+ 0158 A990              ld R10,y+
+ 015A 0895              ret
+ 015C                   .dbsym r temp 10 c
+ 015C                   .dbend
+ 015C                   .dbfunc e convert_temp_data _convert_temp_data fV
+ 015C           ;             ng -> R20
                         .even
- 0138           _convert_temp_data::
- 0138 4A93              st -y,R20
- 013A                   .dbline -1
- 013A                   .dbline 91
- 013A           ; }
- 013A           ; 
- 013A           ; //温度转换
- 013A           ; void convert_temp_data(void)
- 013A           ; {
- 013A                   .dbline 92
- 013A           ;    unsigned char ng=0;
- 013A 4427              clr R20
- 013C                   .dbline 94
- 013C           ;           
- 013C           ;   if((temp_value[1]&0xF8)==0xF8) //判断温度的正负
- 013C 80912200          lds R24,_temp_value+1
- 0140 887F              andi R24,248
- 0142 883F              cpi R24,248
- 0144 91F4              brne L23
- 0146           X5:
- 0146                   .dbline 95
- 0146           ;   {
- 0146                   .dbline 96
- 0146           ;     temp_value[1]=~temp_value[1];
- 0146 20902200          lds R2,_temp_value+1
- 014A 2094              com R2
- 014C 20922200          sts _temp_value+1,R2
- 0150                   .dbline 97
- 0150           ;       temp_value[0]=~temp_value[0]+1;
- 0150 80912100          lds R24,_temp_value
- 0154 8095              com R24
- 0156 8F5F              subi R24,255    ; addi 1
- 0158 80932100          sts _temp_value,R24
- 015C                   .dbline 98
- 015C           ;       if(temp_value[0]==0x00) temp_value[1]++;
- 015C 8823              tst R24
- 015E 21F4              brne L28
- 0160           X6:
- 0160                   .dbline 98
- 0160 822D              mov R24,R2
- 0162 8F5F              subi R24,255    ; addi 1
- 0164 80932200          sts _temp_value+1,R24
- 0168           L28:
- 0168                   .dbline 99
- 0168           ;       ng=1;                        //负数标志
- 0168 41E0              ldi R20,1
- 016A                   .dbline 100
- 016A           ;   }
- 016A           L23:
- 016A                   .dbline 102
- 016A           ;   
- 016A           ;   display_digit[0]=df_table[temp_value[0]&0x0F];    //温度小数部分
- 016A 80E0              ldi R24,<_df_table
- 016C 90E0              ldi R25,>_df_table
- 016E E0912100          lds R30,_temp_value
- 0172 FF27              clr R31
- 0174 EF70              andi R30,15
- 0176 F070              andi R31,0
- 0178 E80F              add R30,R24
- 017A F91F              adc R31,R25
- 017C 2080              ldd R2,z+0
- 017E 20922300          sts _display_digit,R2
- 0182                   .dbline 103
- 0182           ;   currentT=(temp_value[0]>>4)|(temp_value[1]<<4); //温度数值
- 0182 80912200          lds R24,_temp_value+1
- 0186 8F70              andi R24,#0x0F
- 0188 8295              swap R24
- 018A 90912100          lds R25,_temp_value
- 018E 9295              swap R25
- 0190 9F70              andi R25,#0x0F
- 0192 982B              or R25,R24
- 0194 90930F00          sts _currentT,R25
- 0198                   .dbline 105
- 0198           ;   
- 0198           ;   display_digit[3]=currentT/100;                    //温度百位
- 0198 14E6              ldi R17,100
- 019A 092F              mov R16,R25
- 019C 0E940000          xcall div8u
- 01A0 00932600          sts _display_digit+3,R16
- 01A4                   .dbline 106
- 01A4           ;   display_digit[2]=currentT%100/10;                 //温度十位
- 01A4 14E6              ldi R17,100
- 01A6 00910F00          lds R16,_currentT
- 01AA 0E940000          xcall mod8u
- 01AE 1AE0              ldi R17,10
- 01B0 0E940000          xcall div8u
- 01B4 00932500          sts _display_digit+2,R16
- 01B8                   .dbline 107
- 01B8           ;   display_digit[1]=currentT%10;                     //温度个位
- 01B8 1AE0              ldi R17,10
- 01BA 00910F00          lds R16,_currentT
- 01BE 0E940000          xcall mod8u
- 01C2 00932400          sts _display_digit+1,R16
- 01C6                   .dbline 110
- 01C6           ;   
- 01C6           ;   //温度显示预操作
- 01C6           ;   current_temp_display_buffer[11]=display_digit[0]+'0';
- 01C6 80912300          lds R24,_display_digit
- 01CA 805D              subi R24,208    ; addi 48
- 01CC 80930B00          sts _current_temp_display_buffer+11,R24
- 01D0                   .dbline 111
- 01D0           ;   current_temp_display_buffer[10]='.';
- 01D0 8EE2              ldi R24,46
- 01D2 80930A00          sts _current_temp_display_buffer+10,R24
- 01D6                   .dbline 112
- 01D6           ;   current_temp_display_buffer[9]=display_digit[1]+'0';
- 01D6 802F              mov R24,R16
- 01D8 805D              subi R24,208    ; addi 48
- 01DA 80930900          sts _current_temp_display_buffer+9,R24
- 01DE                   .dbline 113
- 01DE           ;   current_temp_display_buffer[8]=display_digit[2]+'0';
- 01DE 80912500          lds R24,_display_digit+2
- 01E2 805D              subi R24,208    ; addi 48
- 01E4 80930800          sts _current_temp_display_buffer+8,R24
- 01E8                   .dbline 114
- 01E8           ;   if(display_digit[3]!=0)
- 01E8 20902600          lds R2,_display_digit+3
- 01EC 2220              tst R2
- 01EE 29F0              breq L41
- 01F0           X7:
- 01F0                   .dbline 115
- 01F0           ;   current_temp_display_buffer[7]=display_digit[3]+'0';
- 01F0 822D              mov R24,R2
- 01F2 805D              subi R24,208    ; addi 48
- 01F4 80930700          sts _current_temp_display_buffer+7,R24
- 01F8 03C0              xjmp L42
- 01FA           L41:
- 01FA                   .dbline 117
- 01FA           ;   else
- 01FA           ;   current_temp_display_buffer[7]=' ';
- 01FA 80E2              ldi R24,32
- 01FC 80930700          sts _current_temp_display_buffer+7,R24
- 0200           L42:
- 0200                   .dbline 118
- 0200           ;   if(display_digit[2]==0 && display_digit[1]==0)
- 0200 20902500          lds R2,_display_digit+2
- 0204 2220              tst R2
- 0206 39F4              brne L47
- 0208           X8:
- 0208 20902400          lds R2,_display_digit+1
- 020C 2220              tst R2
- 020E 19F4              brne L47
- 0210           X9:
- 0210                   .dbline 119
- 0210           ;   current_temp_display_buffer[8]=' ';
- 0210 80E2              ldi R24,32
- 0212 80930800          sts _current_temp_display_buffer+8,R24
- 0216           L47:
- 0216                   .dbline 120
- 0216           ;   if(ng)                                       //温度为负
- 0216 4423              tst R20
- 0218 99F0              breq L52
- 021A           X10:
- 021A                   .dbline 121
- 021A           ;   {
- 021A                   .dbline 122
- 021A           ;     if(current_temp_display_buffer[8]==' ')
- 021A 80910800          lds R24,_current_temp_display_buffer+8
- 021E 8032              cpi R24,32
- 0220 21F4              brne L54
- 0222           X11:
- 0222                   .dbline 123
- 0222           ;          current_temp_display_buffer[8]='-';
- 0222 8DE2              ldi R24,45
- 0224 80930800          sts _current_temp_display_buffer+8,R24
- 0228 0BC0              xjmp L55
- 022A           L54:
- 022A                   .dbline 125
- 022A           ;       else  
- 022A           ;     if(current_temp_display_buffer[7]==' ')
- 022A 80910700          lds R24,_current_temp_display_buffer+7
- 022E 8032              cpi R24,32
- 0230 21F4              brne L58
- 0232           X12:
- 0232                   .dbline 126
- 0232           ;          current_temp_display_buffer[7]='-';
- 0232 8DE2              ldi R24,45
- 0234 80930700          sts _current_temp_display_buffer+7,R24
- 0238 03C0              xjmp L59
- 023A           L58:
- 023A                   .dbline 128
- 023A           ;       else  
- 023A           ;          current_temp_display_buffer[6]='-';
- 023A 8DE2              ldi R24,45
- 023C 80930600          sts _current_temp_display_buffer+6,R24
- 0240           L59:
- 0240           L55:
- 0240                   .dbline 129
- 0240           ;   }
- 0240           L52:
- 0240                   .dbline -2
- 0240           L22:
- 0240                   .dbline 0 ; func end
- 0240 4991              ld R20,y+
- 0242 0895              ret
- 0244                   .dbsym r ng 20 c
- 0244                   .dbend
- 0244           ; }
- 0244           ; 
- 0244           ; 
+ 015C           _convert_temp_data::
+ 015C 4A93              st -y,R20
+ 015E                   .dbline -1
+ 015E                   .dbline 100
+ 015E           ;  
+ 015E           ; }
+ 015E           ; 
+ 015E           ; //温度转换
+ 015E           ; void convert_temp_data(void)
+ 015E           ; {
+ 015E                   .dbline 101
+ 015E           ;    unsigned char ng=0;
+ 015E 4427              clr R20
+ 0160                   .dbline 103
+ 0160           ;           
+ 0160           ;   if((temp_value[1]&0xF8)==0xF8) //判断温度的正负
+ 0160 80912200          lds R24,_temp_value+1
+ 0164 887F              andi R24,248
+ 0166 883F              cpi R24,248
+ 0168 91F4              brne L23
+ 016A           X5:
+ 016A                   .dbline 104
+ 016A           ;   {
+ 016A                   .dbline 105
+ 016A           ;     temp_value[1]=~temp_value[1];
+ 016A 20902200          lds R2,_temp_value+1
+ 016E 2094              com R2
+ 0170 20922200          sts _temp_value+1,R2
+ 0174                   .dbline 106
+ 0174           ;       temp_value[0]=~temp_value[0]+1;
+ 0174 80912100          lds R24,_temp_value
+ 0178 8095              com R24
+ 017A 8F5F              subi R24,255    ; addi 1
+ 017C 80932100          sts _temp_value,R24
+ 0180                   .dbline 107
+ 0180           ;       if(temp_value[0]==0x00) temp_value[1]++;
+ 0180 8823              tst R24
+ 0182 21F4              brne L28
+ 0184           X6:
+ 0184                   .dbline 107
+ 0184 822D              mov R24,R2
+ 0186 8F5F              subi R24,255    ; addi 1
+ 0188 80932200          sts _temp_value+1,R24
+ 018C           L28:
+ 018C                   .dbline 108
+ 018C           ;       ng=1;                        //负数标志
+ 018C 41E0              ldi R20,1
+ 018E                   .dbline 109
+ 018E           ;   }
+ 018E           L23:
+ 018E                   .dbline 111
+ 018E           ;   
+ 018E           ;   display_digit[0]=df_table[temp_value[0]&0x0F];    //温度小数部分
+ 018E 80E0              ldi R24,<_df_table
+ 0190 90E0              ldi R25,>_df_table
+ 0192 E0912100          lds R30,_temp_value
+ 0196 FF27              clr R31
+ 0198 EF70              andi R30,15
+ 019A F070              andi R31,0
+ 019C E80F              add R30,R24
+ 019E F91F              adc R31,R25
+ 01A0 2080              ldd R2,z+0
+ 01A2 20922300          sts _display_digit,R2
+ 01A6                   .dbline 112
+ 01A6           ;   currentT=(temp_value[0]>>4)|(temp_value[1]<<4); //温度数值
+ 01A6 80912200          lds R24,_temp_value+1
+ 01AA 8F70              andi R24,#0x0F
+ 01AC 8295              swap R24
+ 01AE 90912100          lds R25,_temp_value
+ 01B2 9295              swap R25
+ 01B4 9F70              andi R25,#0x0F
+ 01B6 982B              or R25,R24
+ 01B8 90930F00          sts _currentT,R25
+ 01BC                   .dbline 114
+ 01BC           ;   
+ 01BC           ;   display_digit[3]=currentT/100;                    //温度百位
+ 01BC 14E6              ldi R17,100
+ 01BE 092F              mov R16,R25
+ 01C0 0E940000          xcall div8u
+ 01C4 00932600          sts _display_digit+3,R16
+ 01C8                   .dbline 115
+ 01C8           ;   display_digit[2]=currentT%100/10;                 //温度十位
+ 01C8 14E6              ldi R17,100
+ 01CA 00910F00          lds R16,_currentT
+ 01CE 0E940000          xcall mod8u
+ 01D2 1AE0              ldi R17,10
+ 01D4 0E940000          xcall div8u
+ 01D8 00932500          sts _display_digit+2,R16
+ 01DC                   .dbline 116
+ 01DC           ;   display_digit[1]=currentT%10;                     //温度个位
+ 01DC 1AE0              ldi R17,10
+ 01DE 00910F00          lds R16,_currentT
+ 01E2 0E940000          xcall mod8u
+ 01E6 00932400          sts _display_digit+1,R16
+ 01EA                   .dbline 119
+ 01EA           ;   
+ 01EA           ;   //温度显示预操作
+ 01EA           ;   current_temp_display_buffer[11]=display_digit[0]+'0';
+ 01EA 80912300          lds R24,_display_digit
+ 01EE 805D              subi R24,208    ; addi 48
+ 01F0 80930B00          sts _current_temp_display_buffer+11,R24
+ 01F4                   .dbline 120
+ 01F4           ;   current_temp_display_buffer[10]='.';
+ 01F4 8EE2              ldi R24,46
+ 01F6 80930A00          sts _current_temp_display_buffer+10,R24
+ 01FA                   .dbline 121
+ 01FA           ;   current_temp_display_buffer[9]=display_digit[1]+'0';
+ 01FA 802F              mov R24,R16
+ 01FC 805D              subi R24,208    ; addi 48
+ 01FE 80930900          sts _current_temp_display_buffer+9,R24
+ 0202                   .dbline 122
+ 0202           ;   current_temp_display_buffer[8]=display_digit[2]+'0';
+ 0202 80912500          lds R24,_display_digit+2
+ 0206 805D              subi R24,208    ; addi 48
+ 0208 80930800          sts _current_temp_display_buffer+8,R24
+ 020C                   .dbline 123
+ 020C           ;   if(display_digit[3]!=0)
+ 020C 20902600          lds R2,_display_digit+3
+ 0210 2220              tst R2
+ 0212 29F0              breq L41
+ 0214           X7:
+ 0214                   .dbline 124
+ 0214           ;   current_temp_display_buffer[7]=display_digit[3]+'0';
+ 0214 822D              mov R24,R2
+ 0216 805D              subi R24,208    ; addi 48
+ 0218 80930700          sts _current_temp_display_buffer+7,R24
+ 021C 03C0              xjmp L42
+ 021E           L41:
+ 021E                   .dbline 126
+ 021E           ;   else
+ 021E           ;   current_temp_display_buffer[7]=' ';
+ 021E 80E2              ldi R24,32
+ 0220 80930700          sts _current_temp_display_buffer+7,R24
+ 0224           L42:
+ 0224                   .dbline 127
+ 0224           ;   if(display_digit[2]==0 && display_digit[1]==0)
+ 0224 20902500          lds R2,_display_digit+2
+ 0228 2220              tst R2
+ 022A 39F4              brne L47
+ 022C           X8:
+ 022C 20902400          lds R2,_display_digit+1
+ 0230 2220              tst R2
+ 0232 19F4              brne L47
+ 0234           X9:
+ 0234                   .dbline 128
+ 0234           ;   current_temp_display_buffer[8]=' ';
+ 0234 80E2              ldi R24,32
+ 0236 80930800          sts _current_temp_display_buffer+8,R24
+ 023A           L47:
+ 023A                   .dbline 129
+ 023A           ;   if(ng)                                       //温度为负
+ 023A 4423              tst R20
+ 023C 99F0              breq L52
+ 023E           X10:
+ 023E                   .dbline 130
+ 023E           ;   {
+ 023E                   .dbline 131
+ 023E           ;     if(current_temp_display_buffer[8]==' ')
+ 023E 80910800          lds R24,_current_temp_display_buffer+8
+ 0242 8032              cpi R24,32
+ 0244 21F4              brne L54
+ 0246           X11:
+ 0246                   .dbline 132
+ 0246           ;          current_temp_display_buffer[8]='-';
+ 0246 8DE2              ldi R24,45
+ 0248 80930800          sts _current_temp_display_buffer+8,R24
+ 024C 0BC0              xjmp L55
+ 024E           L54:
+ 024E                   .dbline 134
+ 024E           ;       else  
+ 024E           ;     if(current_temp_display_buffer[7]==' ')
+ 024E 80910700          lds R24,_current_temp_display_buffer+7
+ 0252 8032              cpi R24,32
+ 0254 21F4              brne L58
+ 0256           X12:
+ 0256                   .dbline 135
+ 0256           ;          current_temp_display_buffer[7]='-';
+ 0256 8DE2              ldi R24,45
+ 0258 80930700          sts _current_temp_display_buffer+7,R24
+ 025C 03C0              xjmp L59
+ 025E           L58:
+ 025E                   .dbline 137
+ 025E           ;       else  
+ 025E           ;          current_temp_display_buffer[6]='-';
+ 025E 8DE2              ldi R24,45
+ 0260 80930600          sts _current_temp_display_buffer+6,R24
+ 0264           L59:
+ 0264           L55:
+ 0264                   .dbline 138
+ 0264           ;   }
+ 0264           L52:
+ 0264                   .dbline -2
+ 0264           L22:
+ 0264                   .dbline 0 ; func end
+ 0264 4991              ld R20,y+
+ 0266 0895              ret
+ 0268                   .dbsym r ng 20 c
+ 0268                   .dbend
+ 0268           ; }
+ 0268           ; 
+ 0268           ; 

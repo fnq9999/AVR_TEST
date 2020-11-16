@@ -2,11 +2,12 @@
                         .area text(rom, con, rel)
  0000                   .dbfile ..\source\lib\delay.c
  0000                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\delay.c
- 0000                   .dbfunc e delay_1us _delay_1us fV
+ 0000                   .dbfunc e delay_nus _delay_nus fV
+ 0000           ;              n -> R16,R17
                         .even
- 0000           _delay_1us::
+ 0000           _delay_nus::
  0000                   .dbline -1
- 0000                   .dbline 11
+ 0000                   .dbline 17
  0000           ; /************************************************
  0000           ; 文件：delay.c
  0000           ; 用途：延时函数
@@ -16,131 +17,111 @@
  0000           ; Copy Right  (c)  www.avrvi.com  AVR与虚拟仪器
  0000           ; ************************************************/
  0000           ; #include <iom128v.h>
- 0000           ; void delay_1us(void)                 //1us延时函数
- 0000           ;   {
- 0000                   .dbline 12
- 0000           ;    asm("nop");
- 0000 0000              nop
- 0002                   .dbline -2
- 0002           L1:
- 0002                   .dbline 0 ; func end
- 0002 0895              ret
- 0004                   .dbend
- 0004                   .dbfunc e delay_nus _delay_nus fV
- 0004           ;              i -> R20,R21
- 0004           ;              n -> R10,R11
+ 0000           ; 
+ 0000           ; #define delay_1us(); asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");
+ 0000           ; //void delay_1us(void) //延时1us
+ 0000           ; //{//ret:4t+call:4t=8t,8MHz时1t为125ns,8t为1000ns=1us
+ 0000           ; //}
+ 0000           ; 
+ 0000           ;   void delay_nus(unsigned int n) //延时n us
+ 0000           ; {//(8+(4+4)*(n-1)+3)t=(8+8n-8+3)t=(8n+3)t=n us+0.375us,所以约等于1us,特别n越大越精确
+ 0000           L2:
+ 0000                   .dbline 19
+ 0000           ;  while(--n)
+ 0000           ;  {
+ 0000                   .dbline 21
+ 0000           ; //  delay_1us();
+ 0000           ;  }
+ 0000           L3:
+ 0000                   .dbline 18
+ 0000 C801              movw R24,R16
+ 0002 0197              sbiw R24,1
+ 0004 8C01              movw R16,R24
+ 0006 0030              cpi R16,0
+ 0008 0107              cpc R16,R17
+ 000A D1F7              brne L2
+ 000C           X0:
+ 000C                   .dbline -2
+ 000C           L1:
+ 000C                   .dbline 0 ; func end
+ 000C 0895              ret
+ 000E                   .dbsym r n 16 i
+ 000E                   .dbend
+ 000E                   .dbfunc e delay_1ms _delay_1ms fV
                         .even
- 0004           _delay_nus::
- 0004 0E940000          xcall push_xgset300C
- 0008 5801              movw R10,R16
- 000A                   .dbline -1
- 000A                   .dbline 16
- 000A           ;   }
- 000A           ; 
- 000A           ; void delay_nus(unsigned int n)       //N us延时函数
- 000A           ;   {
- 000A                   .dbline 17
- 000A           ;    unsigned int i=0;
- 000A                   .dbline 18
- 000A           ;    for (i=0;i<n;i++)
- 000A 4427              clr R20
- 000C 5527              clr R21
- 000E 03C0              xjmp L6
- 0010           L3:
- 0010                   .dbline 19
- 0010           ;    delay_1us();
- 0010 F7DF              xcall _delay_1us
- 0012           L4:
- 0012                   .dbline 18
- 0012 4F5F              subi R20,255  ; offset = 1
- 0014 5F4F              sbci R21,255
- 0016           L6:
- 0016                   .dbline 18
- 0016 4A15              cp R20,R10
- 0018 5B05              cpc R21,R11
- 001A D0F3              brlo L3
- 001C           X0:
- 001C                   .dbline -2
- 001C           L2:
- 001C                   .dbline 0 ; func end
- 001C 0C940000          xjmp pop_xgset300C
- 0020                   .dbsym r i 20 i
- 0020                   .dbsym r n 10 i
- 0020                   .dbend
- 0020                   .dbfunc e delay_1ms _delay_1ms fV
- 0020           ;              i -> R16,R17
+ 000E           _delay_1ms::
+ 000E                   .dbline -1
+ 000E                   .dbline 27
+ 000E           ; }
+ 000E           ; 
+ 000E           ;   
+ 000E           ;   
+ 000E           ; void delay_1ms(void)                 //1ms延时函数
+ 000E           ;   {
+ 000E                   .dbline 32
+ 000E           ;   /*
+ 000E           ;    unsigned int i;
+ 000E           ;    for (i=0;i<1140;i++);
+ 000E           ;    */
+ 000E           ;    delay_nus(999); //为999us
+ 000E 07EE              ldi R16,999
+ 0010 13E0              ldi R17,3
+ 0012                   .dbline -2
+ 0012           L5:
+ 0012                   .dbline 0 ; func end
+ 0012 F6CF              xjmp _delay_nus
+ 0014                   .dbend
+ 0014                   .dbfunc e delay_nms _delay_nms fV
+ 0014           ;              n -> R20,R21
                         .even
- 0020           _delay_1ms::
- 0020                   .dbline -1
- 0020                   .dbline 23
- 0020           ;   }
- 0020           ;   
- 0020           ; void delay_1ms(void)                 //1ms延时函数
- 0020           ;   {
- 0020                   .dbline 25
- 0020           ;    unsigned int i;
- 0020           ;    for (i=0;i<1140;i++);
- 0020 0027              clr R16
- 0022 1127              clr R17
- 0024 02C0              xjmp L11
- 0026           L8:
- 0026                   .dbline 25
- 0026           L9:
- 0026                   .dbline 25
- 0026 0F5F              subi R16,255  ; offset = 1
- 0028 1F4F              sbci R17,255
- 002A           L11:
- 002A                   .dbline 25
- 002A 0437              cpi R16,116
- 002C E4E0              ldi R30,4
- 002E 1E07              cpc R17,R30
- 0030 D0F3              brlo L8
- 0032           X1:
- 0032                   .dbline -2
- 0032           L7:
- 0032                   .dbline 0 ; func end
+ 0014           _delay_nms::
+ 0014 4A93              st -y,R20
+ 0016 5A93              st -y,R21
+ 0018 A801              movw R20,R16
+ 001A                   .dbline -1
+ 001A                   .dbline 39
+ 001A           ;    
+ 001A           ;   }
+ 001A           ;   
+ 001A           ;   
+ 001A           ;   
+ 001A           ;   void delay_nms(unsigned int n) //延时nms
+ 001A           ; {//(8+4*(n-1)+3)t+delay_nus=(7+4n)t+delay_nus
+ 001A                   .dbline 40
+ 001A           ;  for(;n>0;n--)
+ 001A 06C0              xjmp L10
+ 001C           L7:
+ 001C                   .dbline 41
+ 001C           ;  {
+ 001C                   .dbline 42
+ 001C           ;   asm("nop"); //再补尝,变成了(7+5n)t+delay_nus
+ 001C 0000              nop
+ 001E                   .dbline 43
+ 001E           ;   delay_nus(999); /*delay_nus(m)为(8m+3)t所以delay_nus的参数只要999就可以了
+ 001E 07EE              ldi R16,999
+ 0020 13E0              ldi R17,3
+ 0022 EEDF              xcall _delay_nus
+ 0024                   .dbline 47
+ 0024           ;                 (7+5n)t+((8m+3)*n)t=(7+8n+8mn)t=7t+n us+mn us
+ 0024           ;                 =7t+(m+1)n us,代入m=999约等于1000n us=n ms,误差仅为7t,不到1us
+ 0024           ;                 */
+ 0024           ;  }
+ 0024           L8:
+ 0024                   .dbline 40
+ 0024 4150              subi R20,1
+ 0026 5040              sbci R21,0
+ 0028           L10:
+ 0028                   .dbline 40
+ 0028 4030              cpi R20,0
+ 002A 4507              cpc R20,R21
+ 002C B9F7              brne L7
+ 002E           X1:
+ 002E                   .dbline -2
+ 002E           L6:
+ 002E                   .dbline 0 ; func end
+ 002E 5991              ld R21,y+
+ 0030 4991              ld R20,y+
  0032 0895              ret
- 0034                   .dbsym r i 16 i
+ 0034                   .dbsym r n 20 i
  0034                   .dbend
- 0034                   .dbfunc e delay_nms _delay_nms fV
- 0034           ;              i -> R20,R21
- 0034           ;              n -> R10,R11
-                        .even
- 0034           _delay_nms::
- 0034 0E940000          xcall push_xgset300C
- 0038 5801              movw R10,R16
- 003A                   .dbline -1
- 003A                   .dbline 29
- 003A           ;   }
- 003A           ;   
- 003A           ; void delay_nms(unsigned int n)       //N ms延时函数
- 003A           ;   {
- 003A                   .dbline 30
- 003A           ;    unsigned int i=0;
- 003A                   .dbline 31
- 003A           ;    for (i=0;i<n;i++)
- 003A 4427              clr R20
- 003C 5527              clr R21
- 003E 03C0              xjmp L16
- 0040           L13:
- 0040                   .dbline 32
- 0040           ;    delay_1ms();
- 0040 EFDF              xcall _delay_1ms
- 0042           L14:
- 0042                   .dbline 31
- 0042 4F5F              subi R20,255  ; offset = 1
- 0044 5F4F              sbci R21,255
- 0046           L16:
- 0046                   .dbline 31
- 0046 4A15              cp R20,R10
- 0048 5B05              cpc R21,R11
- 004A D0F3              brlo L13
- 004C           X2:
- 004C                   .dbline -2
- 004C           L12:
- 004C                   .dbline 0 ; func end
- 004C 0C940000          xjmp pop_xgset300C
- 0050                   .dbsym r i 20 i
- 0050                   .dbsym r n 10 i
- 0050                   .dbend
- 0050           ;   }
+ 0034           ; }

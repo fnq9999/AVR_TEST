@@ -407,520 +407,547 @@
  0132           ; void Seg7_Led_display(unsigned int data)
  0132           ; {
  0132                   .dbline 101
- 0132           ;  if(data>9999) //错误处理,超出显示范围则全亮
- 0132 8FE0              ldi R24,9999
- 0134 97E2              ldi R25,39
- 0136 8A15              cp R24,R10
- 0138 9B05              cpc R25,R11
- 013A 30F4              brsh L21
- 013C           X6:
- 013C                   .dbline 102
- 013C           ;       {
- 013C                   .dbline 103
- 013C           ;        HC_595_OUT(0xFF);
- 013C 0FEF              ldi R16,255
- 013E 72DF              xcall _HC_595_OUT
- 0140                   .dbline 104
- 0140           ;        Seg7_Bitselect_PORT|=((1<<Seg7_Bit0)|(1<<Seg7_Bit1)|(1<<Seg7_Bit2)|(1<<Seg7_Bit3));
- 0140 88B3              in R24,0x18
- 0142 806F              ori R24,240
- 0144 88BB              out 0x18,R24
- 0146                   .dbline 105
- 0146           ;       }
- 0146 7FC0              xjmp L22
- 0148           L21:
- 0148                   .dbline 106
- 0148           ;  else if(data>999)
- 0148 87EE              ldi R24,999
- 014A 93E0              ldi R25,3
- 014C 8A15              cp R24,R10
- 014E 9B05              cpc R25,R11
- 0150 30F5              brsh L23
- 0152           X7:
- 0152                   .dbline 107
- 0152           ;       {
- 0152                   .dbline 108
- 0152           ;        Seg7_Led_Buf[3]=data/1000;
- 0152 28EE              ldi R18,1000
- 0154 33E0              ldi R19,3
- 0156 8501              movw R16,R10
- 0158 0E940000          xcall div16u
- 015C 00930300          sts _Seg7_Led_Buf+3,R16
- 0160                   .dbline 109
- 0160           ;        Seg7_Led_Buf[2]=(data%1000)/100;
- 0160 28EE              ldi R18,1000
- 0162 33E0              ldi R19,3
- 0164 8501              movw R16,R10
- 0166 0E940000          xcall mod16u
- 016A 24E6              ldi R18,100
- 016C 30E0              ldi R19,0
- 016E 0E940000          xcall div16u
- 0172 00930200          sts _Seg7_Led_Buf+2,R16
- 0176                   .dbline 110
- 0176           ;        Seg7_Led_Buf[1]=(data%100)/10;
- 0176 24E6              ldi R18,100
- 0178 30E0              ldi R19,0
- 017A 8501              movw R16,R10
- 017C 0E940000          xcall mod16u
- 0180 2AE0              ldi R18,10
- 0182 30E0              ldi R19,0
- 0184 0E940000          xcall div16u
- 0188 00930100          sts _Seg7_Led_Buf+1,R16
- 018C                   .dbline 111
- 018C           ;        Seg7_Led_Buf[0]=data%10;
- 018C 2AE0              ldi R18,10
- 018E 30E0              ldi R19,0
- 0190 8501              movw R16,R10
- 0192 0E940000          xcall mod16u
- 0196 00930000          sts _Seg7_Led_Buf,R16
- 019A                   .dbline 112
- 019A           ;        Seg7_Led_Update();
- 019A 4DDF              xcall _Seg7_Led_Update
- 019C                   .dbline 113
- 019C           ;       }
- 019C 54C0              xjmp L24
- 019E           L23:
- 019E                   .dbline 114
- 019E           ;  else if(data>99)
- 019E 83E6              ldi R24,99
- 01A0 90E0              ldi R25,0
- 01A2 8A15              cp R24,R10
- 01A4 9B05              cpc R25,R11
- 01A6 10F5              brsh L28
- 01A8           X8:
- 01A8                   .dbline 115
- 01A8           ;       {
- 01A8                   .dbline 116
- 01A8           ;        Seg7_Led_Buf[3]=16;
- 01A8 80E1              ldi R24,16
- 01AA 80930300          sts _Seg7_Led_Buf+3,R24
- 01AE                   .dbline 117
- 01AE           ;        Seg7_Led_Buf[2]=(data%1000)/100;
- 01AE 28EE              ldi R18,1000
- 01B0 33E0              ldi R19,3
- 01B2 8501              movw R16,R10
- 01B4 0E940000          xcall mod16u
- 01B8 24E6              ldi R18,100
- 01BA 30E0              ldi R19,0
- 01BC 0E940000          xcall div16u
- 01C0 00930200          sts _Seg7_Led_Buf+2,R16
- 01C4                   .dbline 118
- 01C4           ;        Seg7_Led_Buf[1]=(data%100)/10;
- 01C4 24E6              ldi R18,100
- 01C6 30E0              ldi R19,0
- 01C8 8501              movw R16,R10
- 01CA 0E940000          xcall mod16u
- 01CE 2AE0              ldi R18,10
- 01D0 30E0              ldi R19,0
- 01D2 0E940000          xcall div16u
- 01D6 00930100          sts _Seg7_Led_Buf+1,R16
- 01DA                   .dbline 119
- 01DA           ;        Seg7_Led_Buf[0]=data%10;
- 01DA 2AE0              ldi R18,10
- 01DC 30E0              ldi R19,0
- 01DE 8501              movw R16,R10
- 01E0 0E940000          xcall mod16u
- 01E4 00930000          sts _Seg7_Led_Buf,R16
- 01E8                   .dbline 120
- 01E8           ;        Seg7_Led_Update();
- 01E8 26DF              xcall _Seg7_Led_Update
- 01EA                   .dbline 121
- 01EA           ;       }
- 01EA 2DC0              xjmp L29
- 01EC           L28:
- 01EC                   .dbline 122
- 01EC           ;  else if(data>9)
- 01EC 89E0              ldi R24,9
- 01EE 90E0              ldi R25,0
- 01F0 8A15              cp R24,R10
- 01F2 9B05              cpc R25,R11
- 01F4 C8F4              brsh L33
- 01F6           X9:
- 01F6                   .dbline 123
- 01F6           ;       {
- 01F6                   .dbline 124
- 01F6           ;        Seg7_Led_Buf[3]=16;
- 01F6 80E1              ldi R24,16
- 01F8 80930300          sts _Seg7_Led_Buf+3,R24
- 01FC                   .dbline 125
- 01FC           ;        Seg7_Led_Buf[2]=16;
- 01FC 80930200          sts _Seg7_Led_Buf+2,R24
- 0200                   .dbline 126
- 0200           ;        Seg7_Led_Buf[1]=(data%100)/10;
- 0200 24E6              ldi R18,100
- 0202 30E0              ldi R19,0
- 0204 8501              movw R16,R10
- 0206 0E940000          xcall mod16u
- 020A 2AE0              ldi R18,10
- 020C 30E0              ldi R19,0
- 020E 0E940000          xcall div16u
- 0212 00930100          sts _Seg7_Led_Buf+1,R16
- 0216                   .dbline 127
- 0216           ;        Seg7_Led_Buf[0]=data%10;
- 0216 2AE0              ldi R18,10
- 0218 30E0              ldi R19,0
- 021A 8501              movw R16,R10
- 021C 0E940000          xcall mod16u
- 0220 00930000          sts _Seg7_Led_Buf,R16
- 0224                   .dbline 128
- 0224           ;        Seg7_Led_Update();
- 0224 08DF              xcall _Seg7_Led_Update
- 0226                   .dbline 129
- 0226           ;       }
- 0226 0FC0              xjmp L34
- 0228           L33:
- 0228                   .dbline 131
- 0228           ;  else
- 0228           ;       {
- 0228                   .dbline 132
- 0228           ;        Seg7_Led_Buf[3]=16;
- 0228 80E1              ldi R24,16
- 022A 80930300          sts _Seg7_Led_Buf+3,R24
- 022E                   .dbline 133
- 022E           ;        Seg7_Led_Buf[2]=16;
- 022E 80930200          sts _Seg7_Led_Buf+2,R24
+ 0132           ; if(data==0){
+ 0132 AA20              tst R10
+ 0134 61F4              brne L21
+ 0136 BB20              tst R11
+ 0138 51F4              brne L21
+ 013A           X6:
+ 013A                   .dbline 101
+ 013A                   .dbline 102
+ 013A           ;       Seg7_Led_Buf[3]=0;
+ 013A 2224              clr R2
+ 013C 20920300          sts _Seg7_Led_Buf+3,R2
+ 0140                   .dbline 103
+ 0140           ;        Seg7_Led_Buf[2]=0;
+ 0140 20920200          sts _Seg7_Led_Buf+2,R2
+ 0144                   .dbline 104
+ 0144           ;        Seg7_Led_Buf[1]=0;
+ 0144 20920100          sts _Seg7_Led_Buf+1,R2
+ 0148                   .dbline 105
+ 0148           ;        Seg7_Led_Buf[0]=0;
+ 0148 20920000          sts _Seg7_Led_Buf,R2
+ 014C                   .dbline 106
+ 014C           ;        Seg7_Led_Update();
+ 014C 74DF              xcall _Seg7_Led_Update
+ 014E                   .dbline 107
+ 014E           ; }
+ 014E           L21:
+ 014E                   .dbline 108
+ 014E           ;  if(data>9999) //错误处理,超出显示范围则全亮
+ 014E 8FE0              ldi R24,9999
+ 0150 97E2              ldi R25,39
+ 0152 8A15              cp R24,R10
+ 0154 9B05              cpc R25,R11
+ 0156 30F4              brsh L26
+ 0158           X7:
+ 0158                   .dbline 109
+ 0158           ;       {
+ 0158                   .dbline 110
+ 0158           ;        HC_595_OUT(0xFF);
+ 0158 0FEF              ldi R16,255
+ 015A 64DF              xcall _HC_595_OUT
+ 015C                   .dbline 111
+ 015C           ;        Seg7_Bitselect_PORT|=((1<<Seg7_Bit0)|(1<<Seg7_Bit1)|(1<<Seg7_Bit2)|(1<<Seg7_Bit3));
+ 015C 88B3              in R24,0x18
+ 015E 806F              ori R24,240
+ 0160 88BB              out 0x18,R24
+ 0162                   .dbline 112
+ 0162           ;       }
+ 0162 7FC0              xjmp L27
+ 0164           L26:
+ 0164                   .dbline 113
+ 0164           ;  else if(data>999)
+ 0164 87EE              ldi R24,999
+ 0166 93E0              ldi R25,3
+ 0168 8A15              cp R24,R10
+ 016A 9B05              cpc R25,R11
+ 016C 30F5              brsh L28
+ 016E           X8:
+ 016E                   .dbline 114
+ 016E           ;       {
+ 016E                   .dbline 115
+ 016E           ;        Seg7_Led_Buf[3]=data/1000;
+ 016E 28EE              ldi R18,1000
+ 0170 33E0              ldi R19,3
+ 0172 8501              movw R16,R10
+ 0174 0E940000          xcall div16u
+ 0178 00930300          sts _Seg7_Led_Buf+3,R16
+ 017C                   .dbline 116
+ 017C           ;        Seg7_Led_Buf[2]=(data%1000)/100;
+ 017C 28EE              ldi R18,1000
+ 017E 33E0              ldi R19,3
+ 0180 8501              movw R16,R10
+ 0182 0E940000          xcall mod16u
+ 0186 24E6              ldi R18,100
+ 0188 30E0              ldi R19,0
+ 018A 0E940000          xcall div16u
+ 018E 00930200          sts _Seg7_Led_Buf+2,R16
+ 0192                   .dbline 117
+ 0192           ;        Seg7_Led_Buf[1]=(data%100)/10;
+ 0192 24E6              ldi R18,100
+ 0194 30E0              ldi R19,0
+ 0196 8501              movw R16,R10
+ 0198 0E940000          xcall mod16u
+ 019C 2AE0              ldi R18,10
+ 019E 30E0              ldi R19,0
+ 01A0 0E940000          xcall div16u
+ 01A4 00930100          sts _Seg7_Led_Buf+1,R16
+ 01A8                   .dbline 118
+ 01A8           ;        Seg7_Led_Buf[0]=data%10;
+ 01A8 2AE0              ldi R18,10
+ 01AA 30E0              ldi R19,0
+ 01AC 8501              movw R16,R10
+ 01AE 0E940000          xcall mod16u
+ 01B2 00930000          sts _Seg7_Led_Buf,R16
+ 01B6                   .dbline 119
+ 01B6           ;        Seg7_Led_Update();
+ 01B6 3FDF              xcall _Seg7_Led_Update
+ 01B8                   .dbline 120
+ 01B8           ;       }
+ 01B8 54C0              xjmp L29
+ 01BA           L28:
+ 01BA                   .dbline 121
+ 01BA           ;  else if(data>99)
+ 01BA 83E6              ldi R24,99
+ 01BC 90E0              ldi R25,0
+ 01BE 8A15              cp R24,R10
+ 01C0 9B05              cpc R25,R11
+ 01C2 10F5              brsh L33
+ 01C4           X9:
+ 01C4                   .dbline 122
+ 01C4           ;       {
+ 01C4                   .dbline 123
+ 01C4           ;        Seg7_Led_Buf[3]=0;
+ 01C4 2224              clr R2
+ 01C6 20920300          sts _Seg7_Led_Buf+3,R2
+ 01CA                   .dbline 124
+ 01CA           ;        Seg7_Led_Buf[2]=(data%1000)/100;
+ 01CA 28EE              ldi R18,1000
+ 01CC 33E0              ldi R19,3
+ 01CE 8501              movw R16,R10
+ 01D0 0E940000          xcall mod16u
+ 01D4 24E6              ldi R18,100
+ 01D6 30E0              ldi R19,0
+ 01D8 0E940000          xcall div16u
+ 01DC 00930200          sts _Seg7_Led_Buf+2,R16
+ 01E0                   .dbline 125
+ 01E0           ;        Seg7_Led_Buf[1]=(data%100)/10;
+ 01E0 24E6              ldi R18,100
+ 01E2 30E0              ldi R19,0
+ 01E4 8501              movw R16,R10
+ 01E6 0E940000          xcall mod16u
+ 01EA 2AE0              ldi R18,10
+ 01EC 30E0              ldi R19,0
+ 01EE 0E940000          xcall div16u
+ 01F2 00930100          sts _Seg7_Led_Buf+1,R16
+ 01F6                   .dbline 126
+ 01F6           ;        Seg7_Led_Buf[0]=data%10;
+ 01F6 2AE0              ldi R18,10
+ 01F8 30E0              ldi R19,0
+ 01FA 8501              movw R16,R10
+ 01FC 0E940000          xcall mod16u
+ 0200 00930000          sts _Seg7_Led_Buf,R16
+ 0204                   .dbline 127
+ 0204           ;        Seg7_Led_Update();
+ 0204 18DF              xcall _Seg7_Led_Update
+ 0206                   .dbline 128
+ 0206           ;       }
+ 0206 2DC0              xjmp L34
+ 0208           L33:
+ 0208                   .dbline 129
+ 0208           ;  else if(data>9)
+ 0208 89E0              ldi R24,9
+ 020A 90E0              ldi R25,0
+ 020C 8A15              cp R24,R10
+ 020E 9B05              cpc R25,R11
+ 0210 C8F4              brsh L38
+ 0212           X10:
+ 0212                   .dbline 130
+ 0212           ;       {
+ 0212                   .dbline 131
+ 0212           ;        Seg7_Led_Buf[3]=0;
+ 0212 2224              clr R2
+ 0214 20920300          sts _Seg7_Led_Buf+3,R2
+ 0218                   .dbline 132
+ 0218           ;        Seg7_Led_Buf[2]=0;
+ 0218 20920200          sts _Seg7_Led_Buf+2,R2
+ 021C                   .dbline 133
+ 021C           ;        Seg7_Led_Buf[1]=(data%100)/10;
+ 021C 24E6              ldi R18,100
+ 021E 30E0              ldi R19,0
+ 0220 8501              movw R16,R10
+ 0222 0E940000          xcall mod16u
+ 0226 2AE0              ldi R18,10
+ 0228 30E0              ldi R19,0
+ 022A 0E940000          xcall div16u
+ 022E 00930100          sts _Seg7_Led_Buf+1,R16
  0232                   .dbline 134
- 0232           ;        Seg7_Led_Buf[1]=16;
- 0232 80930100          sts _Seg7_Led_Buf+1,R24
- 0236                   .dbline 135
- 0236           ;        Seg7_Led_Buf[0]=data%10;
- 0236 2AE0              ldi R18,10
- 0238 30E0              ldi R19,0
- 023A 8501              movw R16,R10
- 023C 0E940000          xcall mod16u
- 0240 00930000          sts _Seg7_Led_Buf,R16
- 0244                   .dbline 136
- 0244           ;        Seg7_Led_Update();
- 0244 F8DE              xcall _Seg7_Led_Update
- 0246                   .dbline 137
- 0246           ;       }
- 0246           L34:
- 0246           L29:
- 0246           L24:
- 0246           L22:
- 0246                   .dbline -2
- 0246           L20:
- 0246                   .dbline 0 ; func end
- 0246 B990              ld R11,y+
- 0248 A990              ld R10,y+
- 024A 0895              ret
- 024C                   .dbsym r data 10 i
- 024C                   .dbend
- 024C                   .dbfunc e Seg7_Led_float _Seg7_Led_float fV
- 024C           ;           temp -> R10,R11
- 024C           ;           data -> y+2
+ 0232           ;        Seg7_Led_Buf[0]=data%10;
+ 0232 2AE0              ldi R18,10
+ 0234 30E0              ldi R19,0
+ 0236 8501              movw R16,R10
+ 0238 0E940000          xcall mod16u
+ 023C 00930000          sts _Seg7_Led_Buf,R16
+ 0240                   .dbline 135
+ 0240           ;        Seg7_Led_Update();
+ 0240 FADE              xcall _Seg7_Led_Update
+ 0242                   .dbline 136
+ 0242           ;       }
+ 0242 0FC0              xjmp L39
+ 0244           L38:
+ 0244                   .dbline 138
+ 0244           ;  else
+ 0244           ;       {
+ 0244                   .dbline 139
+ 0244           ;        Seg7_Led_Buf[3]=0;
+ 0244 2224              clr R2
+ 0246 20920300          sts _Seg7_Led_Buf+3,R2
+ 024A                   .dbline 140
+ 024A           ;        Seg7_Led_Buf[2]=0;
+ 024A 20920200          sts _Seg7_Led_Buf+2,R2
+ 024E                   .dbline 141
+ 024E           ;        Seg7_Led_Buf[1]=0;
+ 024E 20920100          sts _Seg7_Led_Buf+1,R2
+ 0252                   .dbline 142
+ 0252           ;        Seg7_Led_Buf[0]=data%10;
+ 0252 2AE0              ldi R18,10
+ 0254 30E0              ldi R19,0
+ 0256 8501              movw R16,R10
+ 0258 0E940000          xcall mod16u
+ 025C 00930000          sts _Seg7_Led_Buf,R16
+ 0260                   .dbline 143
+ 0260           ;        Seg7_Led_Update();
+ 0260 EADE              xcall _Seg7_Led_Update
+ 0262                   .dbline 144
+ 0262           ;       }
+ 0262           L39:
+ 0262           L34:
+ 0262           L29:
+ 0262           L27:
+ 0262                   .dbline -2
+ 0262           L20:
+ 0262                   .dbline 0 ; func end
+ 0262 B990              ld R11,y+
+ 0264 A990              ld R10,y+
+ 0266 0895              ret
+ 0268                   .dbsym r data 10 i
+ 0268                   .dbend
+ 0268                   .dbfunc e Seg7_Led_float _Seg7_Led_float fV
+ 0268           ;           temp -> R10,R11
+ 0268           ;           data -> y+2
                         .even
- 024C           _Seg7_Led_float::
- 024C 0E940000          xcall push_arg4
- 0250 AA92              st -y,R10
- 0252 BA92              st -y,R11
- 0254                   .dbline -1
- 0254                   .dbline 150
- 0254           ; }
- 0254           ; /*************************************************************************
- 0254           ; ** 函数名称:HC595显示浮点数据
- 0254           ; ** 功能描述:
- 0254           ; ** 输　入:
- 0254           ; ** 输出        :
- 0254           ; ** 全局变量:
- 0254           ; ** 调用模块: 
- 0254           ; ** 说明：
- 0254           ; ** 注意：
- 0254           ; **************************************************************************/
- 0254           ; void Seg7_Led_float(float data)
- 0254           ; {
- 0254                   .dbline 157
- 0254           ;  unsigned int temp;
- 0254           ;  /*
- 0254           ;  重要说明:data+=0.00001;其中0.00001为容错值
- 0254           ;  解决float数据类型在计算机内部存储的误差问题，可以解决显示问题
- 0254           ;  但是会引入新的计算误差，如果精度要求大于0.00001建议更改容错值或者将此处注释掉 
- 0254           ;  */
- 0254           ;  data+=0.00001;
- 0254 2A80              ldd R2,y+2
- 0256 3B80              ldd R3,y+3
- 0258 4C80              ldd R4,y+4
- 025A 5D80              ldd R5,y+5
- 025C 00E0              ldi R16,<L42
- 025E 10E0              ldi R17,>L42
- 0260 0E940000          xcall elpm32
- 0264 3A93              st -y,R19
- 0266 2A93              st -y,R18
- 0268 1A93              st -y,R17
- 026A 0A93              st -y,R16
- 026C 8101              movw R16,R2
- 026E 9201              movw R18,R4
- 0270 0E940000          xcall fpadd2
- 0274 0A83              std y+2,R16
- 0276 1B83              std y+3,R17
- 0278 2C83              std y+4,R18
- 027A 3D83              std y+5,R19
- 027C                   .dbline 158
- 027C           ;  point=1;
- 027C 81E0              ldi R24,1
- 027E 80931100          sts _point,R24
- 0282                   .dbline 159
- 0282           ;  if(data>999) //错误处理,超出显示范围则全亮
- 0282 CE01              movw R24,R28
- 0284 0296              adiw R24,2
- 0286 1C01              movw R2,R24
- 0288 00E0              ldi R16,<L45
- 028A 10E0              ldi R17,>L45
- 028C 0E940000          xcall elpm32
- 0290 3A92              st -y,R3
- 0292 2A92              st -y,R2
- 0294 0E940000          xcall fpcmp1
- 0298 34F4              brge L43
- 029A           X10:
- 029A                   .dbline 160
- 029A           ;       {
- 029A                   .dbline 161
- 029A           ;        HC_595_OUT(0xFF);
- 029A 0FEF              ldi R16,255
- 029C C3DE              xcall _HC_595_OUT
- 029E                   .dbline 162
- 029E           ;        Seg7_Bitselect_PORT|=((1<<Seg7_Bit0)|(1<<Seg7_Bit1)|(1<<Seg7_Bit2)|(1<<Seg7_Bit3));
- 029E 88B3              in R24,0x18
- 02A0 806F              ori R24,240
- 02A2 88BB              out 0x18,R24
- 02A4                   .dbline 163
- 02A4           ;       }
- 02A4 B6C0              xjmp L44
- 02A6           L43:
- 02A6                   .dbline 164
- 02A6           ;  else if(data>99)
- 02A6 CE01              movw R24,R28
- 02A8 0296              adiw R24,2
- 02AA 1C01              movw R2,R24
- 02AC 00E0              ldi R16,<L48
- 02AE 10E0              ldi R17,>L48
- 02B0 0E940000          xcall elpm32
- 02B4 3A92              st -y,R3
- 02B6 2A92              st -y,R2
- 02B8 0E940000          xcall fpcmp1
- 02BC ACF5              brge L46
- 02BE           X11:
- 02BE                   .dbline 165
- 02BE           ;       {
- 02BE                   .dbline 166
- 02BE           ;        temp=data*10;
- 02BE 00E0              ldi R16,<L49
- 02C0 10E0              ldi R17,>L49
- 02C2 0E940000          xcall elpm32
- 02C6 CE01              movw R24,R28
- 02C8 0296              adiw R24,2
- 02CA 9A93              st -y,R25
- 02CC 8A93              st -y,R24
- 02CE 0E940000          xcall fpmule1
- 02D2 0E940000          xcall fpint
- 02D6 5801              movw R10,R16
- 02D8                   .dbline 167
- 02D8           ;        point_pos=1;
- 02D8 81E0              ldi R24,1
- 02DA 80931200          sts _point_pos,R24
- 02DE                   .dbline 168
- 02DE           ;        Seg7_Led_Buf[3]=temp/1000;
- 02DE 28EE              ldi R18,1000
- 02E0 33E0              ldi R19,3
- 02E2 0E940000          xcall div16u
- 02E6 00930300          sts _Seg7_Led_Buf+3,R16
- 02EA                   .dbline 169
- 02EA           ;        Seg7_Led_Buf[2]=(temp%1000)/100;
- 02EA 28EE              ldi R18,1000
- 02EC 33E0              ldi R19,3
- 02EE 8501              movw R16,R10
- 02F0 0E940000          xcall mod16u
- 02F4 24E6              ldi R18,100
- 02F6 30E0              ldi R19,0
- 02F8 0E940000          xcall div16u
- 02FC 00930200          sts _Seg7_Led_Buf+2,R16
- 0300                   .dbline 170
- 0300           ;        Seg7_Led_Buf[1]=(temp%100)/10;
- 0300 24E6              ldi R18,100
- 0302 30E0              ldi R19,0
- 0304 8501              movw R16,R10
- 0306 0E940000          xcall mod16u
- 030A 2AE0              ldi R18,10
- 030C 30E0              ldi R19,0
- 030E 0E940000          xcall div16u
- 0312 00930100          sts _Seg7_Led_Buf+1,R16
- 0316                   .dbline 171
- 0316           ;        Seg7_Led_Buf[0]=temp%10;
- 0316 2AE0              ldi R18,10
- 0318 30E0              ldi R19,0
- 031A 8501              movw R16,R10
- 031C 0E940000          xcall mod16u
- 0320 00930000          sts _Seg7_Led_Buf,R16
- 0324                   .dbline 172
- 0324           ;        Seg7_Led_Update();
- 0324 88DE              xcall _Seg7_Led_Update
- 0326                   .dbline 173
- 0326           ;       }
- 0326 75C0              xjmp L47
- 0328           L46:
- 0328                   .dbline 174
- 0328           ;  else if(data>9)
- 0328 CE01              movw R24,R28
- 032A 0296              adiw R24,2
- 032C 1C01              movw R2,R24
- 032E 00E0              ldi R16,<L55
- 0330 10E0              ldi R17,>L55
- 0332 0E940000          xcall elpm32
- 0336 3A92              st -y,R3
- 0338 2A92              st -y,R2
- 033A 0E940000          xcall fpcmp1
- 033E ACF5              brge L53
- 0340           X12:
- 0340                   .dbline 175
- 0340           ;       {
- 0340                   .dbline 176
- 0340           ;        temp=data*100;
- 0340 00E0              ldi R16,<L56
- 0342 10E0              ldi R17,>L56
- 0344 0E940000          xcall elpm32
- 0348 CE01              movw R24,R28
- 034A 0296              adiw R24,2
- 034C 9A93              st -y,R25
- 034E 8A93              st -y,R24
- 0350 0E940000          xcall fpmule1
- 0354 0E940000          xcall fpint
- 0358 5801              movw R10,R16
- 035A                   .dbline 177
- 035A           ;        point_pos=2;
- 035A 82E0              ldi R24,2
- 035C 80931200          sts _point_pos,R24
- 0360                   .dbline 178
- 0360           ;        Seg7_Led_Buf[3]=temp/1000;
- 0360 28EE              ldi R18,1000
- 0362 33E0              ldi R19,3
- 0364 0E940000          xcall div16u
- 0368 00930300          sts _Seg7_Led_Buf+3,R16
- 036C                   .dbline 179
- 036C           ;        Seg7_Led_Buf[2]=(temp%1000)/100;
- 036C 28EE              ldi R18,1000
- 036E 33E0              ldi R19,3
- 0370 8501              movw R16,R10
- 0372 0E940000          xcall mod16u
- 0376 24E6              ldi R18,100
- 0378 30E0              ldi R19,0
- 037A 0E940000          xcall div16u
- 037E 00930200          sts _Seg7_Led_Buf+2,R16
- 0382                   .dbline 180
- 0382           ;        Seg7_Led_Buf[1]=(temp%100)/10;
- 0382 24E6              ldi R18,100
- 0384 30E0              ldi R19,0
- 0386 8501              movw R16,R10
- 0388 0E940000          xcall mod16u
- 038C 2AE0              ldi R18,10
- 038E 30E0              ldi R19,0
- 0390 0E940000          xcall div16u
- 0394 00930100          sts _Seg7_Led_Buf+1,R16
- 0398                   .dbline 181
- 0398           ;        Seg7_Led_Buf[0]=temp%10;
- 0398 2AE0              ldi R18,10
- 039A 30E0              ldi R19,0
- 039C 8501              movw R16,R10
- 039E 0E940000          xcall mod16u
- 03A2 00930000          sts _Seg7_Led_Buf,R16
- 03A6                   .dbline 182
- 03A6           ;        Seg7_Led_Update();
- 03A6 47DE              xcall _Seg7_Led_Update
- 03A8                   .dbline 183
- 03A8           ;       }
- 03A8 34C0              xjmp L54
- 03AA           L53:
- 03AA                   .dbline 185
- 03AA           ;  else
- 03AA           ;       {
- 03AA                   .dbline 186
- 03AA           ;        temp=data*1000;
- 03AA 00E0              ldi R16,<L60
- 03AC 10E0              ldi R17,>L60
- 03AE 0E940000          xcall elpm32
- 03B2 CE01              movw R24,R28
- 03B4 0296              adiw R24,2
- 03B6 9A93              st -y,R25
- 03B8 8A93              st -y,R24
- 03BA 0E940000          xcall fpmule1
- 03BE 0E940000          xcall fpint
- 03C2 5801              movw R10,R16
- 03C4                   .dbline 187
- 03C4           ;        point_pos=3;
- 03C4 83E0              ldi R24,3
- 03C6 80931200          sts _point_pos,R24
- 03CA                   .dbline 188
- 03CA           ;        Seg7_Led_Buf[3]=temp/1000;
- 03CA 28EE              ldi R18,1000
- 03CC 33E0              ldi R19,3
- 03CE 0E940000          xcall div16u
- 03D2 00930300          sts _Seg7_Led_Buf+3,R16
- 03D6                   .dbline 189
- 03D6           ;        Seg7_Led_Buf[2]=(temp%1000)/100;
- 03D6 28EE              ldi R18,1000
- 03D8 33E0              ldi R19,3
- 03DA 8501              movw R16,R10
- 03DC 0E940000          xcall mod16u
- 03E0 24E6              ldi R18,100
- 03E2 30E0              ldi R19,0
- 03E4 0E940000          xcall div16u
- 03E8 00930200          sts _Seg7_Led_Buf+2,R16
- 03EC                   .dbline 190
- 03EC           ;        Seg7_Led_Buf[1]=(temp%100)/10;
- 03EC 24E6              ldi R18,100
- 03EE 30E0              ldi R19,0
- 03F0 8501              movw R16,R10
- 03F2 0E940000          xcall mod16u
- 03F6 2AE0              ldi R18,10
- 03F8 30E0              ldi R19,0
- 03FA 0E940000          xcall div16u
- 03FE 00930100          sts _Seg7_Led_Buf+1,R16
- 0402                   .dbline 191
- 0402           ;        Seg7_Led_Buf[0]=temp%10;
- 0402 2AE0              ldi R18,10
- 0404 30E0              ldi R19,0
- 0406 8501              movw R16,R10
- 0408 0E940000          xcall mod16u
- 040C 00930000          sts _Seg7_Led_Buf,R16
- 0410                   .dbline 192
- 0410           ;        Seg7_Led_Update();
- 0410 12DE              xcall _Seg7_Led_Update
- 0412                   .dbline 193
- 0412           ;       }
- 0412           L54:
- 0412           L47:
- 0412           L44:
- 0412                   .dbline 194
- 0412           ;  point=0;
- 0412 2224              clr R2
- 0414 20921100          sts _point,R2
- 0418                   .dbline -2
- 0418           L41:
- 0418                   .dbline 0 ; func end
- 0418 B990              ld R11,y+
- 041A A990              ld R10,y+
- 041C 2496              adiw R28,4
- 041E 0895              ret
- 0420                   .dbsym r temp 10 i
- 0420                   .dbsym l data 2 D
- 0420                   .dbend
+ 0268           _Seg7_Led_float::
+ 0268 0E940000          xcall push_arg4
+ 026C AA92              st -y,R10
+ 026E BA92              st -y,R11
+ 0270                   .dbline -1
+ 0270                   .dbline 157
+ 0270           ; }
+ 0270           ; /*************************************************************************
+ 0270           ; ** 函数名称:HC595显示浮点数据
+ 0270           ; ** 功能描述:
+ 0270           ; ** 输　入:
+ 0270           ; ** 输出        :
+ 0270           ; ** 全局变量:
+ 0270           ; ** 调用模块: 
+ 0270           ; ** 说明：
+ 0270           ; ** 注意：
+ 0270           ; **************************************************************************/
+ 0270           ; void Seg7_Led_float(float data)
+ 0270           ; {
+ 0270                   .dbline 164
+ 0270           ;  unsigned int temp;
+ 0270           ;  /*
+ 0270           ;  重要说明:data+=0.00001;其中0.00001为容错值
+ 0270           ;  解决float数据类型在计算机内部存储的误差问题，可以解决显示问题
+ 0270           ;  但是会引入新的计算误差，如果精度要求大于0.00001建议更改容错值或者将此处注释掉 
+ 0270           ;  */
+ 0270           ;  data+=0.00001;
+ 0270 2A80              ldd R2,y+2
+ 0272 3B80              ldd R3,y+3
+ 0274 4C80              ldd R4,y+4
+ 0276 5D80              ldd R5,y+5
+ 0278 00E0              ldi R16,<L47
+ 027A 10E0              ldi R17,>L47
+ 027C 0E940000          xcall elpm32
+ 0280 3A93              st -y,R19
+ 0282 2A93              st -y,R18
+ 0284 1A93              st -y,R17
+ 0286 0A93              st -y,R16
+ 0288 8101              movw R16,R2
+ 028A 9201              movw R18,R4
+ 028C 0E940000          xcall fpadd2
+ 0290 0A83              std y+2,R16
+ 0292 1B83              std y+3,R17
+ 0294 2C83              std y+4,R18
+ 0296 3D83              std y+5,R19
+ 0298                   .dbline 165
+ 0298           ;  point=1;
+ 0298 81E0              ldi R24,1
+ 029A 80931100          sts _point,R24
+ 029E                   .dbline 166
+ 029E           ;  if(data>999) //错误处理,超出显示范围则全亮
+ 029E CE01              movw R24,R28
+ 02A0 0296              adiw R24,2
+ 02A2 1C01              movw R2,R24
+ 02A4 00E0              ldi R16,<L50
+ 02A6 10E0              ldi R17,>L50
+ 02A8 0E940000          xcall elpm32
+ 02AC 3A92              st -y,R3
+ 02AE 2A92              st -y,R2
+ 02B0 0E940000          xcall fpcmp1
+ 02B4 34F4              brge L48
+ 02B6           X11:
+ 02B6                   .dbline 167
+ 02B6           ;       {
+ 02B6                   .dbline 168
+ 02B6           ;        HC_595_OUT(0xFF);
+ 02B6 0FEF              ldi R16,255
+ 02B8 B5DE              xcall _HC_595_OUT
+ 02BA                   .dbline 169
+ 02BA           ;        Seg7_Bitselect_PORT|=((1<<Seg7_Bit0)|(1<<Seg7_Bit1)|(1<<Seg7_Bit2)|(1<<Seg7_Bit3));
+ 02BA 88B3              in R24,0x18
+ 02BC 806F              ori R24,240
+ 02BE 88BB              out 0x18,R24
+ 02C0                   .dbline 170
+ 02C0           ;       }
+ 02C0 B6C0              xjmp L49
+ 02C2           L48:
+ 02C2                   .dbline 171
+ 02C2           ;  else if(data>99)
+ 02C2 CE01              movw R24,R28
+ 02C4 0296              adiw R24,2
+ 02C6 1C01              movw R2,R24
+ 02C8 00E0              ldi R16,<L53
+ 02CA 10E0              ldi R17,>L53
+ 02CC 0E940000          xcall elpm32
+ 02D0 3A92              st -y,R3
+ 02D2 2A92              st -y,R2
+ 02D4 0E940000          xcall fpcmp1
+ 02D8 ACF5              brge L51
+ 02DA           X12:
+ 02DA                   .dbline 172
+ 02DA           ;       {
+ 02DA                   .dbline 173
+ 02DA           ;        temp=data*10;
+ 02DA 00E0              ldi R16,<L54
+ 02DC 10E0              ldi R17,>L54
+ 02DE 0E940000          xcall elpm32
+ 02E2 CE01              movw R24,R28
+ 02E4 0296              adiw R24,2
+ 02E6 9A93              st -y,R25
+ 02E8 8A93              st -y,R24
+ 02EA 0E940000          xcall fpmule1
+ 02EE 0E940000          xcall fpint
+ 02F2 5801              movw R10,R16
+ 02F4                   .dbline 174
+ 02F4           ;        point_pos=1;
+ 02F4 81E0              ldi R24,1
+ 02F6 80931200          sts _point_pos,R24
+ 02FA                   .dbline 175
+ 02FA           ;        Seg7_Led_Buf[3]=temp/1000;
+ 02FA 28EE              ldi R18,1000
+ 02FC 33E0              ldi R19,3
+ 02FE 0E940000          xcall div16u
+ 0302 00930300          sts _Seg7_Led_Buf+3,R16
+ 0306                   .dbline 176
+ 0306           ;        Seg7_Led_Buf[2]=(temp%1000)/100;
+ 0306 28EE              ldi R18,1000
+ 0308 33E0              ldi R19,3
+ 030A 8501              movw R16,R10
+ 030C 0E940000          xcall mod16u
+ 0310 24E6              ldi R18,100
+ 0312 30E0              ldi R19,0
+ 0314 0E940000          xcall div16u
+ 0318 00930200          sts _Seg7_Led_Buf+2,R16
+ 031C                   .dbline 177
+ 031C           ;        Seg7_Led_Buf[1]=(temp%100)/10;
+ 031C 24E6              ldi R18,100
+ 031E 30E0              ldi R19,0
+ 0320 8501              movw R16,R10
+ 0322 0E940000          xcall mod16u
+ 0326 2AE0              ldi R18,10
+ 0328 30E0              ldi R19,0
+ 032A 0E940000          xcall div16u
+ 032E 00930100          sts _Seg7_Led_Buf+1,R16
+ 0332                   .dbline 178
+ 0332           ;        Seg7_Led_Buf[0]=temp%10;
+ 0332 2AE0              ldi R18,10
+ 0334 30E0              ldi R19,0
+ 0336 8501              movw R16,R10
+ 0338 0E940000          xcall mod16u
+ 033C 00930000          sts _Seg7_Led_Buf,R16
+ 0340                   .dbline 179
+ 0340           ;        Seg7_Led_Update();
+ 0340 7ADE              xcall _Seg7_Led_Update
+ 0342                   .dbline 180
+ 0342           ;       }
+ 0342 75C0              xjmp L52
+ 0344           L51:
+ 0344                   .dbline 181
+ 0344           ;  else if(data>9)
+ 0344 CE01              movw R24,R28
+ 0346 0296              adiw R24,2
+ 0348 1C01              movw R2,R24
+ 034A 00E0              ldi R16,<L60
+ 034C 10E0              ldi R17,>L60
+ 034E 0E940000          xcall elpm32
+ 0352 3A92              st -y,R3
+ 0354 2A92              st -y,R2
+ 0356 0E940000          xcall fpcmp1
+ 035A ACF5              brge L58
+ 035C           X13:
+ 035C                   .dbline 182
+ 035C           ;       {
+ 035C                   .dbline 183
+ 035C           ;        temp=data*100;
+ 035C 00E0              ldi R16,<L61
+ 035E 10E0              ldi R17,>L61
+ 0360 0E940000          xcall elpm32
+ 0364 CE01              movw R24,R28
+ 0366 0296              adiw R24,2
+ 0368 9A93              st -y,R25
+ 036A 8A93              st -y,R24
+ 036C 0E940000          xcall fpmule1
+ 0370 0E940000          xcall fpint
+ 0374 5801              movw R10,R16
+ 0376                   .dbline 184
+ 0376           ;        point_pos=2;
+ 0376 82E0              ldi R24,2
+ 0378 80931200          sts _point_pos,R24
+ 037C                   .dbline 185
+ 037C           ;        Seg7_Led_Buf[3]=temp/1000;
+ 037C 28EE              ldi R18,1000
+ 037E 33E0              ldi R19,3
+ 0380 0E940000          xcall div16u
+ 0384 00930300          sts _Seg7_Led_Buf+3,R16
+ 0388                   .dbline 186
+ 0388           ;        Seg7_Led_Buf[2]=(temp%1000)/100;
+ 0388 28EE              ldi R18,1000
+ 038A 33E0              ldi R19,3
+ 038C 8501              movw R16,R10
+ 038E 0E940000          xcall mod16u
+ 0392 24E6              ldi R18,100
+ 0394 30E0              ldi R19,0
+ 0396 0E940000          xcall div16u
+ 039A 00930200          sts _Seg7_Led_Buf+2,R16
+ 039E                   .dbline 187
+ 039E           ;        Seg7_Led_Buf[1]=(temp%100)/10;
+ 039E 24E6              ldi R18,100
+ 03A0 30E0              ldi R19,0
+ 03A2 8501              movw R16,R10
+ 03A4 0E940000          xcall mod16u
+ 03A8 2AE0              ldi R18,10
+ 03AA 30E0              ldi R19,0
+ 03AC 0E940000          xcall div16u
+ 03B0 00930100          sts _Seg7_Led_Buf+1,R16
+ 03B4                   .dbline 188
+ 03B4           ;        Seg7_Led_Buf[0]=temp%10;
+ 03B4 2AE0              ldi R18,10
+ 03B6 30E0              ldi R19,0
+ 03B8 8501              movw R16,R10
+ 03BA 0E940000          xcall mod16u
+ 03BE 00930000          sts _Seg7_Led_Buf,R16
+ 03C2                   .dbline 189
+ 03C2           ;        Seg7_Led_Update();
+ 03C2 39DE              xcall _Seg7_Led_Update
+ 03C4                   .dbline 190
+ 03C4           ;       }
+ 03C4 34C0              xjmp L59
+ 03C6           L58:
+ 03C6                   .dbline 192
+ 03C6           ;  else
+ 03C6           ;       {
+ 03C6                   .dbline 193
+ 03C6           ;        temp=data*1000;
+ 03C6 00E0              ldi R16,<L65
+ 03C8 10E0              ldi R17,>L65
+ 03CA 0E940000          xcall elpm32
+ 03CE CE01              movw R24,R28
+ 03D0 0296              adiw R24,2
+ 03D2 9A93              st -y,R25
+ 03D4 8A93              st -y,R24
+ 03D6 0E940000          xcall fpmule1
+ 03DA 0E940000          xcall fpint
+ 03DE 5801              movw R10,R16
+ 03E0                   .dbline 194
+ 03E0           ;        point_pos=3;
+ 03E0 83E0              ldi R24,3
+ 03E2 80931200          sts _point_pos,R24
+ 03E6                   .dbline 195
+ 03E6           ;        Seg7_Led_Buf[3]=temp/1000;
+ 03E6 28EE              ldi R18,1000
+ 03E8 33E0              ldi R19,3
+ 03EA 0E940000          xcall div16u
+ 03EE 00930300          sts _Seg7_Led_Buf+3,R16
+ 03F2                   .dbline 196
+ 03F2           ;        Seg7_Led_Buf[2]=(temp%1000)/100;
+ 03F2 28EE              ldi R18,1000
+ 03F4 33E0              ldi R19,3
+ 03F6 8501              movw R16,R10
+ 03F8 0E940000          xcall mod16u
+ 03FC 24E6              ldi R18,100
+ 03FE 30E0              ldi R19,0
+ 0400 0E940000          xcall div16u
+ 0404 00930200          sts _Seg7_Led_Buf+2,R16
+ 0408                   .dbline 197
+ 0408           ;        Seg7_Led_Buf[1]=(temp%100)/10;
+ 0408 24E6              ldi R18,100
+ 040A 30E0              ldi R19,0
+ 040C 8501              movw R16,R10
+ 040E 0E940000          xcall mod16u
+ 0412 2AE0              ldi R18,10
+ 0414 30E0              ldi R19,0
+ 0416 0E940000          xcall div16u
+ 041A 00930100          sts _Seg7_Led_Buf+1,R16
+ 041E                   .dbline 198
+ 041E           ;        Seg7_Led_Buf[0]=temp%10;
+ 041E 2AE0              ldi R18,10
+ 0420 30E0              ldi R19,0
+ 0422 8501              movw R16,R10
+ 0424 0E940000          xcall mod16u
+ 0428 00930000          sts _Seg7_Led_Buf,R16
+ 042C                   .dbline 199
+ 042C           ;        Seg7_Led_Update();
+ 042C 04DE              xcall _Seg7_Led_Update
+ 042E                   .dbline 200
+ 042E           ;       }
+ 042E           L59:
+ 042E           L52:
+ 042E           L49:
+ 042E                   .dbline 201
+ 042E           ;  point=0;
+ 042E 2224              clr R2
+ 0430 20921100          sts _point,R2
+ 0434                   .dbline -2
+ 0434           L46:
+ 0434                   .dbline 0 ; func end
+ 0434 B990              ld R11,y+
+ 0436 A990              ld R10,y+
+ 0438 2496              adiw R28,4
+ 043A 0895              ret
+ 043C                   .dbsym r temp 10 i
+ 043C                   .dbsym l data 2 D
+ 043C                   .dbend
                         .area bss(ram, con, rel)
  0000                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\lib\hc595.c
  0000           _Seg7_Led_Buf::
  0000                   .blkb 4
  0004                   .dbsym e Seg7_Led_Buf _Seg7_Led_Buf A[4:4]c
                         .area lit(rom, con, rel)
- 0000           L60:
+ 0000           L65:
  0000 00007A44          .word 0x0,0x447a
- 0004           L56:
+ 0004           L61:
  0004 0000C842          .word 0x0,0x42c8
- 0008           L55:
+ 0008           L60:
  0008 00001041          .word 0x0,0x4110
- 000C           L49:
+ 000C           L54:
  000C 00002041          .word 0x0,0x4120
- 0010           L48:
+ 0010           L53:
  0010 0000C642          .word 0x0,0x42c6
- 0014           L45:
+ 0014           L50:
  0014 00C07944          .word 0xc000,0x4479
- 0018           L42:
+ 0018           L47:
  0018 ACC52737          .word 0xc5ac,0x3727
  001C           ; }

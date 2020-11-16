@@ -591,25 +591,21 @@
  028A                   .dbsym r p 10 pc
  028A                   .dbend
  028A                   .dbfunc e out_to_user _out_to_user fV
- 028A           ;              i -> R20
- 028A           ;              s -> R16,R17
+ 028A           ;              s -> R20,R21
                         .even
  028A           _out_to_user::
  028A 0E940000          xcall push_xgsetF000
- 028E                   .dbline -1
- 028E                   .dbline 91
- 028E           ; }/// com_packet_end
- 028E           ; 
- 028E           ; void out_to_user(uint8 *s){
- 028E                   .dbline 92
- 028E           ;      uint8      i=12;
- 028E 4CE0              ldi R20,12
- 0290                   .dbline 93
- 0290           ;      ind=0;
+ 028E A801              movw R20,R16
+ 0290                   .dbline -1
+ 0290                   .dbline 91
+ 0290           ; }/// com_packet_end
+ 0290           ; 
+ 0290           ; void out_to_user(uint8 *s){
+ 0290                   .dbline 92
+ 0290           ;        ind=0;
  0290 2224              clr R2
  0292 20924600          sts _ind,R2
- 0296                   .dbline 95
- 0296           ; 
+ 0296                   .dbline 93
  0296           ;      out_buf[ind++]='2';
  0296 3324              clr R3
  0298 822D              mov R24,R2
@@ -623,8 +619,8 @@
  02AA F91F              adc R31,R25
  02AC 82E3              ldi R24,50
  02AE 8083              std z+0,R24
- 02B0                   .dbline 96
- 02B0           ;      out_buf[ind++]='0';
+ 02B0                   .dbline 94
+ 02B0           ;        out_buf[ind++]='0';
  02B0 20904600          lds R2,_ind
  02B4 3324              clr R3
  02B6 822D              mov R24,R2
@@ -638,673 +634,653 @@
  02C8 F91F              adc R31,R25
  02CA 80E3              ldi R24,48
  02CC 8083              std z+0,R24
- 02CE                   .dbline 97
- 02CE           ;      for(;i>=0;--i){
- 02CE 3AC0              xjmp L33
- 02D0           L30:
- 02D0                   .dbline 97
- 02D0                   .dbline 98
- 02D0           ;         out_buf[ind++]=s[2*i];
- 02D0 60914600          lds R22,_ind
- 02D4 7727              clr R23
- 02D6 862F              mov R24,R22
- 02D8 8F5F              subi R24,255    ; addi 1
- 02DA 80934600          sts _ind,R24
- 02DE E42F              mov R30,R20
- 02E0 FF27              clr R31
- 02E2 EE0F              lsl R30
- 02E4 FF1F              rol R31
- 02E6 E00F              add R30,R16
- 02E8 F11F              adc R31,R17
- 02EA 2080              ldd R2,z+0
- 02EC 80E0              ldi R24,<_out_buf
- 02EE 90E0              ldi R25,>_out_buf
- 02F0 E62F              mov R30,R22
- 02F2 FF27              clr R31
- 02F4 E80F              add R30,R24
- 02F6 F91F              adc R31,R25
- 02F8 2082              std z+0,R2
- 02FA                   .dbline 99
- 02FA           ;         out_buf[ind++]=s[2*i+1];
- 02FA 60914600          lds R22,_ind
- 02FE 7727              clr R23
- 0300 862F              mov R24,R22
- 0302 8F5F              subi R24,255    ; addi 1
- 0304 80934600          sts _ind,R24
- 0308 E42F              mov R30,R20
- 030A FF27              clr R31
- 030C EE0F              lsl R30
- 030E FF1F              rol R31
- 0310 E00F              add R30,R16
- 0312 F11F              adc R31,R17
- 0314 2180              ldd R2,z+1
- 0316 80E0              ldi R24,<_out_buf
- 0318 90E0              ldi R25,>_out_buf
- 031A E62F              mov R30,R22
- 031C FF27              clr R31
- 031E E80F              add R30,R24
- 0320 F91F              adc R31,R25
- 0322 2082              std z+0,R2
- 0324                   .dbline 100
- 0324           ;         out_buf[ind++]='-';
- 0324 60914600          lds R22,_ind
- 0328 7727              clr R23
- 032A 862F              mov R24,R22
- 032C 8F5F              subi R24,255    ; addi 1
- 032E 80934600          sts _ind,R24
- 0332 80E0              ldi R24,<_out_buf
- 0334 90E0              ldi R25,>_out_buf
- 0336 E62F              mov R30,R22
- 0338 FF27              clr R31
- 033A E80F              add R30,R24
- 033C F91F              adc R31,R25
- 033E 8DE2              ldi R24,45
- 0340 8083              std z+0,R24
- 0342                   .dbline 101
- 0342           ;      }
- 0342           L31:
- 0342                   .dbline 97
- 0342 4A95              dec R20
- 0344           L33:
- 0344                   .dbline 97
- 0344 4030              cpi R20,0
- 0346 08F0              brlo X9
- 0348 C3CF              xjmp L30
- 034A           X9:
- 034A           X7:
- 034A                   .dbline 102
- 034A           ;      out_buf[ind-1]='\n';
- 034A 80E0              ldi R24,<_out_buf-1
- 034C 90E0              ldi R25,>_out_buf-1
- 034E E0914600          lds R30,_ind
- 0352 FF27              clr R31
- 0354 E80F              add R30,R24
- 0356 F91F              adc R31,R25
- 0358 8AE0              ldi R24,10
- 035A 8083              std z+0,R24
- 035C                   .dbline 103
- 035C           ;      out_buf[ind++]='\0';
- 035C 40914600          lds R20,_ind
- 0360 5527              clr R21
- 0362 842F              mov R24,R20
- 0364 8F5F              subi R24,255    ; addi 1
- 0366 80934600          sts _ind,R24
- 036A 80E0              ldi R24,<_out_buf
- 036C 90E0              ldi R25,>_out_buf
- 036E E42F              mov R30,R20
- 0370 FF27              clr R31
- 0372 E80F              add R30,R24
- 0374 F91F              adc R31,R25
- 0376 2224              clr R2
- 0378 2082              std z+0,R2
- 037A                   .dbline 104
- 037A           ;      return ;                        
- 037A 00C0              xjmp L29
- 037C           X8:
- 037C                   .dbline -2
- 037C           L29:
- 037C                   .dbline 0 ; func end
- 037C 0C940000          xjmp pop_xgsetF000
- 0380                   .dbsym r i 20 c
- 0380                   .dbsym r s 16 pc
- 0380                   .dbend
- 0380                   .dbfunc e main _main fV
- 0380           ;         W_Buff -> R20,R21
- 0380           ;         R_Buff -> R20,R21
- 0380           ;        key_brk -> R22
- 0380           ;            Key -> R10
- 0380           ;              i -> R22
- 0380           ;              j -> R10
+ 02CE                   .dbline 95
+ 02CE           ;      out_buf[ind++]=s[12];
+ 02CE 60914600          lds R22,_ind
+ 02D2 7727              clr R23
+ 02D4 862F              mov R24,R22
+ 02D6 8F5F              subi R24,255    ; addi 1
+ 02D8 80934600          sts _ind,R24
+ 02DC 80E0              ldi R24,<_out_buf
+ 02DE 90E0              ldi R25,>_out_buf
+ 02E0 E62F              mov R30,R22
+ 02E2 FF27              clr R31
+ 02E4 E80F              add R30,R24
+ 02E6 F91F              adc R31,R25
+ 02E8 DA01              movw R26,R20
+ 02EA 1C96              adiw R26,12
+ 02EC 2C90              ld R2,x
+ 02EE 2082              std z+0,R2
+ 02F0                   .dbline 96
+ 02F0           ;        out_buf[ind++]=s[13];
+ 02F0 60914600          lds R22,_ind
+ 02F4 7727              clr R23
+ 02F6 862F              mov R24,R22
+ 02F8 8F5F              subi R24,255    ; addi 1
+ 02FA 80934600          sts _ind,R24
+ 02FE 80E0              ldi R24,<_out_buf
+ 0300 90E0              ldi R25,>_out_buf
+ 0302 E62F              mov R30,R22
+ 0304 FF27              clr R31
+ 0306 E80F              add R30,R24
+ 0308 F91F              adc R31,R25
+ 030A DA01              movw R26,R20
+ 030C 1D96              adiw R26,13
+ 030E 2C90              ld R2,x
+ 0310 2082              std z+0,R2
+ 0312                   .dbline 97
+ 0312           ;        out_buf[ind++]='-';
+ 0312 60914600          lds R22,_ind
+ 0316 7727              clr R23
+ 0318 862F              mov R24,R22
+ 031A 8F5F              subi R24,255    ; addi 1
+ 031C 80934600          sts _ind,R24
+ 0320 80E0              ldi R24,<_out_buf
+ 0322 90E0              ldi R25,>_out_buf
+ 0324 E62F              mov R30,R22
+ 0326 FF27              clr R31
+ 0328 E80F              add R30,R24
+ 032A F91F              adc R31,R25
+ 032C 8DE2              ldi R24,45
+ 032E 8083              std z+0,R24
+ 0330                   .dbline 99
+ 0330           ;      
+ 0330           ;      out_buf[ind++]=s[10];
+ 0330 60914600          lds R22,_ind
+ 0334 7727              clr R23
+ 0336 862F              mov R24,R22
+ 0338 8F5F              subi R24,255    ; addi 1
+ 033A 80934600          sts _ind,R24
+ 033E 80E0              ldi R24,<_out_buf
+ 0340 90E0              ldi R25,>_out_buf
+ 0342 E62F              mov R30,R22
+ 0344 FF27              clr R31
+ 0346 E80F              add R30,R24
+ 0348 F91F              adc R31,R25
+ 034A DA01              movw R26,R20
+ 034C 1A96              adiw R26,10
+ 034E 2C90              ld R2,x
+ 0350 2082              std z+0,R2
+ 0352                   .dbline 100
+ 0352           ;        out_buf[ind++]=s[11];
+ 0352 60914600          lds R22,_ind
+ 0356 7727              clr R23
+ 0358 862F              mov R24,R22
+ 035A 8F5F              subi R24,255    ; addi 1
+ 035C 80934600          sts _ind,R24
+ 0360 80E0              ldi R24,<_out_buf
+ 0362 90E0              ldi R25,>_out_buf
+ 0364 E62F              mov R30,R22
+ 0366 FF27              clr R31
+ 0368 E80F              add R30,R24
+ 036A F91F              adc R31,R25
+ 036C DA01              movw R26,R20
+ 036E 1B96              adiw R26,11
+ 0370 2C90              ld R2,x
+ 0372 2082              std z+0,R2
+ 0374                   .dbline 101
+ 0374           ;        out_buf[ind++]='-';
+ 0374 60914600          lds R22,_ind
+ 0378 7727              clr R23
+ 037A 862F              mov R24,R22
+ 037C 8F5F              subi R24,255    ; addi 1
+ 037E 80934600          sts _ind,R24
+ 0382 80E0              ldi R24,<_out_buf
+ 0384 90E0              ldi R25,>_out_buf
+ 0386 E62F              mov R30,R22
+ 0388 FF27              clr R31
+ 038A E80F              add R30,R24
+ 038C F91F              adc R31,R25
+ 038E 8DE2              ldi R24,45
+ 0390 8083              std z+0,R24
+ 0392                   .dbline 103
+ 0392           ;      
+ 0392           ;      out_buf[ind++]=s[6];
+ 0392 60914600          lds R22,_ind
+ 0396 7727              clr R23
+ 0398 862F              mov R24,R22
+ 039A 8F5F              subi R24,255    ; addi 1
+ 039C 80934600          sts _ind,R24
+ 03A0 80E0              ldi R24,<_out_buf
+ 03A2 90E0              ldi R25,>_out_buf
+ 03A4 E62F              mov R30,R22
+ 03A6 FF27              clr R31
+ 03A8 E80F              add R30,R24
+ 03AA F91F              adc R31,R25
+ 03AC DA01              movw R26,R20
+ 03AE 1696              adiw R26,6
+ 03B0 2C90              ld R2,x
+ 03B2 2082              std z+0,R2
+ 03B4                   .dbline 104
+ 03B4           ;        out_buf[ind++]=s[7];
+ 03B4 60914600          lds R22,_ind
+ 03B8 7727              clr R23
+ 03BA 862F              mov R24,R22
+ 03BC 8F5F              subi R24,255    ; addi 1
+ 03BE 80934600          sts _ind,R24
+ 03C2 80E0              ldi R24,<_out_buf
+ 03C4 90E0              ldi R25,>_out_buf
+ 03C6 E62F              mov R30,R22
+ 03C8 FF27              clr R31
+ 03CA E80F              add R30,R24
+ 03CC F91F              adc R31,R25
+ 03CE DA01              movw R26,R20
+ 03D0 1796              adiw R26,7
+ 03D2 2C90              ld R2,x
+ 03D4 2082              std z+0,R2
+ 03D6                   .dbline 105
+ 03D6           ;        out_buf[ind++]=' ';out_buf[ind++]=' ';
+ 03D6 60914600          lds R22,_ind
+ 03DA 7727              clr R23
+ 03DC 862F              mov R24,R22
+ 03DE 8F5F              subi R24,255    ; addi 1
+ 03E0 80934600          sts _ind,R24
+ 03E4 80E0              ldi R24,<_out_buf
+ 03E6 90E0              ldi R25,>_out_buf
+ 03E8 E62F              mov R30,R22
+ 03EA FF27              clr R31
+ 03EC E80F              add R30,R24
+ 03EE F91F              adc R31,R25
+ 03F0 80E2              ldi R24,32
+ 03F2 8083              std z+0,R24
+ 03F4                   .dbline 105
+ 03F4 60914600          lds R22,_ind
+ 03F8 7727              clr R23
+ 03FA 862F              mov R24,R22
+ 03FC 8F5F              subi R24,255    ; addi 1
+ 03FE 80934600          sts _ind,R24
+ 0402 80E0              ldi R24,<_out_buf
+ 0404 90E0              ldi R25,>_out_buf
+ 0406 E62F              mov R30,R22
+ 0408 FF27              clr R31
+ 040A E80F              add R30,R24
+ 040C F91F              adc R31,R25
+ 040E 80E2              ldi R24,32
+ 0410 8083              std z+0,R24
+ 0412                   .dbline 107
+ 0412           ;      
+ 0412           ;      out_buf[ind++]=s[4];
+ 0412 60914600          lds R22,_ind
+ 0416 7727              clr R23
+ 0418 862F              mov R24,R22
+ 041A 8F5F              subi R24,255    ; addi 1
+ 041C 80934600          sts _ind,R24
+ 0420 80E0              ldi R24,<_out_buf
+ 0422 90E0              ldi R25,>_out_buf
+ 0424 E62F              mov R30,R22
+ 0426 FF27              clr R31
+ 0428 E80F              add R30,R24
+ 042A F91F              adc R31,R25
+ 042C DA01              movw R26,R20
+ 042E 1496              adiw R26,4
+ 0430 2C90              ld R2,x
+ 0432 2082              std z+0,R2
+ 0434                   .dbline 108
+ 0434           ;        out_buf[ind++]=s[5];
+ 0434 60914600          lds R22,_ind
+ 0438 7727              clr R23
+ 043A 862F              mov R24,R22
+ 043C 8F5F              subi R24,255    ; addi 1
+ 043E 80934600          sts _ind,R24
+ 0442 80E0              ldi R24,<_out_buf
+ 0444 90E0              ldi R25,>_out_buf
+ 0446 E62F              mov R30,R22
+ 0448 FF27              clr R31
+ 044A E80F              add R30,R24
+ 044C F91F              adc R31,R25
+ 044E DA01              movw R26,R20
+ 0450 1596              adiw R26,5
+ 0452 2C90              ld R2,x
+ 0454 2082              std z+0,R2
+ 0456                   .dbline 109
+ 0456           ;        out_buf[ind++]=':';
+ 0456 60914600          lds R22,_ind
+ 045A 7727              clr R23
+ 045C 862F              mov R24,R22
+ 045E 8F5F              subi R24,255    ; addi 1
+ 0460 80934600          sts _ind,R24
+ 0464 80E0              ldi R24,<_out_buf
+ 0466 90E0              ldi R25,>_out_buf
+ 0468 E62F              mov R30,R22
+ 046A FF27              clr R31
+ 046C E80F              add R30,R24
+ 046E F91F              adc R31,R25
+ 0470 8AE3              ldi R24,58
+ 0472 8083              std z+0,R24
+ 0474                   .dbline 110
+ 0474           ;        out_buf[ind++]=s[2];
+ 0474 60914600          lds R22,_ind
+ 0478 7727              clr R23
+ 047A 862F              mov R24,R22
+ 047C 8F5F              subi R24,255    ; addi 1
+ 047E 80934600          sts _ind,R24
+ 0482 80E0              ldi R24,<_out_buf
+ 0484 90E0              ldi R25,>_out_buf
+ 0486 E62F              mov R30,R22
+ 0488 FF27              clr R31
+ 048A E80F              add R30,R24
+ 048C F91F              adc R31,R25
+ 048E DA01              movw R26,R20
+ 0490 1296              adiw R26,2
+ 0492 2C90              ld R2,x
+ 0494 2082              std z+0,R2
+ 0496                   .dbline 111
+ 0496           ;        out_buf[ind++]=s[3];
+ 0496 60914600          lds R22,_ind
+ 049A 7727              clr R23
+ 049C 862F              mov R24,R22
+ 049E 8F5F              subi R24,255    ; addi 1
+ 04A0 80934600          sts _ind,R24
+ 04A4 80E0              ldi R24,<_out_buf
+ 04A6 90E0              ldi R25,>_out_buf
+ 04A8 E62F              mov R30,R22
+ 04AA FF27              clr R31
+ 04AC E80F              add R30,R24
+ 04AE F91F              adc R31,R25
+ 04B0 DA01              movw R26,R20
+ 04B2 1396              adiw R26,3
+ 04B4 2C90              ld R2,x
+ 04B6 2082              std z+0,R2
+ 04B8                   .dbline 112
+ 04B8           ;        out_buf[ind++]=':';
+ 04B8 60914600          lds R22,_ind
+ 04BC 7727              clr R23
+ 04BE 862F              mov R24,R22
+ 04C0 8F5F              subi R24,255    ; addi 1
+ 04C2 80934600          sts _ind,R24
+ 04C6 80E0              ldi R24,<_out_buf
+ 04C8 90E0              ldi R25,>_out_buf
+ 04CA E62F              mov R30,R22
+ 04CC FF27              clr R31
+ 04CE E80F              add R30,R24
+ 04D0 F91F              adc R31,R25
+ 04D2 8AE3              ldi R24,58
+ 04D4 8083              std z+0,R24
+ 04D6                   .dbline 113
+ 04D6           ;        out_buf[ind++]=s[0];
+ 04D6 60914600          lds R22,_ind
+ 04DA 7727              clr R23
+ 04DC 862F              mov R24,R22
+ 04DE 8F5F              subi R24,255    ; addi 1
+ 04E0 80934600          sts _ind,R24
+ 04E4 80E0              ldi R24,<_out_buf
+ 04E6 90E0              ldi R25,>_out_buf
+ 04E8 E62F              mov R30,R22
+ 04EA FF27              clr R31
+ 04EC E80F              add R30,R24
+ 04EE F91F              adc R31,R25
+ 04F0 DA01              movw R26,R20
+ 04F2 2C90              ld R2,x
+ 04F4 2082              std z+0,R2
+ 04F6                   .dbline 114
+ 04F6           ;        out_buf[ind++]=s[1];
+ 04F6 60914600          lds R22,_ind
+ 04FA 7727              clr R23
+ 04FC 862F              mov R24,R22
+ 04FE 8F5F              subi R24,255    ; addi 1
+ 0500 80934600          sts _ind,R24
+ 0504 80E0              ldi R24,<_out_buf
+ 0506 90E0              ldi R25,>_out_buf
+ 0508 E62F              mov R30,R22
+ 050A FF27              clr R31
+ 050C E80F              add R30,R24
+ 050E F91F              adc R31,R25
+ 0510 1196              adiw R26,1
+ 0512 2C90              ld R2,x
+ 0514 2082              std z+0,R2
+ 0516                   .dbline 115
+ 0516           ;        out_buf[ind++]='\n';
+ 0516 40914600          lds R20,_ind
+ 051A 5527              clr R21
+ 051C 842F              mov R24,R20
+ 051E 8F5F              subi R24,255    ; addi 1
+ 0520 80934600          sts _ind,R24
+ 0524 80E0              ldi R24,<_out_buf
+ 0526 90E0              ldi R25,>_out_buf
+ 0528 E42F              mov R30,R20
+ 052A FF27              clr R31
+ 052C E80F              add R30,R24
+ 052E F91F              adc R31,R25
+ 0530 8AE0              ldi R24,10
+ 0532 8083              std z+0,R24
+ 0534                   .dbline 116
+ 0534           ;        out_buf[ind]='\0';
+ 0534 80E0              ldi R24,<_out_buf
+ 0536 90E0              ldi R25,>_out_buf
+ 0538 E0914600          lds R30,_ind
+ 053C FF27              clr R31
+ 053E E80F              add R30,R24
+ 0540 F91F              adc R31,R25
+ 0542 2224              clr R2
+ 0544 2082              std z+0,R2
+ 0546                   .dbline 117
+ 0546           ;        msc_to_pc(out_buf);    
+ 0546 00E0              ldi R16,<_out_buf
+ 0548 10E0              ldi R17,>_out_buf
+ 054A 7DDE              xcall _msc_to_pc
+ 054C                   .dbline -2
+ 054C           L29:
+ 054C                   .dbline 0 ; func end
+ 054C 0C940000          xjmp pop_xgsetF000
+ 0550                   .dbsym r s 20 pc
+ 0550                   .dbend
+ 0550                   .dbfunc e main _main fV
+ 0550           ;        key_brk -> <dead>
+ 0550           ;            Key -> <dead>
+ 0550           ;             ng -> R10
+ 0550           ;         W_Buff -> R20,R21
+ 0550           ;         R_Buff -> R20,R21
+ 0550           ;              i -> R20
+ 0550           ;              j -> R22
                         .even
- 0380           _main::
- 0380 2297              sbiw R28,2
- 0382                   .dbline -1
- 0382                   .dbline 133
- 0382           ;      
- 0382           ;        ind=0;
- 0382           ;        out_buf[ind++]=s[0];
- 0382           ;        out_buf[ind++]=s[1];
- 0382           ;        out_buf[ind++]='S';out_buf[ind++]='E';out_buf[ind++]='C';
- 0382           ;        out_buf[ind++]=' ';
- 0382           ;        out_buf[ind++]=s[2];
- 0382           ;        out_buf[ind++]=s[3];
- 0382           ;        out_buf[ind++]='M';out_buf[ind++]='I';out_buf[ind++]='N';
- 0382           ;        out_buf[ind++]=' ';
- 0382           ;      out_buf[ind++]=s[4];
- 0382           ;        out_buf[ind++]=s[5];
- 0382           ;        out_buf[ind++]='H';
- 0382           ;      out_buf[ind++]=s[6];
- 0382           ;        out_buf[ind++]=s[7];
- 0382           ;        out_buf[ind++]='D';     out_buf[ind++]='A';     out_buf[ind++]='Y';
- 0382           ;      out_buf[ind++]=s[8];
- 0382           ;        out_buf[ind++]=s[9];
- 0382           ;      
- 0382           ;        out_buf[ind++]='D';     out_buf[ind++]='A';     out_buf[ind++]='Y';
- 0382           ; 
- 0382           ;      
- 0382           ;        out_buf[ind++]='\n';
- 0382           ;        out_buf[ind]='\0';
- 0382           ;        msc_to_pc(out_buf);     
- 0382           ; }
- 0382           ; 
- 0382           ; void main(void)
- 0382           ; {
- 0382                   .dbline 134
- 0382           ;      unsigned char *W_Buff="www.avrvi.com",*R_Buff="\0",i=0,j=0,Key,key_brk;
- 0382                   .dbline 134
- 0382 40E0              ldi R20,<L37
- 0384 50E0              ldi R21,>L37
- 0386                   .dbline 134
- 0386                   .dbline 134
- 0386 AA24              clr R10
- 0388                   .dbline 137
- 0388           ;        
- 0388           ;        //// init_process
- 0388           ;        CLI();
- 0388 F894              cli
- 038A                   .dbline 138
- 038A           ;        Com_init();
- 038A 0E940000          xcall _Com_init
- 038E                   .dbline 139
- 038E           ;        twi_init();
- 038E 0E940000          xcall _twi_init
- 0392                   .dbline 140
- 0392           ;        SEI();
- 0392 7894              sei
- 0394                   .dbline 155
- 0394           ;        //// init_process_end
- 0394           ;        
- 0394           ;        //pcf 
- 0394           ; //     msc_to_pc("Plead write the time to the msc now!\n\n");
- 0394           ; // msc_to_pc("24C01 Write: www.avrvi.com\n\n");
- 0394           ; //     time_init(read_buf);
- 0394           ; //     pcf_start();
- 0394           ;       //pcf_init_end  
- 0394           ; //     delay_nms(5000);        
- 0394           ; 
- 0394           ; //////////////////////////////////////////////exp_process
- 0394           ; 
- 0394           ; /////////////////////////led_test
- 0394           ; 
- 0394           ;  PORTE = 0xFF;
- 0394 8FEF              ldi R24,255
- 0396 83B9              out 0x3,R24
- 0398                   .dbline 156
- 0398           ;  DDRE  = 0xFF;
- 0398 82B9              out 0x2,R24
- 039A                   .dbline 158
- 039A           ; 
- 039A           ;          for(i=0;i<3;i++)
- 039A 6627              clr R22
- 039C 0DC0              xjmp L41
- 039E           L38:
- 039E                   .dbline 159
- 039E           ;                {
- 039E                   .dbline 160
- 039E           ;                 PORTE = 0;
- 039E 2224              clr R2
- 03A0 23B8              out 0x3,R2
- 03A2                   .dbline 161
- 03A2           ;                 delay_nms(300);
- 03A2 0CE2              ldi R16,300
- 03A4 11E0              ldi R17,1
- 03A6 0E940000          xcall _delay_nms
- 03AA                   .dbline 162
- 03AA           ;                 PORTE = 0xff;
- 03AA 8FEF              ldi R24,255
- 03AC 83B9              out 0x3,R24
- 03AE                   .dbline 163
- 03AE           ;                 delay_nms(300);
- 03AE 0CE2              ldi R16,300
- 03B0 11E0              ldi R17,1
- 03B2 0E940000          xcall _delay_nms
- 03B6                   .dbline 164
- 03B6           ;                }
- 03B6           L39:
- 03B6                   .dbline 158
- 03B6 6395              inc R22
- 03B8           L41:
- 03B8                   .dbline 158
- 03B8 6330              cpi R22,3
- 03BA 88F3              brlo L38
- 03BC           X10:
- 03BC                   .dbline 171
- 03BC           ; 
- 03BC           ; //.///////////////////////led_test_end
- 03BC           ; 
- 03BC           ; 
- 03BC           ; 
- 03BC           ; /////////////////////////seg7
- 03BC           ;               HC_595_init();
- 03BC 0E940000          xcall _HC_595_init
- 03C0                   .dbline 173
- 03C0           ;               //  Seg7_Led_display(111*i)
- 03C0           ;                for(i=0;i<10;i++)
- 03C0 6627              clr R22
- 03C2 13C0              xjmp L45
- 03C4           L42:
- 03C4                   .dbline 174
- 03C4           ;                {
- 03C4                   .dbline 175
- 03C4           ;                 for(j=0;j<200;++j){
- 03C4 AA24              clr R10
- 03C6 0DC0              xjmp L49
- 03C8           L46:
- 03C8                   .dbline 175
- 03C8                   .dbline 176
- 03C8           ;                       Seg7_Led_display(1111*i);
- 03C8 262F              mov R18,R22
- 03CA 3327              clr R19
- 03CC 07E5              ldi R16,1111
- 03CE 14E0              ldi R17,4
- 03D0 0E940000          xcall empy16s
- 03D4 0E940000          xcall _Seg7_Led_display
- 03D8                   .dbline 177
- 03D8           ;                 delay_nms(1);
- 03D8 01E0              ldi R16,1
- 03DA 10E0              ldi R17,0
- 03DC 0E940000          xcall _delay_nms
- 03E0                   .dbline 178
- 03E0           ;                 }  
- 03E0           L47:
- 03E0                   .dbline 175
- 03E0 A394              inc R10
- 03E2           L49:
- 03E2                   .dbline 175
- 03E2 8A2D              mov R24,R10
- 03E4 883C              cpi R24,200
- 03E6 80F3              brlo L46
- 03E8           X11:
- 03E8                   .dbline 180
- 03E8           ; //              delay_nms(300);
- 03E8           ;                }
- 03E8           L43:
- 03E8                   .dbline 173
- 03E8 6395              inc R22
- 03EA           L45:
- 03EA                   .dbline 173
- 03EA 6A30              cpi R22,10
- 03EC 58F3              brlo L42
- 03EE           X12:
- 03EE                   .dbline 189
- 03EE           ; 
- 03EE           ; 
- 03EE           ; /////////////////////////seg7_test_end
- 03EE           ; 
- 03EE           ; 
- 03EE           ; 
- 03EE           ; /////////////////////////BUZZ_KEY_test_end
- 03EE           ; 
- 03EE           ;  DDRE = 0xFF;
- 03EE 8FEF              ldi R24,255
- 03F0 82B9              out 0x2,R24
- 03F2                   .dbline 190
- 03F2           ;  PORTE = 0xFF;
- 03F2 83B9              out 0x3,R24
- 03F4                   .dbline 191
- 03F4           ;     Key_init();
- 03F4 0E940000          xcall _Key_init
- 03F8                   .dbline 192
- 03F8           ;     Buzz_init();
- 03F8 0E940000          xcall _Buzz_init
- 03FC                   .dbline 193
- 03FC           ;       key_brk=0;
- 03FC 6627              clr R22
- 03FE 6BC0              xjmp L51
- 0400           L50:
- 0400                   .dbline 194
- 0400           ;       while(1) {
- 0400                   .dbline 195
- 0400           ;               if(key_brk)break;
- 0400 6623              tst R22
- 0402 09F0              breq L53
- 0404           X13:
- 0404                   .dbline 195
- 0404 69C0              xjmp L52
- 0406           L53:
- 0406                   .dbline 196
- 0406           ;         Key=get_key();
- 0406 0E940000          xcall _get_key
- 040A A02E              mov R10,R16
- 040C                   .dbline 197
- 040C           ;         switch(Key) {
- 040C BB24              clr R11
- 040E C501              movw R24,R10
- 0410 803B              cpi R24,176
- 0412 E0E0              ldi R30,0
- 0414 9E07              cpc R25,R30
- 0416 09F4              brne X21
- 0418 37C0              xjmp L59
- 041A           X21:
- 041A           X14:
- 041A 80EB              ldi R24,176
- 041C 8A15              cp R24,R10
- 041E 9B05              cpc R25,R11
- 0420 34F0              brlt L63
- 0422           X15:
- 0422           L62:
- 0422 C501              movw R24,R10
- 0424 8037              cpi R24,112
- 0426 E0E0              ldi R30,0
- 0428 9E07              cpc R25,R30
- 042A 99F0              breq L58
- 042C           X16:
- 042C 54C0              xjmp L56
- 042E           L63:
- 042E C501              movw R24,R10
- 0430 803D              cpi R24,208
- 0432 E0E0              ldi R30,0
- 0434 9E07              cpc R25,R30
- 0436 09F4              brne X22
- 0438 3CC0              xjmp L60
- 043A           X22:
- 043A           X17:
- 043A 803D              cpi R24,208
- 043C E0E0              ldi R30,0
- 043E 9E07              cpc R25,R30
- 0440 0CF4              brge X23
- 0442 49C0              xjmp L56
- 0444           X23:
- 0444           X18:
- 0444           L64:
- 0444 C501              movw R24,R10
- 0446 803E              cpi R24,224
- 0448 E0E0              ldi R30,0
- 044A 9E07              cpc R25,R30
- 044C 09F4              brne X24
- 044E 40C0              xjmp L61
- 0450           X24:
- 0450           X19:
- 0450 42C0              xjmp L56
- 0452           L58:
- 0452                   .dbline 198
- 0452           ;             case ( ((1<<S4)^0xF0) ): {
- 0452                   .dbline 199
- 0452           ;                 PORTE =~ (1<<3);
- 0452 87EF              ldi R24,247
- 0454 83B9              out 0x3,R24
- 0456                   .dbline 200
- 0456           ;                 Beep(100,50);
- 0456 22E3              ldi R18,50
- 0458 30E0              ldi R19,0
- 045A 04E6              ldi R16,100
- 045C 10E0              ldi R17,0
- 045E 0E940000          xcall _Beep
- 0462                   .dbline 201
- 0462           ;                 Beep(100,50);
- 0462 22E3              ldi R18,50
- 0464 30E0              ldi R19,0
- 0466 04E6              ldi R16,100
- 0468 10E0              ldi R17,0
- 046A 0E940000          xcall _Beep
- 046E                   .dbline 202
- 046E           ;                 Beep(100,50);
- 046E 22E3              ldi R18,50
- 0470 30E0              ldi R19,0
- 0472 04E6              ldi R16,100
- 0474 10E0              ldi R17,0
- 0476 0E940000          xcall _Beep
- 047A                   .dbline 203
- 047A           ;                 Beep(100,50);
- 047A 22E3              ldi R18,50
- 047C 30E0              ldi R19,0
- 047E 04E6              ldi R16,100
- 0480 10E0              ldi R17,0
- 0482 0E940000          xcall _Beep
- 0486                   .dbline 204
- 0486           ;                               break;
- 0486 27C0              xjmp L56
- 0488           L59:
- 0488                   .dbline 206
- 0488           ;             }
- 0488           ;             case ( ((1<<S3)^0xF0) ): {
- 0488                   .dbline 207
- 0488           ;                 PORTE =~ (1<<2);
- 0488 8BEF              ldi R24,251
- 048A 83B9              out 0x3,R24
- 048C                   .dbline 208
- 048C           ;                 Beep(100,50);
- 048C 22E3              ldi R18,50
- 048E 30E0              ldi R19,0
- 0490 04E6              ldi R16,100
- 0492 10E0              ldi R17,0
- 0494 0E940000          xcall _Beep
- 0498                   .dbline 209
- 0498           ;                 Beep(100,50);
- 0498 22E3              ldi R18,50
- 049A 30E0              ldi R19,0
- 049C 04E6              ldi R16,100
- 049E 10E0              ldi R17,0
- 04A0 0E940000          xcall _Beep
- 04A4                   .dbline 210
- 04A4           ;                 Beep(100,50);
- 04A4 22E3              ldi R18,50
- 04A6 30E0              ldi R19,0
- 04A8 04E6              ldi R16,100
- 04AA 10E0              ldi R17,0
- 04AC 0E940000          xcall _Beep
- 04B0                   .dbline 211
- 04B0           ;                               break;
- 04B0 12C0              xjmp L56
- 04B2           L60:
- 04B2                   .dbline 213
- 04B2           ;             }
- 04B2           ;             case ( ((1<<S2)^0xF0) ): {
- 04B2                   .dbline 214
- 04B2           ;                 PORTE =~ (1<<1);
- 04B2 8DEF              ldi R24,253
- 04B4 83B9              out 0x3,R24
- 04B6                   .dbline 215
- 04B6           ;                 Beep(100,50);
- 04B6 22E3              ldi R18,50
- 04B8 30E0              ldi R19,0
- 04BA 04E6              ldi R16,100
- 04BC 10E0              ldi R17,0
- 04BE 0E940000          xcall _Beep
- 04C2                   .dbline 216
- 04C2           ;                 Beep(100,50);
- 04C2 22E3              ldi R18,50
- 04C4 30E0              ldi R19,0
- 04C6 04E6              ldi R16,100
- 04C8 10E0              ldi R17,0
- 04CA 0E940000          xcall _Beep
- 04CE                   .dbline 217
- 04CE           ;                               break;
- 04CE 03C0              xjmp L56
- 04D0           L61:
- 04D0                   .dbline 219
- 04D0           ;             }
- 04D0           ;             case ( ((1<<S1)^0xF0) ): {
- 04D0                   .dbline 220
- 04D0           ;                 PORTE =~ (1<<0);
- 04D0 8EEF              ldi R24,254
- 04D2 83B9              out 0x3,R24
- 04D4                   .dbline 222
- 04D4           ;               //  Beep(100,50);
- 04D4           ;                               key_brk=1;
- 04D4 61E0              ldi R22,1
- 04D6                   .dbline 223
- 04D6           ;                 break;
- 04D6                   .dbline 225
- 04D6           ;             }
- 04D6           ;             default: {
- 04D6                   .dbline 226
- 04D6           ;                 break;
- 04D6           L56:
- 04D6                   .dbline 230
- 04D6           ;             }
- 04D6           ;         }
- 04D6           ; 
- 04D6           ;     }
- 04D6           L51:
- 04D6                   .dbline 194
- 04D6 94CF              xjmp L50
- 04D8           L52:
- 04D8                   .dbline 238
- 04D8           ;       
- 04D8           ;       
- 04D8           ;       
- 04D8           ; 
- 04D8           ; /////////////////////////BUZZ_KEY_test_end
- 04D8           ; // 1.read the pcf_init_data
- 04D8           ; 
- 04D8           ;        msc_to_pc("read the pcf_init_data\n");
- 04D8 00E0              ldi R16,<L65
- 04DA 10E0              ldi R17,>L65
- 04DC B4DE              xcall _msc_to_pc
- 04DE                   .dbline 239
- 04DE           ;        pcfread(tem2,2,7);/// get the bcd_to_year
- 04DE 87E0              ldi R24,7
- 04E0 90E0              ldi R25,0
- 04E2 9983              std y+1,R25
- 04E4 8883              std y+0,R24
- 04E6 22E0              ldi R18,2
- 04E8 30E0              ldi R19,0
- 04EA 00E0              ldi R16,<_tem2
- 04EC 10E0              ldi R17,>_tem2
- 04EE 0E940000          xcall _pcfread
- 04F2                   .dbline 240
- 04F2           ;        pre_transfer(tem2);///and op
- 04F2 00E0              ldi R16,<_tem2
- 04F4 10E0              ldi R17,>_tem2
- 04F6 08DE              xcall _pre_transfer
- 04F8                   .dbline 241
- 04F8           ;      val_msc_to_pc(tem2);/// bcd to string
- 04F8 00E0              ldi R16,<_tem2
- 04FA 10E0              ldi R17,>_tem2
- 04FC 2FDE              xcall _val_msc_to_pc
- 04FE                   .dbline 243
- 04FE           ; // 2.pcf_init_data_read to pc
- 04FE           ;    out_to_user(tem2);
- 04FE 00E0              ldi R16,<_tem2
- 0500 10E0              ldi R17,>_tem2
- 0502 C3DE              xcall _out_to_user
- 0504                   .dbline 245
- 0504           ; //3. update the pcf data_to now time
- 0504           ;        msc_to_pc("update the pcf data_to now time\n");         
- 0504 00E0              ldi R16,<L66
- 0506 10E0              ldi R17,>L66
- 0508 9EDE              xcall _msc_to_pc
- 050A                   .dbline 246
- 050A           ;      time_init(read_buf);
- 050A 00E0              ldi R16,<_read_buf
- 050C 10E0              ldi R17,>_read_buf
- 050E C9DD              xcall _time_init
- 0510                   .dbline 248
- 0510           ; // 4.read the pcd_now_data
- 0510           ;     pcfread(tem2,2,7);/// get the bcd_to_year
- 0510 87E0              ldi R24,7
- 0512 90E0              ldi R25,0
- 0514 9983              std y+1,R25
- 0516 8883              std y+0,R24
- 0518 22E0              ldi R18,2
- 051A 30E0              ldi R19,0
- 051C 00E0              ldi R16,<_tem2
- 051E 10E0              ldi R17,>_tem2
- 0520 0E940000          xcall _pcfread
- 0524                   .dbline 249
- 0524           ;       pre_transfer(tem2);///and op
- 0524 00E0              ldi R16,<_tem2
- 0526 10E0              ldi R17,>_tem2
- 0528 EFDD              xcall _pre_transfer
- 052A                   .dbline 250
- 052A           ;       val_msc_to_pc(tem2);/// bcd to string
- 052A 00E0              ldi R16,<_tem2
- 052C 10E0              ldi R17,>_tem2
- 052E 16DE              xcall _val_msc_to_pc
- 0530                   .dbline 253
- 0530           ;       
- 0530           ; // 5.pcf_now_data_read to pc
- 0530           ;       out_to_user(tem2);
- 0530 00E0              ldi R16,<_tem2
- 0532 10E0              ldi R17,>_tem2
- 0534 AADE              xcall _out_to_user
- 0536                   .dbline 255
- 0536           ; // 6.write_to_at24c01
- 0536           ;       msc_to_pc("writea_to_at24c01_\"wocao\"\n");
- 0536 00E0              ldi R16,<L67
- 0538 10E0              ldi R17,>L67
- 053A 85DE              xcall _msc_to_pc
- 053C                   .dbline 257
- 053C           ;        //wt24c(W_Buff,0x00,13);
- 053C           ;        wt24c("wocao",0x00,5);
- 053C 85E0              ldi R24,5
- 053E 90E0              ldi R25,0
- 0540 9983              std y+1,R25
- 0542 8883              std y+0,R24
- 0544 2227              clr R18
- 0546 3327              clr R19
- 0548 00E0              ldi R16,<L68
- 054A 10E0              ldi R17,>L68
- 054C 0E940000          xcall _wt24c
- 0550                   .dbline 259
- 0550           ; //6.at24c01_to_pc
- 0550           ;       msc_to_pc("to_pc\n");
- 0550 00E0              ldi R16,<L69
- 0552 10E0              ldi R17,>L69
- 0554 78DE              xcall _msc_to_pc
- 0556                   .dbline 260
- 0556           ;       rd24c(R_Buff,0x00,5);
- 0556 85E0              ldi R24,5
- 0558 90E0              ldi R25,0
- 055A 9983              std y+1,R25
- 055C 8883              std y+0,R24
- 055E 2227              clr R18
- 0560 3327              clr R19
- 0562 8A01              movw R16,R20
- 0564 0E940000          xcall _rd24c
- 0568                   .dbline 261
- 0568           ;       R_Buff[5]='\n';
- 0568 8AE0              ldi R24,10
- 056A FA01              movw R30,R20
- 056C 8583              std z+5,R24
- 056E                   .dbline 262
- 056E           ;       R_Buff[6]='\0';
- 056E 2224              clr R2
- 0570 2682              std z+6,R2
- 0572                   .dbline 263
- 0572           ;       msc_to_pc(R_Buff);
- 0572 8F01              movw R16,R30
- 0574 68DE              xcall _msc_to_pc
- 0576           L70:
- 0576                   .dbline 265
- 0576           ;       
- 0576           ; while(1);
- 0576           L71:
- 0576                   .dbline 265
- 0576 FFCF              xjmp L70
- 0578           L73:
- 0578                   .dbline 275
- 0578           ; ////////////////////////////////////////exp_process_end
- 0578           ; 
- 0578           ;        wt24c(W_Buff,0x00,13);
- 0578           ;        delay_nms(500);
- 0578           ;        //Com_putstring ("24C01 Read: ",12,&RTbuf_UART0);
- 0578           ;        rd24c(R_Buff,0x00,13);Com_putstring (R_Buff,13,&RTbuf_UART0);
- 0578           ;        //Com_putstring ("\n\n",2,&RTbuf_UART0);
- 0578           ;      delay_nms(500);
- 0578           ;        while(1)
- 0578           ;        {
- 0578                   .dbline 276
- 0578           ;         ;
- 0578                   .dbline 277
- 0578           ;        }
- 0578           L74:
- 0578                   .dbline 274
- 0578 FFCF              xjmp L73
- 057A           X20:
- 057A                   .dbline -2
- 057A           L35:
- 057A                   .dbline 0 ; func end
- 057A 2296              adiw R28,2
- 057C 0895              ret
- 057E                   .dbsym r W_Buff 20 pc
- 057E                   .dbsym r R_Buff 20 pc
- 057E                   .dbsym r key_brk 22 c
- 057E                   .dbsym r Key 10 c
- 057E                   .dbsym r i 22 c
- 057E                   .dbsym r j 10 c
- 057E                   .dbend
+ 0550           _main::
+ 0550 2297              sbiw R28,2
+ 0552                   .dbline -1
+ 0552                   .dbline 121
+ 0552           ; }
+ 0552           ; 
+ 0552           ; void main(void)
+ 0552           ; {
+ 0552                   .dbline 122
+ 0552           ;      unsigned char *W_Buff="www.avrvi.com",*R_Buff="\0",i=0,j=0,Key,key_brk,ng;
+ 0552                   .dbline 122
+ 0552                   .dbline 122
+ 0552                   .dbline 122
+ 0552 6627              clr R22
+ 0554                   .dbline 125
+ 0554           ;        
+ 0554           ;        //// init_process
+ 0554           ;        CLI();
+ 0554 F894              cli
+ 0556                   .dbline 126
+ 0556           ;        Com_init();
+ 0556 0E940000          xcall _Com_init
+ 055A                   .dbline 127
+ 055A           ;        twi_init();
+ 055A 0E940000          xcall _twi_init
+ 055E                   .dbline 128
+ 055E           ;       CLI();
+ 055E F894              cli
+ 0560                   .dbline 129
+ 0560           ;      ng= read_temperature();
+ 0560 0E940000          xcall _read_temperature
+ 0564 A02E              mov R10,R16
+ 0566                   .dbline 130
+ 0566           ;        SEI();
+ 0566 7894              sei
+ 0568                   .dbline 148
+ 0568           ; //         ng= read_temperature();
+ 0568           ;        //// init_process_end
+ 0568           ;        
+ 0568           ;        //pcf 
+ 0568           ; //     msc_to_pc("Plead write the time to the msc now!\n\n");
+ 0568           ; //     while(1);
+ 0568           ; // msc_to_pc("24C01 Write: www.avrvi.com\n\n");
+ 0568           ; //     time_init(read_buf);
+ 0568           ; //     pcf_start();
+ 0568           ;       //pcf_init_end  
+ 0568           ; //     delay_nms(5000);        
+ 0568           ; 
+ 0568           ; //////////////////////////////////////////////exp_process
+ 0568           ; 
+ 0568           ; /////////////////////////led_test
+ 0568           ; 
+ 0568           ; 
+ 0568           ;        msc_to_pc("led_test\n");
+ 0568 00E0              ldi R16,<L33
+ 056A 10E0              ldi R17,>L33
+ 056C 6CDE              xcall _msc_to_pc
+ 056E                   .dbline 150
+ 056E           ; 
+ 056E           ;  PORTE = 0xFF;
+ 056E 8FEF              ldi R24,255
+ 0570 83B9              out 0x3,R24
+ 0572                   .dbline 151
+ 0572           ;  DDRE  = 0xFF;
+ 0572 82B9              out 0x2,R24
+ 0574                   .dbline 153
+ 0574           ; 
+ 0574           ;          for(i=0;i<3;i++)
+ 0574 4427              clr R20
+ 0576 0DC0              xjmp L37
+ 0578           L34:
+ 0578                   .dbline 154
+ 0578           ;                {
+ 0578                   .dbline 155
+ 0578           ;                 PORTE = 0;
+ 0578 2224              clr R2
+ 057A 23B8              out 0x3,R2
+ 057C                   .dbline 156
+ 057C           ;                 delay_nms(300);
+ 057C 0CE2              ldi R16,300
+ 057E 11E0              ldi R17,1
+ 0580 0E940000          xcall _delay_nms
+ 0584                   .dbline 157
+ 0584           ;                 PORTE = 0xff;
+ 0584 8FEF              ldi R24,255
+ 0586 83B9              out 0x3,R24
+ 0588                   .dbline 158
+ 0588           ;                 delay_nms(300);
+ 0588 0CE2              ldi R16,300
+ 058A 11E0              ldi R17,1
+ 058C 0E940000          xcall _delay_nms
+ 0590                   .dbline 159
+ 0590           ;                }
+ 0590           L35:
+ 0590                   .dbline 153
+ 0590 4395              inc R20
+ 0592           L37:
+ 0592                   .dbline 153
+ 0592 4330              cpi R20,3
+ 0594 88F3              brlo L34
+ 0596           X7:
+ 0596                   .dbline 167
+ 0596           ; 
+ 0596           ; //.///////////////////////led_test_end
+ 0596           ; 
+ 0596           ; 
+ 0596           ; 
+ 0596           ; /////////////////////////seg7
+ 0596           ; 
+ 0596           ;        msc_to_pc("SEG7_test\n");
+ 0596 00E0              ldi R16,<L38
+ 0598 10E0              ldi R17,>L38
+ 059A 55DE              xcall _msc_to_pc
+ 059C                   .dbline 168
+ 059C           ;               HC_595_init();
+ 059C 0E940000          xcall _HC_595_init
+ 05A0                   .dbline 170
+ 05A0           ;               //  Seg7_Led_display(111*i)
+ 05A0           ;                for(i=0;i<10;i++)
+ 05A0 4427              clr R20
+ 05A2 12C0              xjmp L42
+ 05A4           L39:
+ 05A4                   .dbline 171
+ 05A4           ;                {
+ 05A4                   .dbline 172
+ 05A4           ;                 for(j=0;j<200;++j){
+ 05A4 6627              clr R22
+ 05A6 0DC0              xjmp L46
+ 05A8           L43:
+ 05A8                   .dbline 172
+ 05A8                   .dbline 173
+ 05A8           ;                       Seg7_Led_display(1111*i);
+ 05A8 242F              mov R18,R20
+ 05AA 3327              clr R19
+ 05AC 07E5              ldi R16,1111
+ 05AE 14E0              ldi R17,4
+ 05B0 0E940000          xcall empy16s
+ 05B4 0E940000          xcall _Seg7_Led_display
+ 05B8                   .dbline 174
+ 05B8           ;                 delay_nms(1);
+ 05B8 01E0              ldi R16,1
+ 05BA 10E0              ldi R17,0
+ 05BC 0E940000          xcall _delay_nms
+ 05C0                   .dbline 175
+ 05C0           ;                 }  
+ 05C0           L44:
+ 05C0                   .dbline 172
+ 05C0 6395              inc R22
+ 05C2           L46:
+ 05C2                   .dbline 172
+ 05C2 683C              cpi R22,200
+ 05C4 88F3              brlo L43
+ 05C6           X8:
+ 05C6                   .dbline 176
+ 05C6           ;                }
+ 05C6           L40:
+ 05C6                   .dbline 170
+ 05C6 4395              inc R20
+ 05C8           L42:
+ 05C8                   .dbline 170
+ 05C8 4A30              cpi R20,10
+ 05CA 60F3              brlo L39
+ 05CC           X9:
+ 05CC                   .dbline 262
+ 05CC           ; 
+ 05CC           ; 
+ 05CC           ; /////////////////////////seg7_test_end
+ 05CC           ; 
+ 05CC           ; 
+ 05CC           ; 
+ 05CC           ; /////////////////////////BUZZ_KEY_test
+ 05CC           ; /*
+ 05CC           ;        msc_to_pc("BUZZ_KEY_test\n");
+ 05CC           ;       DDRE = 0xFF;
+ 05CC           ;        PORTE = 0xFF;
+ 05CC           ;     Key_init();
+ 05CC           ;     Buzz_init();
+ 05CC           ;       key_brk=0;
+ 05CC           ;       while(1) {
+ 05CC           ;               if(key_brk)break;
+ 05CC           ;         Key=get_key();
+ 05CC           ;         switch(Key) {
+ 05CC           ;             case ( ((1<<S4)^0xF0) ): {
+ 05CC           ;                 PORTE =~ (1<<3);
+ 05CC           ;                 Beep(100,50);
+ 05CC           ;                 Beep(100,50);
+ 05CC           ;                 Beep(100,50);
+ 05CC           ;                 Beep(100,50);
+ 05CC           ;                               break;
+ 05CC           ;             }
+ 05CC           ;             case ( ((1<<S3)^0xF0) ): {
+ 05CC           ;                 PORTE =~ (1<<2);
+ 05CC           ;                 Beep(100,50);
+ 05CC           ;                 Beep(100,50);
+ 05CC           ;                 Beep(100,50);
+ 05CC           ;                               break;
+ 05CC           ;             }
+ 05CC           ;             case ( ((1<<S2)^0xF0) ): {
+ 05CC           ;                 PORTE =~ (1<<1);
+ 05CC           ;                 Beep(100,50);
+ 05CC           ;                 Beep(100,50);
+ 05CC           ;                               break;
+ 05CC           ;             }
+ 05CC           ;             case ( ((1<<S1)^0xF0) ): {
+ 05CC           ;                 PORTE =~ (1<<0);
+ 05CC           ;                 Beep(100,50);
+ 05CC           ;                               key_brk=1;
+ 05CC           ;                 break;
+ 05CC           ;             }
+ 05CC           ;             default: {
+ 05CC           ;                 break;
+ 05CC           ;             }
+ 05CC           ;         }
+ 05CC           ; 
+ 05CC           ;     }
+ 05CC           ;       
+ 05CC           ; 
+ 05CC           ; 
+ 05CC           ; /////////////////////////BUZZ_KEY_test_end
+ 05CC           ; // 1.read the pcf_init_data
+ 05CC           ; 
+ 05CC           ;        msc_to_pc("read the pcf_init_data\n");
+ 05CC           ;        pcfread(tem2,2,7);/// get the bcd_to_year
+ 05CC           ;        pre_transfer(tem2);///and op
+ 05CC           ;      val_msc_to_pc(tem2);/// bcd to string
+ 05CC           ;        msc_to_pc("read the pcf_init_data_end\n");
+ 05CC           ; // 2.pcf_init_data_read to pc
+ 05CC           ;    out_to_user(tem2);
+ 05CC           ; //3. update the pcf data_to now time
+ 05CC           ;        msc_to_pc("update the pcf data_to now time\n");         
+ 05CC           ;      time_init(read_buf);
+ 05CC           ; // 4.read the pcd_now_data
+ 05CC           ;     pcfread(tem2,2,7);/// get the bcd_to_year
+ 05CC           ;       pre_transfer(tem2);///and op
+ 05CC           ;       val_msc_to_pc(tem2);/// bcd to string
+ 05CC           ;       
+ 05CC           ; // 5.pcf_now_data_read to pc
+ 05CC           ;       out_to_user(tem2);
+ 05CC           ; // 6.write_to_at24c01
+ 05CC           ;       msc_to_pc("The string written to the AT24C01 is: \"GOOD_EXP\"\n");
+ 05CC           ;        //wt24c(W_Buff,0x00,13);
+ 05CC           ;        wt24c("GOOD_EXP\n\0",0x00,10);
+ 05CC           ; //7.at24c01_to_pc
+ 05CC           ;       msc_to_pc("GET THE STRING:\n");
+ 05CC           ;       rd24c(R_Buff,0x00,10);
+ 05CC           ;       msc_to_pc(R_Buff);
+ 05CC           ; //8.ds18b20
+ 05CC           ;     
+ 05CC           ;       */
+ 05CC           ;     msc_to_pc("DS18B20\n");
+ 05CC 00E0              ldi R16,<L47
+ 05CE 10E0              ldi R17,>L47
+ 05D0 3ADE              xcall _msc_to_pc
+ 05D2                   .dbline 263
+ 05D2           ;     CLI();
+ 05D2 F894              cli
+ 05D4                   .dbline 265
+ 05D4           ; //    ng= read_temperature();
+ 05D4           ;      SEI();
+ 05D4 7894              sei
+ 05D6                   .dbline 266
+ 05D6           ;     convert_temp_data();
+ 05D6 0E940000          xcall _convert_temp_data
+ 05DA                   .dbline 267
+ 05DA           ;     msc_to_pc(current_temp_display_buffer);
+ 05DA 00E0              ldi R16,<_current_temp_display_buffer
+ 05DC 10E0              ldi R17,>_current_temp_display_buffer
+ 05DE 33DE              xcall _msc_to_pc
+ 05E0           L48:
+ 05E0                   .dbline 269
+ 05E0           ;     
+ 05E0           ; while(1);
+ 05E0           L49:
+ 05E0                   .dbline 269
+ 05E0 FFCF              xjmp L48
+ 05E2           L51:
+ 05E2                   .dbline 279
+ 05E2           ; ////////////////////////////////////////exp_process_end
+ 05E2           ; 
+ 05E2           ;        wt24c(W_Buff,0x00,13);
+ 05E2           ;        delay_nms(500);
+ 05E2           ;        //Com_putstring ("24C01 Read: ",12,&RTbuf_UART0);
+ 05E2           ;        rd24c(R_Buff,0x00,13);Com_putstring (R_Buff,13,&RTbuf_UART0);
+ 05E2           ;        //Com_putstring ("\n\n",2,&RTbuf_UART0);
+ 05E2           ;      delay_nms(500);
+ 05E2           ;        while(1)
+ 05E2           ;        {
+ 05E2                   .dbline 280
+ 05E2           ;         ;
+ 05E2                   .dbline 281
+ 05E2           ;        }
+ 05E2           L52:
+ 05E2                   .dbline 278
+ 05E2 FFCF              xjmp L51
+ 05E4           X10:
+ 05E4                   .dbline -2
+ 05E4           L30:
+ 05E4                   .dbline 0 ; func end
+ 05E4 2296              adiw R28,2
+ 05E6 0895              ret
+ 05E8                   .dbsym l key_brk 3 c
+ 05E8                   .dbsym l Key 3 c
+ 05E8                   .dbsym r ng 10 c
+ 05E8                   .dbsym r W_Buff 20 pc
+ 05E8                   .dbsym r R_Buff 20 pc
+ 05E8                   .dbsym r i 20 c
+ 05E8                   .dbsym r j 22 c
+ 05E8                   .dbend
                         .area bss(ram, con, rel)
  0000                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\main.c
  0000           _tem2::
@@ -1315,51 +1291,35 @@
  0028                   .dbsym e tem _tem A[20:20]c
                         .area data(ram, con, rel)
  0047                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\main.c
- 0047           L69:
- 0047                   .blkb 7
+ 0047           L47:
+ 0047                   .blkb 9
                         .area idata
- 0047 746F5F70630A00    .byte 't,'o,95,'p,'c,10,0
+ 0047 445331384232300A00        .byte 'D,'S,49,56,'B,50,48,10,0
                         .area data(ram, con, rel)
- 004E                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\main.c
- 004E           L68:
- 004E                   .blkb 6
+ 0050                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\main.c
+ 0050           L38:
+ 0050                   .blkb 11
                         .area idata
- 004E 776F63616F00      .byte 'w,'o,'c,'a,'o,0
+ 0050 534547375F746573740A00    .byte 'S,'E,'G,55,95,'t,'e,'s,'t,10,0
                         .area data(ram, con, rel)
- 0054                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\main.c
- 0054           L67:
- 0054                   .blkb 27
+ 005B                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\main.c
+ 005B           L33:
+ 005B                   .blkb 10
                         .area idata
- 0054 7772697465615F746F5F617432346330  .byte 'w,'r,'i,'t,'e,'a,95,'t,'o,95,'a,'t,50,52,'c,48
- 0064 315F22776F63616F220A00    .byte 49,95,34,'w,'o,'c,'a,'o,34,10,0
+ 005B 6C65645F746573740A00      .byte 'l,'e,'d,95,'t,'e,'s,'t,10,0
                         .area data(ram, con, rel)
- 006F                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\main.c
- 006F           L66:
- 006F                   .blkb 33
+ 0065                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\main.c
+ 0065           L32:
+ 0065                   .blkb 2
                         .area idata
- 006F 75706461746520746865207063662064  .byte 'u,'p,'d,'a,'t,'e,32,'t,'h,'e,32,'p,'c,'f,32,'d
- 007F 6174615F746F206E6F772074696D650A  .byte 'a,'t,'a,95,'t,'o,32,'n,'o,'w,32,'t,'i,'m,'e,10
- 008F 00                .byte 0
+ 0065 0000              .byte 0,0
                         .area data(ram, con, rel)
- 0090                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\main.c
- 0090           L65:
- 0090                   .blkb 24
+ 0067                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\main.c
+ 0067           L31:
+ 0067                   .blkb 14
                         .area idata
- 0090 7265616420746865207063665F696E69  .byte 'r,'e,'a,'d,32,'t,'h,'e,32,'p,'c,'f,95,'i,'n,'i
- 00A0 745F646174610A00  .byte 't,95,'d,'a,'t,'a,10,0
+ 0067 7777772E61767276692E636F6D00      .byte 'w,'w,'w,46,'a,'v,'r,'v,'i,46,'c,'o,'m,0
                         .area data(ram, con, rel)
- 00A8                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\main.c
- 00A8           L37:
- 00A8                   .blkb 2
-                        .area idata
- 00A8 0000              .byte 0,0
-                        .area data(ram, con, rel)
- 00AA                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\main.c
- 00AA           L36:
- 00AA                   .blkb 14
-                        .area idata
- 00AA 7777772E61767276692E636F6D00      .byte 'w,'w,'w,46,'a,'v,'r,'v,'i,46,'c,'o,'m,0
-                        .area data(ram, con, rel)
- 00B8                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\main.c
- 00B8           ; }
- 00B8           ; 
+ 0075                   .dbfile D:\desk_station\LM041L\AVR_licheng\USART_24C01_ok\source\main.c
+ 0075           ; }
+ 0075           ; 
